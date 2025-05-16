@@ -7,21 +7,37 @@ import {
 import { Order } from "../../store/models/order";
 import PaginatedFavoriteProductsRequest from "../../store/models/favorites/paginated-favorite-products-request";
 import ProductCard from "../../components/product-card/product-card";
+import Pagination from "../../components/pagination/pagination";
+import CartItem from "../../store/models/cart/cart-item";
 
 const FavoritesPage = () => {
-  const [params, setParams] = useState<PaginatedFavoriteProductsRequest>({
-    pageIndex: 1,
-    pageSize: 12,
-    orderBy: Order.DESCENDING,
-    sortField: "updatedAt",
-  });
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [sortField, setSortField] = useState<keyof CartItem>("updatedAt");
+  const [orderBy, setOrderBy] = useState<Order>(Order.DESCENDING);
+
+  const requestParams: PaginatedFavoriteProductsRequest = {
+    pageIndex,
+    pageSize,
+    sortField: String(sortField),
+    orderBy,
+  };
 
   const {
-    data: { products = [] } = {},
+    data: {
+      products = [],
+      pageDto: page = {
+        pageIndex: 1,
+        totalPages: 1,
+        totalCount: 0,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      },
+    } = {},
     isLoading,
     isError,
     refetch,
-  } = useGetPaginatedFavoriteProductsQuery(params, {
+  } = useGetPaginatedFavoriteProductsQuery(requestParams, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -30,6 +46,10 @@ const FavoritesPage = () => {
   const handleClearAll = async () => {
     await clearFavorites();
     refetch();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPageIndex(newPage);
   };
 
   if (isError) {
@@ -85,6 +105,11 @@ const FavoritesPage = () => {
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
+      </div>
+
+      {/* Пагинация */}
+      <div className="mt-8 bg-gray p-4 rounded">
+        <Pagination page={page} onPageChange={handlePageChange} />
       </div>
     </div>
   );

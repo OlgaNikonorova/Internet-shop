@@ -73,7 +73,9 @@ const CartPage = () => {
                   <CartItemCard key={product.id} cartItem={product} />
                 ))}
               </div>
-              <div className="mt-8 flex justify-center">
+
+              {/* Пагинация */}
+              <div className="mt-8 bg-gray p-4 rounded">
                 <Pagination page={page} onPageChange={handlePageChange} />
               </div>
             </div>
