@@ -4,7 +4,11 @@ import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
 import { useGetPaginatedCartItemsProductsQuery } from "../../store/api/cart-api";
 
-const Header = () => {
+interface HeaderProps {
+  onCartClick: () => void;
+}
+
+const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
 
   const { data: { products = [] } = {} } =
@@ -44,13 +48,12 @@ const Header = () => {
             <button
               className="p-2 rounded-full hover:bg-gray transition-colors relative"
               aria-label="Корзина"
+              onClick={onCartClick}
             >
-              <Link to="/cart">
                 <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>
-                <ShoppingCart fontSize="medium" />
-              </Link>
+                <ShoppingCart fontSize="medium" />   
             </button>
 
             <button

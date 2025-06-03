@@ -1,10 +1,20 @@
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import {
+  useGetPaginatedFavoriteProductsQuery,
+  useRemoveProductFromFavoritesMutation,
+  useAddProductToFavoritesMutation,
+} from "../../store/api/favorites-api";
+
 import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
 import { ProductStatus } from "../../store/models/product/product-status";
 import { useGetReviewsQuery } from "../../store/api/reviews-api";
 import Review from "../../components/review/review";
 import { useAddItemToCartMutation } from "../../store/api/cart-api";
-import { useAddProductToFavoritesMutation } from "../../store/api/favorites-api";
+import { IconButton } from "@mui/material";
+
+import { Order } from "../../store/models/order";
+import Product from "../../store/models/product/product";
 
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +32,24 @@ const ProductPage = () => {
   const [addToFavorites, { isLoading: isAddingToFavorites }] =
     useAddProductToFavoritesMutation();
 
+  // Правильный вызов с параметрами для пагинации
+  const { data: favoriteData } = useGetPaginatedFavoriteProductsQuery({
+    pageIndex: 1,
+    pageSize: 1000,
+    sortField: "updatedAt",
+    orderBy: Order.DESCENDING,
+  });
+
+  // массив избранных продуктов или пустой массив
+  const favoriteProducts: Product[] = favoriteData?.products || [];
+
+  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
+
+  // Проверяем, есть ли продукт в избранном
+  const isFavorite = favoriteProducts.some(
+    (p: Product) => p.id === product?.id
+  );
+
   const handleAddToCart = async () => {
     if (!product) return;
 
@@ -31,12 +59,14 @@ const ProductPage = () => {
     });
   };
 
-  const handleAddToFavorites = async () => {
+  const handleToggleFavorite = async () => {
     if (!product) return;
 
-    await addToFavorites({
-      productId: product.id,
-    });
+    if (isFavorite) {
+      await removeFromFavorites(product.id);
+    } else {
+      await addToFavorites({ productId: product.id });
+    }
   };
 
   if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
@@ -124,13 +154,18 @@ const ProductPage = () => {
               >
                 {isAddingToCart ? "Adding..." : "Add to Cart"}
               </button>
-              <button
-                onClick={handleAddToFavorites}
+
+              <IconButton
+                onClick={handleToggleFavorite}
                 disabled={isAddingToFavorites}
-                className="px-6 py-3 border-gray"
+                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition"
               >
-                {isAddingToFavorites ? "Adding..." : "Add to Wishlist"}
-              </button>
+                {isFavorite ? (
+                  <Favorite className="text-black" />
+                ) : (
+                  <FavoriteBorder className="text-black" />
+                )}
+              </IconButton>
             </div>
           </div>
 
@@ -139,9 +174,7 @@ const ProductPage = () => {
             <div className="mt-4 grid grid-cols-2 gap-4 text-white">
               <div>
                 <p className="text-sm text-white">Category</p>
-                <p className="text-sm font-medium text-white">
-                  {product.category}
-                </p>
+                <p className="text-sm font-medium text-white">{product.category}</p>
               </div>
               <div>
                 <p className="text-sm text-white">SKU</p>
@@ -156,7 +189,7 @@ const ProductPage = () => {
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-white">Customer Reviews</h2>
           {reviews?.length !== 0 ? (
-            <div className="flex flex-colgap-6">
+            <div className="flex flex-col gap-6">
               {reviews.map((review) => (
                 <Review key={review.id} review={review} />
               ))}
