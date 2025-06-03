@@ -1,9 +1,19 @@
 import { Link } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
+import { Favorite, ShoppingCart } from "@mui/icons-material";
+import { useGetPaginatedCartItemsProductsQuery } from "../../store/api/cart-api";
 
 const Header = () => {
   const username = useTypedSelector(usernameSelector);
+
+  const { data: { products = [] } = {} } =
+    useGetPaginatedCartItemsProductsQuery(
+      { pageIndex: 1, pageSize: 100 }, 
+      { refetchOnMountOrArgChange: true }
+    );
+
+  const cartItemCount = products.length;
 
   return (
     <header className="bg-primary text-white shadow-md">
@@ -15,16 +25,17 @@ const Header = () => {
         <nav className="flex items-center gap-6">
           <div className="hidden md:flex items-center gap-6">
             <Link to="/shop" className="hover:text-gray transition-colors">
-              Магазин
+              Каталог
             </Link>
             <Link to="/about" className="hover:text-gray transition-colors">
-              О нас
+              Новинки
             </Link>
             <Link to="/contacts" className="hover:text-gray transition-colors">
-              Контакты
+              Бренды
             </Link>
+
             <Link to="/favorites" className="hover:text-gray transition-colors">
-              Избранное
+              <Favorite fontSize="medium" />
             </Link>
           </div>
 
@@ -36,8 +47,9 @@ const Header = () => {
             >
               <Link to="/cart">
                 <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  0
+                  {cartItemCount}
                 </span>
+                <ShoppingCart fontSize="medium" />
               </Link>
             </button>
 
@@ -45,7 +57,9 @@ const Header = () => {
               className="p-2 rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
             >
-              <div>{username}</div>
+              <Link to="/profile">
+                <div>{username}</div>
+              </Link>
             </button>
           </div>
         </nav>

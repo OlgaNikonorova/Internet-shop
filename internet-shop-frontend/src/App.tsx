@@ -14,6 +14,7 @@ import ProtectedLayout from "./routes/protected-layout";
 import ProductPage from "./pages/product-page/product-page";
 import CartPage from "./pages/cart-page/cart-page";
 import FavoritesPage from "./pages/favorites-page/favorites-page";
+import NotFoundPage from "./pages/not-found-page/not-found-page";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -63,7 +64,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "*",
-        element: <div>Not Found</div>,
+        element: <NotFoundPage />,
       },
     ],
   },

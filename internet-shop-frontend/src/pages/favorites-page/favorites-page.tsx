@@ -108,7 +108,7 @@ const FavoritesPage = () => {
       </div>
 
       {/* Пагинация */}
-      <div className="mt-8 bg-gray p-4 rounded">
+      <div className="mt-8 bg-white p-4 rounded">
         <Pagination page={page} onPageChange={handlePageChange} />
       </div>
     </div>
