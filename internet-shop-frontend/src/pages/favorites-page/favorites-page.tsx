@@ -9,6 +9,7 @@ import PaginatedFavoriteProductsRequest from "../../store/models/favorites/pagin
 import ProductCard from "../../components/product-card/product-card";
 import Pagination from "../../components/pagination/pagination";
 import CartItem from "../../store/models/cart/cart-item";
+import Product from "../../store/models/product/product";
 
 const FavoritesPage = () => {
   const [pageIndex, setPageIndex] = useState(1);
@@ -102,7 +103,7 @@ const FavoritesPage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((product) => (
+        {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

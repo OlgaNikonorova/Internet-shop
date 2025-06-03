@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useGetMeQuery, useUpdateUserByIdMutation, useDeleteUserByIdMutation } from '../../store/api/user-api';
-import { UserRole } from '../../store/models/user/user-role';
 import ProfileForm from '../../components/profile-form/profile-form';
 import UpdateUser from '../../store/models/user/update-user';
 
