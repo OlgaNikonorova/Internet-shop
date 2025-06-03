@@ -69,7 +69,7 @@ const CartPage = () => {
           <div className="flex flex-col">
             <div className="w-full max-w-4xl mx-auto">
               <div className="space-y-4">
-                {products.map((product) => (
+                {products.map((product: CartItem) => (
                   <CartItemCard key={product.id} cartItem={product} />
                 ))}
               </div>
