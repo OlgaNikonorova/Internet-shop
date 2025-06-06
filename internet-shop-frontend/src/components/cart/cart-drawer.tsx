@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  useGetPaginatedCartItemsProductsQuery,
-  useRemoveItemFromCartMutation,
-  useUpdateCartItemQuantityMutation,
-} from "../../store/api/cart-api";
+import { useGetUserCartQuery } from "../../store/api/cart-api";
 import CartItemCard from "../cart-item-card/cart-item-card";
 import CartItem from "../../store/models/cart/cart-item";
-import PaginatedCartItemsProductsRequest from "../../store/models/cart/paginated-cart-items-products-request";
-import { Order } from "../../store/models/order";
-import { useDispatch } from "react-redux";
-import { addCartItem } from "../../store/slices/cart-slice";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -18,23 +10,13 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-  const [deleteCartItem] = useRemoveItemFromCartMutation();
-  const dispatch = useDispatch();
-
-  const requestParams: PaginatedCartItemsProductsRequest = {
-    sortField: "updatedAt",
-    orderBy: Order.DESCENDING,
-  };
-
   const {
-    data: { products = [] } = {},
+    data: { items: products = [], totalPrice = 0 } = {},
     isLoading,
     refetch,
-  } = useGetPaginatedCartItemsProductsQuery(requestParams, {
+  } = useGetUserCartQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-
-  const [updateQuantity] = useUpdateCartItemQuantityMutation();
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -55,33 +37,6 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     }
   }, [isOpen, refetch]);
 
-  const onDecrease = async (cartItemId: string, quantity?: number) => {
-    if ((quantity ?? 0) > 1) {
-      await updateQuantity({
-        cartItemId: cartItemId,
-        updateCartItem: { quantity: quantity! - 1 },
-      });
-    } else {
-      await deleteCartItem(cartItemId);
-      dispatch(addCartItem(-1));
-    }
-    refetch();
-  };
-
-  const onIncrease = async (cartItemId: string, quantity?: number) => {
-    await updateQuantity({
-      cartItemId: cartItemId,
-      updateCartItem: { quantity: (quantity ?? 0) + 1 },
-    });
-    refetch();
-  };
-
-  const onDelete = async (cartItemId: string) => {
-    await deleteCartItem(cartItemId);
-    dispatch(addCartItem(-1));
-    refetch();
-  };
-
   if (!showDrawer) return null;
 
   return createPortal(
@@ -101,9 +56,9 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         ${animateDrawer ? "translate-x-0" : "translate-x-full"}
       `}
       >
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-lg font-bold">Корзина / {products.length} шт.</h2>
-          <button onClick={onClose} className="text-2xl">
+        <div className="flex justify-between items-center mb-4 p-5">
+          <h2 className="text-2xl">Корзина / {products.length} шт.</h2>
+          <button onClick={onClose} className="text-3xl">
             &times;
           </button>
         </div>
@@ -115,26 +70,32 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         ) : (
           <div className="space-y-4">
             {products.map((product: CartItem) => (
-              <div
-                key={product.id}
-                className="relative p-4 rounded shadow-sm bg-gray-50"
-              >
-                <CartItemCard
-                  cartItem={product}
-                  onDecrease={onDecrease}
-                  onIncrease={onIncrease}
-                  onDelete={onDelete}
-                />
+              <div key={product.id} className="relative p-4">
+                <CartItemCard cartItem={product} refetchCart={refetch} />
               </div>
             ))}
 
             {/* Промокод и итог */}
-            <div className="mt-6 border-t pt-4 text-right">
-              <button className="px-4 py-2 mb-2 border border-black rounded">
-                Ввести промокод
+            <div className="flex flex-col mt-6 pt-4 gap-8">
+              <button className="text-gray px-4 py-4 mb-2 border border-gray rounded w-fit self-center">
+                ВВЕДИТЕ ПРОМОКОД
               </button>
-              <div className="text-xl font-bold">Итого: 7 659 ₽</div>
-              <button className="bg-black text-white px-6 py-3 mt-2 rounded">
+
+              <div className="flex flex-col self-start">
+                <h2 className="text-2xl font-bold mb-4">Сумма заказа</h2>
+                <span>
+                  Стоимость продуктов...................{totalPrice.toFixed(2)} ₽
+                </span>
+                <span>
+                  Скидка..................................................0 ₽
+                </span>
+              </div>
+
+              <div className="text-3xl self-end">
+                Итого {totalPrice.toFixed(2)} ₽
+              </div>
+
+              <button className="bg-primary text-white px-12 py-3 rounded w-fit self-center">
                 Оформить заказ
               </button>
             </div>
