@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
-import { useGetPaginatedCartItemsProductsQuery } from "../../store/api/cart-api";
+import { cartItemsCountSelector } from "../../store/slices/cart-slice";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -10,17 +10,12 @@ interface HeaderProps {
 
 const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
-
-  const { data: { products = [] } = {} } =
-    useGetPaginatedCartItemsProductsQuery(
-      { pageIndex: 1, pageSize: 100 }, 
-      { refetchOnMountOrArgChange: true }
-    );
-
-  const cartItemCount = products.length;
+  const cartItemsCount = useTypedSelector(cartItemsCountSelector);
 
   return (
-    <header className="bg-primary text-white shadow-md">
+    <header
+      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 absolute`}
+    >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <span className="text-2xl font-bold tracking-tight">Sobaccini</span>
@@ -50,10 +45,10 @@ const Header = ({ onCartClick }: HeaderProps) => {
               aria-label="Корзина"
               onClick={onCartClick}
             >
-                <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-                <ShoppingCart fontSize="medium" />   
+              <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
+              </span>
+              <ShoppingCart fontSize="medium" />
             </button>
 
             <button

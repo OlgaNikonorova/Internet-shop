@@ -6,10 +6,11 @@ import {
   useUpdateCartItemQuantityMutation,
 } from "../../store/api/cart-api";
 import CartItemCard from "../cart-item-card/cart-item-card";
-import Pagination from "../pagination/pagination";
 import CartItem from "../../store/models/cart/cart-item";
 import PaginatedCartItemsProductsRequest from "../../store/models/cart/paginated-cart-items-products-request";
 import { Order } from "../../store/models/order";
+import { useDispatch } from "react-redux";
+import { addCartItem } from "../../store/slices/cart-slice";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -17,26 +18,16 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-    const [deleteCartItem] = useRemoveItemFromCartMutation();
-    
+  const [deleteCartItem] = useRemoveItemFromCartMutation();
+  const dispatch = useDispatch();
+
   const requestParams: PaginatedCartItemsProductsRequest = {
-    pageIndex: 1,
-    pageSize: 100,
     sortField: "updatedAt",
     orderBy: Order.DESCENDING,
   };
 
   const {
-    data: {
-      products = [],
-      pageDto: page = {
-        pageIndex: 1,
-        totalPages: 1,
-        totalCount: 0,
-        hasPreviousPage: false,
-        hasNextPage: false,
-      },
-    } = {},
+    data: { products = [] } = {},
     isLoading,
     refetch,
   } = useGetPaginatedCartItemsProductsQuery(requestParams, {
@@ -54,32 +45,40 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
   useEffect(() => {
     if (isOpen) {
+      refetch();
       setShowDrawer(true);
-      setTimeout(() => setAnimateDrawer(true), 10); // задержка для плавной анимации появления
+      setTimeout(() => setAnimateDrawer(true), 10);
     } else {
       setAnimateDrawer(false);
       const timeout = setTimeout(() => setShowDrawer(false), 300);
       return () => clearTimeout(timeout);
     }
-  }, [isOpen]);
+  }, [isOpen, refetch]);
 
-const onDecrease = async (item: CartItem) => {
-  if ((item.quantity ?? 0) > 1) {
-    await updateQuantity({
-      cartItemId: item.id,
-      updateCartItem: { quantity: item.quantity! - 1 },
-    });
-  } else {
-    await deleteCartItem(item.id); // Явное удаление
-  }
-  refetch();
-};
+  const onDecrease = async (cartItemId: string, quantity?: number) => {
+    if ((quantity ?? 0) > 1) {
+      await updateQuantity({
+        cartItemId: cartItemId,
+        updateCartItem: { quantity: quantity! - 1 },
+      });
+    } else {
+      await deleteCartItem(cartItemId);
+      dispatch(addCartItem(-1));
+    }
+    refetch();
+  };
 
-  const onIncrease = async (item: CartItem) => {
+  const onIncrease = async (cartItemId: string, quantity?: number) => {
     await updateQuantity({
-      cartItemId: item.id,
-      updateCartItem: { quantity: (item.quantity ?? 0) + 1 },
+      cartItemId: cartItemId,
+      updateCartItem: { quantity: (quantity ?? 0) + 1 },
     });
+    refetch();
+  };
+
+  const onDelete = async (cartItemId: string) => {
+    await deleteCartItem(cartItemId);
+    dispatch(addCartItem(-1));
     refetch();
   };
 
@@ -104,7 +103,9 @@ const onDecrease = async (item: CartItem) => {
       >
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-lg font-bold">Корзина / {products.length} шт.</h2>
-          <button onClick={onClose} className="text-2xl">&times;</button>
+          <button onClick={onClose} className="text-2xl">
+            &times;
+          </button>
         </div>
 
         {isLoading ? (
@@ -114,31 +115,28 @@ const onDecrease = async (item: CartItem) => {
         ) : (
           <div className="space-y-4">
             {products.map((product: CartItem) => (
-              <div key={product.id} className="relative p-4 rounded shadow-sm bg-gray-50">
-                <div className="absolute top-2 right-2 flex items-center space-x-2 bg-gray-100 rounded-md px-2 py-1 text-sm">
-                  <button
-                    onClick={() => onDecrease(product)}
-                    className="w-6 h-6 flex justify-center items-center rounded bg-gray-200 hover:bg-gray-300 border-none"
-                  >
-                    −
-                  </button>
-                  <span className="min-w-[20px] text-center">{product.quantity}</span>
-                  <button
-                    onClick={() => onIncrease(product)}
-                    className="w-6 h-6 flex justify-center items-center rounded bg-gray-200 hover:bg-gray-300 border-none"
-                  >
-                    +
-                  </button>
-                </div>
-                <CartItemCard cartItem={product} />
+              <div
+                key={product.id}
+                className="relative p-4 rounded shadow-sm bg-gray-50"
+              >
+                <CartItemCard
+                  cartItem={product}
+                  onDecrease={onDecrease}
+                  onIncrease={onIncrease}
+                  onDelete={onDelete}
+                />
               </div>
             ))}
 
             {/* Промокод и итог */}
             <div className="mt-6 border-t pt-4 text-right">
-              <button className="px-4 py-2 mb-2 border border-black rounded">Ввести промокод</button>
+              <button className="px-4 py-2 mb-2 border border-black rounded">
+                Ввести промокод
+              </button>
               <div className="text-xl font-bold">Итого: 7 659 ₽</div>
-              <button className="bg-black text-white px-6 py-3 mt-2 rounded">Оформить заказ</button>
+              <button className="bg-black text-white px-6 py-3 mt-2 rounded">
+                Оформить заказ
+              </button>
             </div>
           </div>
         )}

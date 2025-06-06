@@ -10,14 +10,17 @@ import { useGetProductQuery } from "../../store/api/products-api";
 import { ProductStatus } from "../../store/models/product/product-status";
 import { useGetReviewsQuery } from "../../store/api/reviews-api";
 import Review from "../../components/review/review";
+import ReviewModel from "../../store/models/review/review";
 import { useAddItemToCartMutation } from "../../store/api/cart-api";
 import { IconButton } from "@mui/material";
-
 import { Order } from "../../store/models/order";
 import Product from "../../store/models/product/product";
+import { useDispatch } from "react-redux";
+import { addCartItem } from "../../store/slices/cart-slice";
 
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
 
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
     refetchOnMountOrArgChange: true,
@@ -32,7 +35,6 @@ const ProductPage = () => {
   const [addToFavorites, { isLoading: isAddingToFavorites }] =
     useAddProductToFavoritesMutation();
 
-  // Правильный вызов с параметрами для пагинации
   const { data: favoriteData } = useGetPaginatedFavoriteProductsQuery({
     pageIndex: 1,
     pageSize: 1000,
@@ -40,12 +42,10 @@ const ProductPage = () => {
     orderBy: Order.DESCENDING,
   });
 
-  // массив избранных продуктов или пустой массив
   const favoriteProducts: Product[] = favoriteData?.products || [];
 
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
-  // Проверяем, есть ли продукт в избранном
   const isFavorite = favoriteProducts.some(
     (p: Product) => p.id === product?.id
   );
@@ -57,6 +57,8 @@ const ProductPage = () => {
       productId: product.id,
       quantity: 1,
     });
+
+    dispatch(addCartItem(1));
   };
 
   const handleToggleFavorite = async () => {
@@ -99,14 +101,16 @@ const ProductPage = () => {
           </div>
           {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2 mt-4">
-              {product.images.slice(1).map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${product.name} ${index + 1}`}
-                  className="w-full h-24 object-cover rounded cursor-pointer"
-                />
-              ))}
+              {product.images
+                .slice(1)
+                .map((image: string | undefined, index: number) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`${product.name} ${index + 1}`}
+                    className="w-full h-24 object-cover rounded cursor-pointer"
+                  />
+                ))}
             </div>
           )}
         </div>
@@ -174,7 +178,9 @@ const ProductPage = () => {
             <div className="mt-4 grid grid-cols-2 gap-4 text-white">
               <div>
                 <p className="text-sm text-white">Category</p>
-                <p className="text-sm font-medium text-white">{product.category}</p>
+                <p className="text-sm font-medium text-white">
+                  {product.category}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-white">SKU</p>
@@ -189,8 +195,8 @@ const ProductPage = () => {
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-white">Customer Reviews</h2>
           {reviews?.length !== 0 ? (
-            <div className="flex flex-col gap-6">
-              {reviews.map((review) => (
+            <div className="flex flex-colgap-6">
+              {reviews.map((review: ReviewModel) => (
                 <Review key={review.id} review={review} />
               ))}
             </div>
