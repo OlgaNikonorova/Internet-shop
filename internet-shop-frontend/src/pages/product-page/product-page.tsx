@@ -1,14 +1,26 @@
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import {
+  useGetPaginatedFavoriteProductsQuery,
+  useRemoveProductFromFavoritesMutation,
+  useAddProductToFavoritesMutation,
+} from "../../store/api/favorites-api";
+
 import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
 import { ProductStatus } from "../../store/models/product/product-status";
 import { useGetReviewsQuery } from "../../store/api/reviews-api";
 import Review from "../../components/review/review";
-import { useAddItemToCartMutation } from "../../store/api/cart-api";
-import { useAddProductToFavoritesMutation } from "../../store/api/favorites-api";
 import ReviewModel from "../../store/models/review/review";
+import { useAddItemToCartMutation } from "../../store/api/cart-api";
+import { IconButton } from "@mui/material";
+import { Order } from "../../store/models/order";
+import Product from "../../store/models/product/product";
+import { useDispatch } from "react-redux";
+import { addCartItem } from "../../store/slices/cart-slice";
 
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
 
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
     refetchOnMountOrArgChange: true,
@@ -23,6 +35,21 @@ const ProductPage = () => {
   const [addToFavorites, { isLoading: isAddingToFavorites }] =
     useAddProductToFavoritesMutation();
 
+  const { data: favoriteData } = useGetPaginatedFavoriteProductsQuery({
+    pageIndex: 1,
+    pageSize: 1000,
+    sortField: "updatedAt",
+    orderBy: Order.DESCENDING,
+  });
+
+  const favoriteProducts: Product[] = favoriteData?.products || [];
+
+  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
+
+  const isFavorite = favoriteProducts.some(
+    (p: Product) => p.id === product?.id
+  );
+
   const handleAddToCart = async () => {
     if (!product) return;
 
@@ -30,14 +57,18 @@ const ProductPage = () => {
       productId: product.id,
       quantity: 1,
     });
+
+    dispatch(addCartItem(1));
   };
 
-  const handleAddToFavorites = async () => {
+  const handleToggleFavorite = async () => {
     if (!product) return;
 
-    await addToFavorites({
-      productId: product.id,
-    });
+    if (isFavorite) {
+      await removeFromFavorites(product.id);
+    } else {
+      await addToFavorites({ productId: product.id });
+    }
   };
 
   if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
@@ -70,14 +101,16 @@ const ProductPage = () => {
           </div>
           {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2 mt-4">
-              {product.images.slice(1).map((image: string | undefined, index: number) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${product.name} ${index + 1}`}
-                  className="w-full h-24 object-cover rounded cursor-pointer"
-                />
-              ))}
+              {product.images
+                .slice(1)
+                .map((image: string | undefined, index: number) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`${product.name} ${index + 1}`}
+                    className="w-full h-24 object-cover rounded cursor-pointer"
+                  />
+                ))}
             </div>
           )}
         </div>
@@ -125,13 +158,18 @@ const ProductPage = () => {
               >
                 {isAddingToCart ? "Adding..." : "Add to Cart"}
               </button>
-              <button
-                onClick={handleAddToFavorites}
+
+              <IconButton
+                onClick={handleToggleFavorite}
                 disabled={isAddingToFavorites}
-                className="px-6 py-3 border-gray"
+                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition"
               >
-                {isAddingToFavorites ? "Adding..." : "Add to Wishlist"}
-              </button>
+                {isFavorite ? (
+                  <Favorite className="text-black" />
+                ) : (
+                  <FavoriteBorder className="text-black" />
+                )}
+              </IconButton>
             </div>
           </div>
 

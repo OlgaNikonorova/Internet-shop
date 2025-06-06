@@ -12,9 +12,10 @@ import ShopPage from "./pages/shop-page/shop-page";
 import ProfilePage from "./pages/profile-page/profile-page";
 import ProtectedLayout from "./routes/protected-layout";
 import ProductPage from "./pages/product-page/product-page";
-import CartPage from "./pages/cart-page/cart-page";
 import FavoritesPage from "./pages/favorites-page/favorites-page";
 import NotFoundPage from "./pages/not-found-page/not-found-page";
+import CartDrawer from "./components/cart/cart-drawer";
+import { useState } from "react";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -27,10 +28,6 @@ const protectedRoutes: RouteObject[] = [
   {
     path: "/shop",
     element: <ShopPage />,
-  },
-  {
-    path: "/cart",
-    element: <CartPage />,
   },
   {
     path: "/favorites",
@@ -73,9 +70,12 @@ const routes: RouteObject[] = [
 const router = createBrowserRouter(routes, { basename: "/" });
 
 export default function App() {
+  const [isCartOpen, setCartOpen] = useState(false);
+
   return (
     <RouterProvider router={router}>
-      <Header/>
+      <Header onCartClick={() => setCartOpen(true)} />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
     </RouterProvider>
   );
 }

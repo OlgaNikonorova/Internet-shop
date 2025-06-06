@@ -3,6 +3,8 @@ import Product from "../../store/models/product/product";
 
 interface ProductCardProps {
   product: Product;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 const ProductCard = (props: ProductCardProps) => {

@@ -2,27 +2,19 @@ import { Link } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
-import { useGetUserCartQuery } from "../../store/api/cart-api";
+import { cartItemsCountSelector } from "../../store/slices/cart-slice";
 
-export interface HeaderProps {
-  position?: string;
+interface HeaderProps {
+  onCartClick: () => void;
 }
 
-const Header = ({ position = "fixed" }: HeaderProps) => {
+const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
-
-  const { data: { items: products = [] } = {} } = useGetUserCartQuery(
-    undefined,
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-
-  const cartItemCount = products.length;
+  const cartItemsCount = useTypedSelector(cartItemsCountSelector);
 
   return (
     <header
-      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 ${position}`}
+      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 absolute`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
@@ -51,13 +43,12 @@ const Header = ({ position = "fixed" }: HeaderProps) => {
             <button
               className="p-2 rounded-full hover:bg-gray transition-colors relative"
               aria-label="Корзина"
+              onClick={onCartClick}
             >
-              <Link to="/cart">
-                <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-                <ShoppingCart fontSize="medium" />
-              </Link>
+              <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
+              </span>
+              <ShoppingCart fontSize="medium" />
             </button>
 
             <button
