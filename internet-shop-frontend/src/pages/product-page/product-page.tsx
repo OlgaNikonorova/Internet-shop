@@ -5,6 +5,7 @@ import { useGetReviewsQuery } from "../../store/api/reviews-api";
 import Review from "../../components/review/review";
 import { useAddItemToCartMutation } from "../../store/api/cart-api";
 import { useAddProductToFavoritesMutation } from "../../store/api/favorites-api";
+import ReviewModel from "../../store/models/review/review";
 
 const ProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -69,7 +70,7 @@ const ProductPage = () => {
           </div>
           {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2 mt-4">
-              {product.images.slice(1).map((image, index) => (
+              {product.images.slice(1).map((image: string | undefined, index: number) => (
                 <img
                   key={index}
                   src={image}
@@ -157,7 +158,7 @@ const ProductPage = () => {
           <h2 className="text-2xl font-bold text-white">Customer Reviews</h2>
           {reviews?.length !== 0 ? (
             <div className="flex flex-colgap-6">
-              {reviews.map((review) => (
+              {reviews.map((review: ReviewModel) => (
                 <Review key={review.id} review={review} />
               ))}
             </div>

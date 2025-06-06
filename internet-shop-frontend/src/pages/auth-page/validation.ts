@@ -21,7 +21,7 @@ export const registerSchema = loginSchema.extend({
       /^[A-ZА-ЯЁ][a-zа-яё]+\s[A-ZА-ЯЁ][a-zа-яё]+$/,
       "Имя и фамилия должны начинаться с заглавной буквы"
     ),
-  address: z.string().min(10, "Псевдоним должен быть не менее 10 символов"),
+  address: z.string().min(10, "Адрес должен быть не менее 10 символов"),
   phone: z
     .string()
     .regex(

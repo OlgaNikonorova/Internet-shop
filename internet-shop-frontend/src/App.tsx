@@ -75,7 +75,7 @@ const router = createBrowserRouter(routes, { basename: "/" });
 export default function App() {
   return (
     <RouterProvider router={router}>
-      <Header />
+      <Header/>
     </RouterProvider>
   );
 }

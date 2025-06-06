@@ -2,21 +2,28 @@ import { Link } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
-import { useGetPaginatedCartItemsProductsQuery } from "../../store/api/cart-api";
+import { useGetUserCartQuery } from "../../store/api/cart-api";
 
-const Header = () => {
+export interface HeaderProps {
+  position?: string;
+}
+
+const Header = ({ position = "fixed" }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
 
-  const { data: { products = [] } = {} } =
-    useGetPaginatedCartItemsProductsQuery(
-      { pageIndex: 1, pageSize: 100 }, 
-      { refetchOnMountOrArgChange: true }
-    );
+  const { data: { items: products = [] } = {} } = useGetUserCartQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const cartItemCount = products.length;
 
   return (
-    <header className="bg-primary text-white shadow-md">
+    <header
+      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 ${position}`}
+    >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <span className="text-2xl font-bold tracking-tight">Sobaccini</span>
