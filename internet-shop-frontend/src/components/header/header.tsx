@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
@@ -12,9 +12,16 @@ const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
   const cartItemsCount = useTypedSelector(cartItemsCountSelector);
 
+  const { pathname } = useLocation();
+
+  const getPositionClass = () => {
+    if (pathname === "/shop") return "absolute";
+    return "relative";
+  };
+
   return (
     <header
-      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 absolute`}
+      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">

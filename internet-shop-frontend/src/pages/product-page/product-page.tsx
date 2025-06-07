@@ -1,75 +1,21 @@
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import {
-  useGetPaginatedFavoriteProductsQuery,
-  useRemoveProductFromFavoritesMutation,
-  useAddProductToFavoritesMutation,
-} from "../../store/api/favorites-api";
-
-import { useParams } from "react-router-dom";
-import { useGetProductQuery } from "../../store/api/products-api";
+import { useProductPage } from "./use-product-page";
 import { ProductStatus } from "../../store/models/product/product-status";
-import { useGetReviewsQuery } from "../../store/api/reviews-api";
-import Review from "../../components/review/review";
-import ReviewModel from "../../store/models/review/review";
-import { useAddItemToCartMutation } from "../../store/api/cart-api";
 import { IconButton } from "@mui/material";
-import { Order } from "../../store/models/order";
-import Product from "../../store/models/product/product";
-import { useDispatch } from "react-redux";
-import { addCartItem } from "../../store/slices/cart-slice";
+import Review from "../../components/review/review";
 
 const ProductPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch();
-
-  const { data: product, error: isProductError } = useGetProductQuery(id!, {
-    refetchOnMountOrArgChange: true,
-  });
-  const { data: reviews = [], error: isReviewsError } = useGetReviewsQuery(
-    id!,
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
-  const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
-  const [addToFavorites, { isLoading: isAddingToFavorites }] =
-    useAddProductToFavoritesMutation();
-
-  const { data: favoriteData } = useGetPaginatedFavoriteProductsQuery({
-    pageIndex: 1,
-    pageSize: 1000,
-    sortField: "updatedAt",
-    orderBy: Order.DESCENDING,
-  });
-
-  const favoriteProducts: Product[] = favoriteData?.products || [];
-
-  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
-
-  const isFavorite = favoriteProducts.some(
-    (p: Product) => p.id === product?.id
-  );
-
-  const handleAddToCart = async () => {
-    if (!product) return;
-
-    await addToCart({
-      productId: product.id,
-      quantity: 1,
-    });
-
-    dispatch(addCartItem(1));
-  };
-
-  const handleToggleFavorite = async () => {
-    if (!product) return;
-
-    if (isFavorite) {
-      await removeFromFavorites(product.id);
-    } else {
-      await addToFavorites({ productId: product.id });
-    }
-  };
+  const {
+    product,
+    isProductError,
+    reviews,
+    isReviewsError,
+    isFavorite,
+    isAddingToCart,
+    isAddingToFavorites,
+    handleAddToCart,
+    handleToggleFavorite,
+  } = useProductPage();
 
   if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
     return (
@@ -196,7 +142,7 @@ const ProductPage = () => {
           <h2 className="text-2xl font-bold text-white">Customer Reviews</h2>
           {reviews?.length !== 0 ? (
             <div className="flex flex-colgap-6">
-              {reviews.map((review: ReviewModel) => (
+              {reviews.map((review) => (
                 <Review key={review.id} review={review} />
               ))}
             </div>

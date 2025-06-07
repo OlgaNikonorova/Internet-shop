@@ -2,18 +2,10 @@ import { useState } from "react";
 import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
 import Product from "../../store/models/product/product";
 import { Order } from "../../store/models/order";
-import { useTypedSelector } from "../../store/hooks";
-import {
-  pageIndexSelector,
-  updatePageIndex,
-} from "../../store/slices/shop-slice";
-import { useDispatch } from "react-redux";
 
 export const useShopPage = () => {
-  const dispatch = useDispatch();
-  const pageIndex = useTypedSelector(pageIndexSelector);
   const [pageSize, setPageSize] = useState(8);
-  const [sort, setSort] = useState<{ field: keyof Product; order: Order }[]>([
+  const [sort] = useState<{ field: keyof Product; order: Order }[]>([
     { field: "rating", order: Order.DESCENDING },
   ]);
 
@@ -32,7 +24,6 @@ export const useShopPage = () => {
     error,
   } = useGetPaginatedProductsQuery(
     {
-      pageIndex,
       pageSize,
       sort,
     },
@@ -41,9 +32,9 @@ export const useShopPage = () => {
     }
   );
 
-  const handlePageChange = (newPageIndex: number) => {
-    dispatch(updatePageIndex(newPageIndex));
+  const handleShowMore = () => {
+    setPageSize((prev) => prev + 8);
   };
 
-  return { products, page, isLoading, error, handlePageChange };
+  return { products, page, isLoading, error, handleShowMore };
 };

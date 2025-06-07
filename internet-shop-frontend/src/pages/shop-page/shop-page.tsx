@@ -1,10 +1,9 @@
-import Pagination from "../../components/pagination/pagination";
 import ProductCard from "../../components/product-card/product-card";
 import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
 
 const ShopPage = () => {
-  const { products, page, isLoading, handlePageChange } = useShopPage();
+  const { products, page, isLoading, handleShowMore } = useShopPage();
 
   if (isLoading) {
     return <div className="text-center py-8">Loading products...</div>;
@@ -54,10 +53,21 @@ const ShopPage = () => {
                 ))}
               </div>
 
-              {/* Пагинация */}
-              <div className="mt-8">
+              {/* <div className="mt-8">
                 <Pagination page={page} onPageChange={handlePageChange} />
-              </div>
+              </div> */}
+
+              {/* Кнопка "Показать больше" если есть следующая страница */}
+              {page.hasNextPage && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={handleShowMore}
+                    className="border text-white px-6 py-2 rounded hover:bg-gray-100 transition"
+                  >
+                    Показать больше
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <div className="text-center py-12">
