@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  useGetPaginatedCartItemsProductsQuery,
-  useRemoveItemFromCartMutation,
-  useUpdateCartItemQuantityMutation,
-} from "../../store/api/cart-api";
+import { useGetUserCartQuery } from "../../store/api/cart-api";
 import CartItemCard from "../cart-item-card/cart-item-card";
 import CartItem from "../../store/models/cart/cart-item";
-import PaginatedCartItemsProductsRequest from "../../store/models/cart/paginated-cart-items-products-request";
-import { Order } from "../../store/models/order";
-import { useDispatch } from "react-redux";
-import { addCartItem } from "../../store/slices/cart-slice";
+import List from "@mui/material/List";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -18,23 +11,13 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-  const [deleteCartItem] = useRemoveItemFromCartMutation();
-  const dispatch = useDispatch();
-
-  const requestParams: PaginatedCartItemsProductsRequest = {
-    sortField: "updatedAt",
-    orderBy: Order.DESCENDING,
-  };
-
   const {
-    data: { products = [] } = {},
+    data: { items: products = [], totalPrice = 0 } = {},
     isLoading,
     refetch,
-  } = useGetPaginatedCartItemsProductsQuery(requestParams, {
+  } = useGetUserCartQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-
-  const [updateQuantity] = useUpdateCartItemQuantityMutation();
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -55,33 +38,6 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     }
   }, [isOpen, refetch]);
 
-  const onDecrease = async (cartItemId: string, quantity?: number) => {
-    if ((quantity ?? 0) > 1) {
-      await updateQuantity({
-        cartItemId: cartItemId,
-        updateCartItem: { quantity: quantity! - 1 },
-      });
-    } else {
-      await deleteCartItem(cartItemId);
-      dispatch(addCartItem(-1));
-    }
-    refetch();
-  };
-
-  const onIncrease = async (cartItemId: string, quantity?: number) => {
-    await updateQuantity({
-      cartItemId: cartItemId,
-      updateCartItem: { quantity: (quantity ?? 0) + 1 },
-    });
-    refetch();
-  };
-
-  const onDelete = async (cartItemId: string) => {
-    await deleteCartItem(cartItemId);
-    dispatch(addCartItem(-1));
-    refetch();
-  };
-
   if (!showDrawer) return null;
 
   return createPortal(
@@ -96,14 +52,14 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
       {/* Drawer */}
       <div
-        className={`fixed right-0 top-0 h-full w-[720px] bg-white z-50 p-6 overflow-y-auto
-        transform transition-transform duration-300 ease-in-out
+        className={`fixed right-0 top-0 h-screen w-[720px] bg-white z-50 p-6 overflow-y-auto
+        transform transition-transform duration-300 ease-in-out flex flex-col
         ${animateDrawer ? "translate-x-0" : "translate-x-full"}
       `}
       >
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-lg font-bold">Корзина / {products.length} шт.</h2>
-          <button onClick={onClose} className="text-2xl">
+        <div className="flex justify-between items-center mb-4 p-5">
+          <h2 className="text-2xl">Корзина / {products.length} шт.</h2>
+          <button onClick={onClose} className="text-3xl">
             &times;
           </button>
         </div>
@@ -111,30 +67,49 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         {isLoading ? (
           <div>Загрузка...</div>
         ) : products.length === 0 ? (
-          <p className="text-center text-gray-500">Корзина пуста</p>
+          <p className="text-center text-gray">Корзина пуста</p>
         ) : (
-          <div className="space-y-4">
-            {products.map((product: CartItem) => (
-              <div
-                key={product.id}
-                className="relative p-4 rounded shadow-sm bg-gray-50"
-              >
-                <CartItemCard
-                  cartItem={product}
-                  onDecrease={onDecrease}
-                  onIncrease={onIncrease}
-                  onDelete={onDelete}
-                />
-              </div>
-            ))}
+          <div className="flex flex-col h-full justify-between">
+            <List
+              sx={{
+                width: "100%",
+                position: "relative",
+                overflow: "auto",
+                flex: "1 1 auto",
+                maxHeight: "55vh",
+              }}
+            >
+              {products.map((product: CartItem) => (
+                <div key={product.id} className="relative p-4">
+                  <CartItemCard cartItem={product} refetchCart={refetch} />
+                </div>
+              ))}
+            </List>
 
             {/* Промокод и итог */}
-            <div className="mt-6 border-t pt-4 text-right">
-              <button className="px-4 py-2 mb-2 border border-black rounded">
-                Ввести промокод
-              </button>
-              <div className="text-xl font-bold">Итого: 7 659 ₽</div>
-              <button className="bg-black text-white px-6 py-3 mt-2 rounded">
+            <div className="flex flex-col gap-6">
+              <div className="flex justify-between">
+                <div className="flex flex-col self-start">
+                  <h2 className="text-2xl font-bold mb-4">Сумма заказа</h2>
+                  <span>
+                    Стоимость продуктов...................
+                    {totalPrice.toFixed(2)} ₽
+                  </span>
+                  <span>
+                    Скидка..................................................0 ₽
+                  </span>
+                </div>
+
+                <button className="text-gray px-4 py-4 mb-2 border border-gray rounded w-fit self-center">
+                  ВВЕДИТЕ ПРОМОКОД
+                </button>
+              </div>
+
+              <div className="text-3xl self-end">
+                Итого {totalPrice.toFixed(2)} ₽
+              </div>
+
+              <button className="bg-primary text-white px-12 py-3 rounded w-fit self-center">
                 Оформить заказ
               </button>
             </div>

@@ -8,22 +8,19 @@ import {
 import { Order } from "../../store/models/order";
 import PaginatedFavoriteProductsRequest from "../../store/models/favorites/paginated-favorite-products-request";
 import ProductCard from "../../components/product-card/product-card";
-import Pagination from "../../components/pagination/pagination";
 import CartItem from "../../store/models/cart/cart-item";
 import Product from "../../store/models/product/product";
 
-import { IconButton, Select, MenuItem } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
 const FavoritesPage = () => {
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize] = useState(8);
+  const [pageSize, setPageSize] = useState(8);
   const [sortField, setSortField] = useState<keyof CartItem>("updatedAt");
   const [orderBy] = useState<Order>(Order.DESCENDING);
-  const  [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
+  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
   const requestParams: PaginatedFavoriteProductsRequest = {
-    pageIndex,
     pageSize,
     sortField: String(sortField),
     orderBy,
@@ -54,12 +51,8 @@ const FavoritesPage = () => {
     refetch();
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPageIndex(newPage);
-  };
-
   const handleShowMore = () => {
-    setPageIndex((prev) => prev + 1);
+    setPageSize((prev) => prev + 8);
   };
 
   if (isError) {
@@ -102,7 +95,7 @@ const FavoritesPage = () => {
         <div className="mb-6 flex flex-col md:flex-row justify-between gap-4 md:items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">Избранное</h1>
-            <span className="text-gray-500 text-sm">{products.length} продукта</span>
+            <span className="text-gray-500 text-sm">{products.length}</span>
           </div>
           <button
             className="border px-3 py-2 rounded text-sm hover:bg-gray-100 disabled:opacity-50"
@@ -129,21 +122,18 @@ const FavoritesPage = () => {
         </div>
 
         {/* Сетка товаров */}
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-
-{products.map((product: Product) => (
-  <ProductCard
-    key={product.id}
-    product={product}
-    isFavorite={true}
-    onToggleFavorite={async () => {
-      await removeFromFavorites(product.id);
-      refetch(); // обновим список после удаления
-    }}
-  />
-))}
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product: Product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              isFavorite={true}
+              onToggleFavorite={async () => {
+                await removeFromFavorites(product.id);
+                refetch();
+              }}
+            />
+          ))}
         </div>
 
         {/* Кнопка "Показать больше" если есть следующая страница */}

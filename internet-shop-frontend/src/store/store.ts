@@ -15,7 +15,6 @@ import { userSlice } from "./slices/user-slice";
 import { productsApi } from "./api/products-api";
 import { reviewsApi } from "./api/reviews-api";
 import { userApi } from "./api/user-api";
-import { shopSlice } from "./slices/shop-slice";
 import { cartApi } from "./api/cart-api";
 import { favoritesApi } from "./api/favorites-api";
 import { cartSlice } from "./slices/cart-slice";
@@ -56,12 +55,6 @@ const userPersistConfig = {
   whiteList: ["isAuth", "accessToken", "refreshToken", "username"],
 };
 
-const shopPersistConfig = {
-  key: "shop",
-  storage: storage,
-  whiteList: ["pageNumber"],
-};
-
 const cartPersistConfig = {
   key: "cart",
   storage: storage,
@@ -85,7 +78,6 @@ const rootReducer = combineReducers({
   ),
   [cartApi.reducerPath]: persistReducer(cartApiPersistConfig, cartApi.reducer),
   [userSlice.name]: persistReducer(userPersistConfig, userSlice.reducer),
-  [shopSlice.name]: persistReducer(shopPersistConfig, shopSlice.reducer),
   [cartSlice.name]: persistReducer(cartPersistConfig, cartSlice.reducer),
 });
 

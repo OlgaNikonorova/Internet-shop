@@ -173,8 +173,17 @@ export class CartService implements ICartService {
     cartItemId: string,
     quantity: number,
   ): Promise<CartItem> {
+    const currentItem = await this._cartItemRepository.findOne({
+      where: { id: cartItemId },
+      relations: ['product'],
+    });
+
+    if (!currentItem) {
+      throw new NotFoundException('Cart item not found');
+    }
+
     const updatedItem = await this._cartItemRepository.save({
-      id: cartItemId,
+      ...currentItem,
       quantity,
     });
 
@@ -186,7 +195,7 @@ export class CartService implements ICartService {
     }
 
     cart.totalPrice = cart.items.reduce(
-      (total, item) => total + (item.product.price || 0),
+      (total, item) => total + item.product?.price * item.quantity,
       0,
     );
 
