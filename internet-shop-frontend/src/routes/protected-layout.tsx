@@ -4,6 +4,7 @@ import { useTypedSelector } from "../store/hooks";
 import { isAuthSelector } from "../store/slices/user-slice";
 import { useState } from "react";
 import CartDrawer from "../components/cart/cart-drawer";
+import Footer from "../components/footer/footer";
 
 export default function ProtectedLayout() {
   const isAuth = useTypedSelector(isAuthSelector);
@@ -17,6 +18,7 @@ export default function ProtectedLayout() {
       <Header onCartClick={() => setCartOpen(true)} />
       <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
       <Outlet />
+      <Footer />
     </>
   );
 }
