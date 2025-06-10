@@ -16,7 +16,11 @@ interface CartItemCardProps {
 const CartItemCard = (props: CartItemCardProps) => {
   const { cartItem, refetchCart } = props;
 
-  const mainImage = cartItem.productImages?.[0] || "/images/placeholder.webp";
+  const mainImage =
+    (cartItem.productImages &&
+      cartItem.productImages.length > 0 &&
+      process.env.REACT_APP_API_BASE_URL + cartItem.productImages[0]) ||
+    "/images/placeholder.webp";
   const productName = cartItem.productName;
   const productPrice = cartItem.productPrice || 0;
   const quantity = cartItem.quantity || 1;
@@ -65,7 +69,7 @@ const CartItemCard = (props: CartItemCardProps) => {
     <div className="flex flex-col md:flex-row gap-4 p-4 md:justify-between">
       <div className="w-full md:w-1/4">
         <img
-          src={process.env.REACT_APP_API_BASE_URL + mainImage}
+          src={mainImage}
           alt={productName}
           className="w-full h-auto object-cover rounded"
         />
