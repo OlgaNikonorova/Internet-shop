@@ -1,9 +1,29 @@
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+import CategorySection from "../../components/category-section/category-section";
 import ProductCard from "../../components/product-card/product-card";
 import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 const ShopPage = () => {
   const { products, page, isLoading, handleShowMore } = useShopPage();
+
+  const latestProducts = [...products]
+  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  .slice(0, 4);
+
+  const promoImages = [
+    'images/румяна.jpg',
+    'images/румяна.jpg',
+    'images/румяна.jpg',
+    'images/румяна.jpg',
+    'images/румяна.jpg',
+  ];
 
   if (isLoading) {
     return <div className="text-center py-8">Loading products...</div>;
@@ -41,6 +61,63 @@ const ShopPage = () => {
       </div>
 
       <div className="flex w-full items-center flex-col gap-8 px-4 py-4">
+
+            {/* Секция акций*/}
+        <Typography variant="h5" className="text-white mb-4">
+          Новинки
+        </Typography>
+        <Box className="w-full">
+          <Swiper
+            modules={[Navigation]}
+            navigation
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            className="px-2"
+          >
+            {latestProducts.map((product, idx) => (
+              <SwiperSlide key={idx}>
+                <ProductCard key={product.id} product={product} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
+
+        {/* Секция акций*/}
+        <Typography variant="h5" className="text-white mb-4">
+          Акции
+        </Typography>
+        <Box className="w-full">
+          <Swiper
+            modules={[Navigation]}
+            navigation
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            className="px-2"
+          >
+            {promoImages.map((src, idx) => (
+              <SwiperSlide key={idx}>
+                <img
+                  src={src}
+                  alt={`promo-${idx}`}
+                  className="rounded-lg shadow-lg w-full h-auto object-cover"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
+  
+
+
         {/* Основной контент */}
         <h1 className="text-white text-2xl">Каталог товаров</h1>
         <div className="w-full">

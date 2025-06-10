@@ -3,6 +3,7 @@ import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
 import Product from "../../store/models/product/product";
 import { Order } from "../../store/models/order";
 
+
 export const useShopPage = () => {
   const [pageSize, setPageSize] = useState(8);
   const [sort] = useState<{ field: keyof Product; order: Order }[]>([
@@ -20,6 +21,7 @@ export const useShopPage = () => {
         hasNextPage: false,
       },
     } = {},
+    
     isLoading,
     error,
   } = useGetPaginatedProductsQuery(
@@ -36,5 +38,6 @@ export const useShopPage = () => {
     setPageSize((prev) => prev + 8);
   };
 
-  return { products, page, isLoading, error, handleShowMore };
+  return { products, page, isLoading, error, handleShowMore
+   };
 };
