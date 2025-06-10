@@ -18,6 +18,7 @@ import { userApi } from "./api/user-api";
 import { cartApi } from "./api/cart-api";
 import { favoritesApi } from "./api/favorites-api";
 import { cartSlice } from "./slices/cart-slice";
+import { filesApi } from "./api/files-api";
 
 const authApiPersistConfig = {
   key: "authApi",
@@ -49,6 +50,11 @@ const userApiPersistConfig = {
   storage: storage,
 };
 
+const filesApiPersistConfig = {
+  key: "filesApi",
+  storage: storage,
+};
+
 const userPersistConfig = {
   key: "user",
   storage: storage,
@@ -77,6 +83,10 @@ const rootReducer = combineReducers({
     favoritesApi.reducer
   ),
   [cartApi.reducerPath]: persistReducer(cartApiPersistConfig, cartApi.reducer),
+  [filesApi.reducerPath]: persistReducer(
+    filesApiPersistConfig,
+    filesApi.reducer
+  ),
   [userSlice.name]: persistReducer(userPersistConfig, userSlice.reducer),
   [cartSlice.name]: persistReducer(cartPersistConfig, cartSlice.reducer),
 });
@@ -94,7 +104,8 @@ export const store = configureStore({
       .concat(reviewsApi.middleware)
       .concat(userApi.middleware)
       .concat(cartApi.middleware)
-      .concat(favoritesApi.middleware),
+      .concat(favoritesApi.middleware)
+      .concat(filesApi.middleware),
 });
 
 export const persistor = persistStore(store);
