@@ -17,10 +17,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { UserRole } from 'src/domain/enums/user-role.enum';
 
-@UseGuards(RolesGuard)
-@Roles(UserRole.Admin, UserRole.Seller)
 @ApiTags('File Upload')
 @Controller('files')
 export class FilesController {
