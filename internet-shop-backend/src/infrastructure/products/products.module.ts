@@ -9,35 +9,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Review } from '@entities/review.entity';
 import { User } from '@entities/user.entity';
-import { MulterModule } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Product, Review, User]),
-    MulterModule.register({
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(
-            null,
-            `${file.fieldname}-${uniqueSuffix}.${file.mimetype.split('/')[1]}`,
-          );
-        },
-      }),
-      fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/image\/(jpeg|png)/)) {
-          cb(new Error('Only JPEG and PNG images are allowed'), false);
-        }
-        cb(null, true);
-      },
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-        files: 5,
-      },
-    }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {

@@ -38,8 +38,8 @@ const ProductPage = () => {
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
               src={
-                (product.images && product.images[0]) ||
-                "/images/румяна.jpg"
+                (product.images && (process.env.REACT_APP_API_BASE_URL + product.images[0])) ||
+                "/images/placeholder.webp"
               }
               alt={product.name}
               className="w-full h-auto object-cover"
@@ -49,10 +49,10 @@ const ProductPage = () => {
             <div className="grid grid-cols-4 gap-2 mt-4">
               {product.images
                 .slice(1)
-                .map((image: string | undefined, index: number) => (
+                .map((image, index) => (
                   <img
-                    key={index}
-                    src={image}
+                    key={image}
+                    src={process.env.REACT_APP_API_BASE_URL + image}
                     alt={`${product.name} ${index + 1}`}
                     className="w-full h-24 object-cover rounded cursor-pointer"
                   />

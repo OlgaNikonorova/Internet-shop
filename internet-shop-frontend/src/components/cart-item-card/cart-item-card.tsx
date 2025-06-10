@@ -16,8 +16,12 @@ interface CartItemCardProps {
 const CartItemCard = (props: CartItemCardProps) => {
   const { cartItem, refetchCart } = props;
 
-  const mainImage = cartItem.productImages?.[0] || "/placeholder-product.jpg";
-  const productName = cartItem.productName || "Unnamed Product";
+  const mainImage =
+    (cartItem.productImages &&
+      cartItem.productImages.length > 0 &&
+      process.env.REACT_APP_API_BASE_URL + cartItem.productImages[0]) ||
+    "/images/placeholder.webp";
+  const productName = cartItem.productName;
   const productPrice = cartItem.productPrice || 0;
   const quantity = cartItem.quantity || 1;
 
@@ -84,10 +88,10 @@ const CartItemCard = (props: CartItemCardProps) => {
           />
         </div>
 
-        <h3 className="text-lg font-medium self-center">
-          {productName}
-        </h3>
-        <p className="text-lg font-bold self-end" >{(productPrice * quantity).toFixed(2)} ₽</p>
+        <h3 className="text-lg font-medium self-center">{productName}</h3>
+        <p className="text-lg font-bold self-end">
+          {(productPrice * quantity).toFixed(2)} ₽
+        </p>
       </div>
     </div>
   );
