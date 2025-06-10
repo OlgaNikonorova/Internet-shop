@@ -1,28 +1,30 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
-import CategorySection from "../../components/category-section/category-section";
 import ProductCard from "../../components/product-card/product-card";
 import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const ShopPage = () => {
   const { products, page, isLoading, handleShowMore } = useShopPage();
 
   const latestProducts = [...products]
-  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  .slice(0, 4);
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 4);
 
   const promoImages = [
-    'images/румяна.jpg',
-    'images/румяна.jpg',
-    'images/румяна.jpg',
-    'images/румяна.jpg',
-    'images/румяна.jpg',
+    "/uploads/files-1749583702973-607901801.jpeg",
+    "/uploads/files-1749583702973-607901801.jpeg",
+    "/uploads/files-1749583702973-607901801.jpeg",
+    "/uploads/files-1749583702973-607901801.jpeg",
+    "/uploads/files-1749583702973-607901801.jpeg",
   ];
 
   if (isLoading) {
@@ -61,8 +63,7 @@ const ShopPage = () => {
       </div>
 
       <div className="flex w-full items-center flex-col gap-8 px-4 py-4">
-
-            {/* Секция акций*/}
+        {/* Секция акций*/}
         <Typography variant="h5" className="text-white mb-4">
           Новинки
         </Typography>
@@ -107,7 +108,7 @@ const ShopPage = () => {
             {promoImages.map((src, idx) => (
               <SwiperSlide key={idx}>
                 <img
-                  src={src}
+                  src={process.env.REACT_APP_API_BASE_URL + src}
                   alt={`promo-${idx}`}
                   className="rounded-lg shadow-lg w-full h-auto object-cover"
                 />
@@ -115,8 +116,6 @@ const ShopPage = () => {
             ))}
           </Swiper>
         </Box>
-  
-
 
         {/* Основной контент */}
         <h1 className="text-white text-2xl">Каталог товаров</h1>
