@@ -16,10 +16,7 @@ export interface IProductService {
    * @param product - The data transfer object containing the details of the product to create.
    * @returns A promise that resolves to the created product.
    */
-  createAsync(
-    product: CreateProductDto,
-    files?: Express.Multer.File[],
-  ): Promise<Product>;
+  createAsync(product: CreateProductDto): Promise<Product>;
 
   /**
    * Retrieves all products.
@@ -60,7 +57,6 @@ export interface IProductService {
     userId: string,
     productId: string,
     product: UpdateProductDto,
-    files?: Express.Multer.File[],
   ): Promise<Product>;
 
   /**

@@ -18,7 +18,6 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFiles,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -88,7 +87,6 @@ export class ProductsController {
     summary: 'Create a new product',
     operationId: 'createProduct',
   })
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: CreateProductDto,
     description: 'Product data and images',
@@ -104,12 +102,9 @@ export class ProductsController {
   @ApiBearerAuth()
   public async create(
     @Body() createProductDto: CreateProductDto,
-    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ProductDto> {
-    const newProduct = await this._productsService.createAsync(
-      createProductDto,
-      files,
-    );
+    const newProduct =
+      await this._productsService.createAsync(createProductDto);
     return this.mapToDto(newProduct);
   }
 
@@ -147,7 +142,6 @@ export class ProductsController {
     description: 'Product ID',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: UpdateProductDto,
     description: 'Product data and images',
@@ -166,13 +160,11 @@ export class ProductsController {
     @Param('id') id: string,
     @GetUserId('userId') userId: string,
     @Body() updateProductDto: UpdateProductDto,
-    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<ProductDto> {
     const updatedProduct = await this._productsService.updateAsync(
       userId,
       id,
       updateProductDto,
-      files,
     );
     return this.mapToDto(updatedProduct);
   }

@@ -13,6 +13,7 @@ import { FavoritesModule } from './infrastructure/favorites/favorites.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ReviewsModule } from './infrastructure/reviews/reviews.module';
+import { FilesModule } from '@infrastructure/files/files.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewsModule } from './infrastructure/reviews/reviews.module';
     CartModule,
     FavoritesModule,
     ReviewsModule,
+    FilesModule
   ],
   providers: [
     {
