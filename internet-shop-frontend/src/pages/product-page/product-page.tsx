@@ -39,7 +39,7 @@ const ProductPage = () => {
             <img
               src={
                 (product.images && product.images[0]) ||
-                "/placeholder-product.jpg"
+                "/images/румяна.jpg"
               }
               alt={product.name}
               className="w-full h-auto object-cover"
