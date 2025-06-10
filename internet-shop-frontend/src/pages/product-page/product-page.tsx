@@ -38,8 +38,8 @@ const ProductPage = () => {
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
               src={
-                (product.images && product.images[0]) ||
-                "/images/румяна.jpg"
+                (product.images && (process.env.REACT_APP_API_BASE_URL + product.images[0])) ||
+                "/images/placeholder.jpg"
               }
               alt={product.name}
               className="w-full h-auto object-cover"

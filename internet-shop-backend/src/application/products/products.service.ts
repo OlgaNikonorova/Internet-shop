@@ -27,15 +27,8 @@ export class ProductsService implements IProductService {
     private readonly _recommendationsGateway: RecommendationsGateway,
   ) {}
 
-  public async createAsync(
-    dto: CreateProductDto,
-    files?: Express.Multer.File[],
-  ): Promise<Product> {
-    const images = files?.map((file) => `/uploads/${file.filename}`);
-    const product = this._productRepository.create({
-      ...dto,
-      images,
-    });
+  public async createAsync(dto: CreateProductDto): Promise<Product> {
+    const product = this._productRepository.create(dto);
     return await this._productRepository.save(product);
   }
 
@@ -199,14 +192,11 @@ export class ProductsService implements IProductService {
     userId: string,
     productId: string,
     productDto: UpdateProductDto,
-    files?: Express.Multer.File[],
   ): Promise<Product> {
     const product = await this.findByIdOrThrowNotFoundAsync(userId, productId);
-    const images = files?.map((file) => `/uploads/${file.filename}`);
     return await this._productRepository.save({
       ...product,
       ...productDto,
-      images: images ? images : product.images,
     });
   }
 
