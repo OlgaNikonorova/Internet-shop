@@ -126,14 +126,14 @@ socket.onerror = (error) => {
       "id": "123e4567-e89b-12d3-a456-426614174001",
       "name": "Smartphone",
       "price": 699.99,
-      "category": "Electronics",
+      "category": "DecorativeCosmetics",
       "images": ["/uploads/smartphone1.jpg"]
     },
     {
       "id": "123e4567-e89b-12d3-a456-426614174002",
       "name": "Headphones",
       "price": 199.99,
-      "category": "Electronics",
+      "category": "DecorativeCosmetics",
       "images": ["/uploads/headphones1.jpg"]
     }
   ]

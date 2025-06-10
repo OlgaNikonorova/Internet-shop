@@ -140,7 +140,7 @@ export class CartItemsFiltersDto {
   ratingTo?: number;
 
   @ApiProperty({
-    example: ProductCategory.Electronics,
+    example: ProductCategory.DecorativeCosmetics,
     description: 'Product category',
     enum: ProductCategory,
     required: false,

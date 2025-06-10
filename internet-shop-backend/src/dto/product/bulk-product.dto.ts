@@ -27,7 +27,7 @@ export class BulkProductsDto {
   status?: ProductStatus;
 
   @ApiProperty({
-    example: ProductCategory.Electronics,
+    example: ProductCategory.DecorativeCosmetics,
     description: 'New category to assign to products (optional)',
     enum: ProductCategory,
     required: false,

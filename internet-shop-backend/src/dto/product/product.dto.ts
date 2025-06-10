@@ -38,7 +38,7 @@ export class ProductDto {
   price: number;
 
   @ApiProperty({
-    example: ProductCategory.Electronics,
+    example: ProductCategory.DecorativeCosmetics,
     description: 'Product category',
     enum: ProductCategory,
     examples: Object.values(ProductCategory),
