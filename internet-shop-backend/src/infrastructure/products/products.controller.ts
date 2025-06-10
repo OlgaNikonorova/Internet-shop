@@ -88,7 +88,7 @@ export class ProductsController {
     summary: 'Create a new product',
     operationId: 'createProduct',
   })
-  // @ApiConsumes('multipart/form-data')
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: CreateProductDto,
     description: 'Product data and images',

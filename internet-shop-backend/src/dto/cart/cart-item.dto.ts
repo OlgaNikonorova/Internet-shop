@@ -33,7 +33,7 @@ export class CartItemDto {
   productPrice: number;
 
   @ApiProperty({
-    example: 'electronics',
+    example: 'DecorativeCosmetics',
     description: 'Product category',
     enum: ProductCategory,
     examples: Object.values(ProductCategory),
