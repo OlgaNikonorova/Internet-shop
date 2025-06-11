@@ -58,7 +58,10 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       `}
       >
         <div className="flex justify-between items-center mb-4 p-5">
-          <h2 className="text-2xl">Корзина / {products.length} шт.</h2>
+          <h2 className="text-2xl">
+            Корзина /{" "}
+            {products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)} шт.
+          </h2>
           <button onClick={onClose} className="text-3xl">
             &times;
           </button>
