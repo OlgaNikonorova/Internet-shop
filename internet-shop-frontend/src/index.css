@@ -1,7 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html, body, #root {
+    font-family: 'Cormorant Garamond', serif !important;
+  }
+
+}
+
 body {
-    @apply bg-primary;
+  @apply bg-primary;
 }

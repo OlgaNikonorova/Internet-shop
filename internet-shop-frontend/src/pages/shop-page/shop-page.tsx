@@ -62,8 +62,8 @@ const ShopPage = () => {
         </div>
       </div>
 
-      <div className="flex w-full items-center flex-col gap-8 px-4 py-4">
-        {/* Секция акций*/}
+      <div className="flex w-full items-center flex-col gap-36 px-[54px] px-4 py-4">
+        {/* Секция новинок*/}
         <Typography variant="h5" className="text-white mb-4">
           Новинки
         </Typography>
@@ -151,6 +151,119 @@ const ShopPage = () => {
             </div>
           )}
         </div>
+
+        {/* Секция парфюмерии*/}
+        <Typography className="text-4xl text-white mb-4 ">
+          ПАРФЮМЕРИЯ
+        </Typography>
+        <Box className="relative w-900 mb-[-40px]"> 
+        <img
+          src={process.env.REACT_APP_API_BASE_URL + "/uploads/files-1749654949798-93558344.jpeg"} 
+          alt="Изображение для секции парфюмерии"
+          className="w-full h-auto rounded-lg"
+        />
+      </Box>
+        <Box className="w-full">
+
+          <Swiper
+            modules={[Navigation]}
+            navigation
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            className="px-2"
+          >
+            {latestProducts.map((product, idx) => (
+              <SwiperSlide key={idx}>
+                <ProductCard key={product.id} product={product} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
+
+        {/* Секция уходовой косметики*/}
+        <div className="w-full">
+           <Typography className="text-4xl text-white mb-4">
+          УХОДОВАЯ КОСМЕТИКА
+        </Typography>
+        <Box className="relative w-900 mb-[-40px]"> 
+        <img
+          src={process.env.REACT_APP_API_BASE_URL + "/uploads/files-1749655046735-12483775.jpeg"} 
+          alt="Изображение для секции уходовой косметики"
+          className="w-full h-auto rounded-lg"
+        />
+      </Box>
+        <Box className="w-full">
+          <Swiper
+            modules={[Navigation]}
+            navigation
+            spaceBetween={20}
+            slidesPerView={3}
+            breakpoints={{
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            }}
+            className="px-2"
+          >
+            {promoImages.map((src, idx) => (
+              <SwiperSlide key={idx}>
+                <img
+                  src={process.env.REACT_APP_API_BASE_URL + src}
+                  alt={`promo-${idx}`}
+                  className="rounded-lg shadow-lg w-full h-auto object-cover"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
+        </div>
+       
+
+{/* Секция украшений */}
+<div className="w-full flex flex-col items-center gap-20 px-[54px]">
+  <Typography  className="text-4xl text-white mb-4 text-center">
+    УКРАШЕНИЯ
+  </Typography>
+
+  <Box className="relative w-full max-w-[1050px] mb-[-40px]"> 
+    <img
+      src={process.env.REACT_APP_API_BASE_URL + "/uploads/files-1749654782918-410515775.png"} 
+      alt="Изображение для секции украшений"
+      className="w-full h-auto rounded-lg"
+    />
+  </Box>
+
+  <Box className="w-full relative z-10 mt-[-40px]">
+    <Swiper
+      modules={[Navigation]}
+      navigation
+      spaceBetween={20}
+      slidesPerView={3}
+      breakpoints={{
+        320: { slidesPerView: 1 },
+        640: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 },
+      }}
+      className="px-2"
+    >
+      {promoImages.map((src, idx) => (
+        <SwiperSlide key={idx}>
+          <img
+            src={process.env.REACT_APP_API_BASE_URL + src}
+            alt={`promo-${idx}`}
+            className="rounded-lg shadow-lg w-full h-auto object-cover"
+          />
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </Box>
+</div>
+
       </div>
     </div>
   );
