@@ -19,10 +19,12 @@ import {
   useUpdateUserByIdMutation,
   useDeleteUserByIdMutation,
 } from "../../store/api/user-api";
-import ProfileForm from "../../components/profile-form/profile-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import UpdateUser from "../../store/models/user/update-user";
 import { Link as RouterLink } from "react-router-dom";
 import { ColorButton } from "../../theme";
+import { ProfileFormData, profileSchema } from "./profile-validation";
+import { useForm } from "react-hook-form";
 
 const ProfilePage = () => {
   const { data: user, isLoading, error, refetch } = useGetMeQuery();
@@ -30,6 +32,16 @@ const ProfilePage = () => {
   const [deleteUser] = useDeleteUserByIdMutation();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const {
+      register,
+      handleSubmit,
+      setValue,
+      reset,
+      formState: { errors },
+    } = useForm<ProfileFormData>({
+      resolver: zodResolver(profileSchema),
+    });
 
   const handleUpdateProfile = async (updateData: UpdateUser) => {
     if (!user) return;
@@ -143,6 +155,8 @@ const ProfilePage = () => {
           <Box sx={{ display: "grid", rowGap: 2.5, fontSize: 24}}>
               <TextField
               label="Электронная почта"
+              error={!!errors.email}
+              helperText={errors.email?.message}
               variant="outlined"
               required
               defaultValue={user.email}
@@ -157,6 +171,12 @@ const ProfilePage = () => {
             />
             <TextField
             label="Имя"
+            {...register("username")}
+            {...errors.username && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.username.message}
+              </p>
+            )}
             variant="outlined"
             required
             defaultValue={user.name || "—"}
@@ -170,6 +190,12 @@ const ProfilePage = () => {
             }}
             /><TextField
               label="Адрес"
+              {...register("address")}
+              {...errors.address && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.address.message}
+              </p>
+              )}
               variant="outlined"
               required
               defaultValue={user.address || "—"}
@@ -184,6 +210,12 @@ const ProfilePage = () => {
             />
             <TextField
             label="Номер телефона"
+            {...register("phone")}
+              {...errors.phone && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.phone.message}
+              </p>
+              )}
             variant="outlined"
             required
             defaultValue={user.phone || "—"}

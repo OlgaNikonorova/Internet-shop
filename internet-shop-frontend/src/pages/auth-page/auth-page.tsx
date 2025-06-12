@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useAuthPage } from "./use-auth-page";
-import { FormData, getSchema} from "./validation";
+import { FormData, getSchema} from "./auth-validation";
 import { UserRole } from "../../store/models/user/user-role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthMode } from "./auth-mode";
