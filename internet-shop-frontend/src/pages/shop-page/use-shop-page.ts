@@ -34,7 +34,7 @@ export const useShopPage = () => {
     isError: isLatestError,
   } = useGetPaginatedProductsQuery(
     {
-      pageSize: 4,
+      pageSize: 6,
       sort: [{ field: "createdAt", order: Order.DESCENDING }],
     },
     {
