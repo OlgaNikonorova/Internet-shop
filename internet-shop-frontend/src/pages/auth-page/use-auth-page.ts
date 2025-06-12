@@ -6,7 +6,7 @@ import {
   useLoginUserMutation,
   useRegisterUserMutation,
 } from "../../store/api/auth-api";
-import { FormData, LoginFormData, RegisterFormData } from "./validation";
+import { FormData, LoginFormData, RegisterFormData } from "./auth-validation";
 import { AuthMode } from "./auth-mode";
 
 export const useAuthPage = () => {
