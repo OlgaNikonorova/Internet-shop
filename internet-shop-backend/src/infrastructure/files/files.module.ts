@@ -18,8 +18,8 @@ import { FilesController } from './files.controller';
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/image\/(jpeg|png)/)) {
-          cb(new Error('Only JPEG and PNG images are allowed'), false);
+        if (!file.mimetype.match(/image\/(jpeg|png|webp)/)) {
+          cb(new Error('Only JPEG, PNG and WEBP images are allowed'), false);
         }
         cb(null, true);
       },
