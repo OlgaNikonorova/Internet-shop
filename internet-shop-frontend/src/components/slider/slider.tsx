@@ -26,11 +26,31 @@ const Slider = (props: SliderProps) => {
         {title}
       </Typography>
       {bgImagePath && (
-        <Box className="relative w-900 mb-[-40px]">
+        <Box
+          className="w-900"
+          sx={{
+            position: "relative",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+              pointerEvents: "none",
+              background: `
+                linear-gradient(to right, rgba(0,0,0,1) 0%, transparent 10%, transparent 90%, rgba(0,0,0,1) 100%),
+                linear-gradient(to bottom, rgba(0,0,0,1) 0%, transparent 20%, transparent 80%, rgba(0,0,0,1) 100%)
+              `,
+            },
+          }}
+        >
           <img
             src={bgImagePath}
             alt="Изображение для секции"
             className="w-full h-auto rounded-lg"
+            style={{ display: 'block' }}
           />
         </Box>
       )}
