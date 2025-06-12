@@ -2,7 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
 import { usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
-import { cartItemsCountSelector } from "../../store/slices/cart-slice";
+import {
+  cartItemsCountSelector,
+  setCartItemsCount,
+} from "../../store/slices/cart-slice";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useGetUserCartQuery } from "../../store/api/cart-api";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -11,8 +17,20 @@ interface HeaderProps {
 const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
   const cartItemsCount = useTypedSelector(cartItemsCountSelector);
+  const dispatch = useDispatch();
+  const { data: cart } = useGetUserCartQuery();
 
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (cart?.items) {
+      const totalCount = cart.items.reduce(
+        (acc, item) => acc + (item.quantity ?? 1),
+        0
+      );
+      dispatch(setCartItemsCount(totalCount));
+    }
+  }, [cart, dispatch]);
 
   const getPositionClass = () => {
     if (pathname === "/shop") return "absolute";
@@ -25,7 +43,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold tracking-tight">Sobaccini</span>
+          <span className="text-2xl font-bold tracking-tight">SOBACCINI</span>
         </Link>
 
         <nav className="flex items-center gap-6">

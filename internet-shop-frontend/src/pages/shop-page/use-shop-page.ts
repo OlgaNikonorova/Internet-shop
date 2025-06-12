@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
-import Product from "../../store/models/product/product";
 import { Order } from "../../store/models/order";
-
 
 export const useShopPage = () => {
   const [pageSize, setPageSize] = useState(8);
-  const [sort] = useState<{ field: keyof Product; order: Order }[]>([
-    { field: "rating", order: Order.DESCENDING },
-  ]);
 
   const {
     data: {
@@ -21,13 +16,26 @@ export const useShopPage = () => {
         hasNextPage: false,
       },
     } = {},
-    
     isLoading,
-    error,
+    isError,
   } = useGetPaginatedProductsQuery(
     {
       pageSize,
-      sort,
+      sort: [{ field: "rating", order: Order.DESCENDING }],
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  const {
+    data: { products: latestProducts = [] } = {},
+    isLoading: isLatestLoading,
+    isError: isLatestError,
+  } = useGetPaginatedProductsQuery(
+    {
+      pageSize: 4,
+      sort: [{ field: "createdAt", order: Order.DESCENDING }],
     },
     {
       refetchOnMountOrArgChange: true,
@@ -38,6 +46,14 @@ export const useShopPage = () => {
     setPageSize((prev) => prev + 8);
   };
 
-  return { products, page, isLoading, error, handleShowMore
-   };
+  return {
+    products,
+    page,
+    isLoading,
+    isError,
+    handleShowMore,
+    latestProducts,
+    isLatestLoading,
+    isLatestError,
+  };
 };
