@@ -51,6 +51,27 @@ const theme = createTheme({
         fontFamily: 'inherit',
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontSize: 20, 
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          fontSize: 24, 
+        },
+      },
+    },
   },
 });
 

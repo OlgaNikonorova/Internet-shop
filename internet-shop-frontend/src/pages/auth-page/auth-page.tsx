@@ -1,231 +1,190 @@
-import { useForm } from "react-hook-form";
-import { useAuthPage } from "./use-auth-page";
-import { FormData, getSchema} from "./auth-validation";
-import { UserRole } from "../../store/models/user/user-role";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getSchema, FormData } from "./auth-validation";
+import { useAuthPage } from "./use-auth-page";
 import { AuthMode } from "./auth-mode";
+import { UserRole } from "../../store/models/user/user-role";
+
+import {
+  TextField,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Paper,
+  Box,
+} from "@mui/material";
+import { useState } from "react";
 
 const AuthPage = () => {
   const { mode, error, onSubmit, toggleMode } = useAuthPage();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<any>({
     resolver: zodResolver(getSchema(mode)),
     defaultValues: {
       role: UserRole.USER,
     },
   });
+
+  const handleFormSubmit = async (data: FormData) => {
+    await onSubmit(data);
+  };
+
+  const isLogin = mode === AuthMode.Login;
+
+  const [selectedValue, setSelectedValue] = useState(UserRole.USER);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md bg-white p-8 rounded-lg shadow-md space-y-6"
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#ffffff"
+    >
+      <Paper
+        elevation={5}
+        sx={{ p: 4, width: "100%", maxWidth: 813, bgcolor: "white", margin: 5 }}
       >
-        <h2 className="text-2xl font-bold text-center text-gray-900">
-          {mode === AuthMode.Login ? "Вход" : "Регистрация"}
-        </h2>
+        <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+          <Typography variant="h4" textAlign="center" fontWeight={600} mb={3}>
+            {isLogin ? "Вход" : "Регистрация"}
+          </Typography>
 
-        {/* Общие поля для обоих режимов */}
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Логин
-            </label>
-            <input
-              id="username"
-              placeholder="Введите ваш логин"
-              {...register("username")}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-            />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.username.message}
-              </p>
-            )}
-          </div>
+          <TextField
+            label="Логин"
+            fullWidth
+            margin="normal"
+            {...register("username")}
+            error={!!errors.username}
+            helperText={errors.username?.message?.toString()}
+          />
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Пароль
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Введите пароль"
-              {...register("password")}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-        </div>
+          <TextField
+            label="Пароль"
+            type="password"
+            fullWidth
+            margin="normal"
+            {...register("password")}
+            error={!!errors.password}
+            helperText={errors.password?.message?.toString()}
+          />
 
-        {/* Поля только для регистрации */}
-        {mode === AuthMode.Register && (
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="text"
-                placeholder="Введите ваш email"
+          {!isLogin && (
+            <>
+              <TextField
+                label="Email"
+                fullWidth
+                margin="normal"
                 {...register("email")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                error={!!errors.email}
+                helperText={errors.email?.message?.toString()}
               />
-              {"email" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.email?.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Имя и фамилия
-              </label>
-              <input
-                id="name"
-                placeholder="Иван Иванов"
+              <TextField
+                label="Имя и фамилия"
+                fullWidth
+                margin="normal"
                 {...register("name")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                error={!!errors.name}
+                helperText={errors.name?.message?.toString()}
               />
-              {"name" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.name?.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Адрес
-              </label>
-              <input
-                id="address"
-                placeholder="Введите ваш адрес"
+              <TextField
+                label="Адрес"
+                fullWidth
+                margin="normal"
                 {...register("address")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                error={!!errors.address}
+                helperText={errors.address?.message?.toString()}
               />
-              {"address" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.address?.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Телефон
-              </label>
-              <input
-                id="phone"
-                placeholder="+7 (999) 123-45-67"
+              <TextField
+                label="Телефон"
+                fullWidth
+                margin="normal"
                 {...register("phone")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                error={!!errors.phone}
+                helperText={errors.phone?.message?.toString()}
               />
-              {"phone" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.phone?.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="avatar"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Аватар (URL)
-              </label>
-              <input
-                id="avatar"
-                placeholder="https://example.com/avatar.jpg"
+              <TextField
+                label="Аватар (URL)"
+                fullWidth
+                margin="normal"
                 {...register("avatar")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                error={!!errors.avatar}
+                helperText={errors.avatar?.message?.toString()}
               />
-              {"avatar" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.avatar?.message}
-                </p>
-              )}
-            </div>
 
-            <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Роль
-              </label>
-              <select
-                id="role"
-                {...register("role")}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-              >
-                <option value="user">Покупатель</option>
-                <option value="seller">Продавец</option>
-              </select>
-              {"role" in errors && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.role?.message}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
+              <FormControl fullWidth margin="normal" error={!!errors.role}>
+                <InputLabel id="role-label">Роль</InputLabel>
+                <Select
+                  labelId="role-label"
+                  label="Роль"
+                  {...register("role")}
+                  sx={{
+                    alignItems: "center", 
+                    ".MuiSelect-select": {
+                      alignItems: "center",
+                      backgroundColor: selectedValue ? "#e3f2fd" : "white",
+                    },
+                    "&.Mui-focused .MuiSelect-select": {
+                      backgroundColor: "#e3f2fd", 
+                    },
+                  }}
+                >
+                  <MenuItem value={UserRole.USER} sx={{ fontSize: 20 }}>
+                    Покупатель
+                  </MenuItem>
+                  <MenuItem value={UserRole.SELLER} sx={{ fontSize: 20 }}>
+                    Продавец
+                  </MenuItem>
+                </Select>
+                <Typography variant="caption" color="error">
+                  {errors.role?.message?.toString()}
+                </Typography>
+              </FormControl>
+            </>
+          )}
 
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+          {error && (
+            <Typography variant="body2" color="error" mt={1}>
+              {error}
+            </Typography>
+          )}
+          <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, mb: 2, fontSize: 24, width: 0.5 }}
+            >
+              {isLogin ? "Войти" : "Зарегистрироваться"}
+            </Button>
+          </Box>
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            gap={30}
           >
-            {mode === AuthMode.Login ? "Войти" : "Зарегистрироваться"}
-          </button>
-        </div>
-
-        <div className="text-center text-sm text-gray-600">
-          {mode === AuthMode.Login ? "Нет аккаунта?" : "Уже есть аккаунт?"}{" "}
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="font-medium text-primary hover:text-primary-dark focus:outline-none"
-          >
-            {mode === AuthMode.Login ? "Зарегистрироваться" : "Войти"}
-          </button>
-        </div>
-
-        {error && (
-          <div className="mt-1 text-sm text-red-600">
-            {error}
-          </div>
-        )}
-      </form>
-    </div>
+            <Typography variant="h5" textAlign="center">
+              {isLogin ? "Еще нет аккаунта?" : "Уже есть аккаунт?"}{" "}
+              <Button onClick={toggleMode} size="medium" sx={{ fontSize: 20 }}>
+                {isLogin ? "Зарегистрироваться" : "Войти"}
+              </Button>
+            </Typography>
+          </Box>
+        </form>
+      </Paper>
+    </Box>
   );
 };
 

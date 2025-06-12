@@ -46,25 +46,25 @@ const Header = ({ onCartClick }: HeaderProps) => {
           <span className="text-2xl font-bold tracking-tight">SOBACCINI</span>
         </Link>
 
-        <nav className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/shop" className="hover:text-gray transition-colors">
+        <nav className="flex items-center gap-[35px]">
+          <div className="hidden md:flex items-center gap-[81px]">
+            <Link to="/shop" className="text-xl hover:text-gray transition-colors">
               Каталог
             </Link>
-            <Link to="/about" className="hover:text-gray transition-colors">
+            <Link to="/about" className="text-xl hover:text-gray transition-colors">
               Новинки
             </Link>
-            <Link to="/contacts" className="hover:text-gray transition-colors">
+            <Link to="/contacts" className="text-xl hover:text-gray transition-colors">
               Бренды
             </Link>
 
-            <Link to="/favorites" className="hover:text-gray transition-colors">
+            <Link to="/favorites" className="text-xl hover:text-gray transition-colors">
               <Favorite fontSize="medium" />
             </Link>
           </div>
 
           {/* Кнопки корзины и профиля */}
-          <div className="flex justify-center items-center gap-4">
+          <div className="flex justify-center items-center gap-[30px]">
             <button
               className="p-2 rounded-full hover:bg-gray transition-colors relative"
               aria-label="Корзина"
@@ -77,7 +77,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
             </button>
 
             <button
-              className="p-2 rounded-full hover:bg-gray transition-colors"
+              className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
             >
               <Link to="/profile">
