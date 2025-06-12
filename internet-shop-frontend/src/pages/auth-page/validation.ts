@@ -32,8 +32,8 @@ export const registerSchema = loginSchema.extend({
     .string()
     .url("Некорректный URL изображения")
     .refine(
-      (value: string) => /\.(jpe?g|png|gif|webp|svg)$/i.test(value),
-      "Поддерживаются только форматы: , PNG, GIF, WEBP, SVG"
+      (value: string) => /\.(jpe?g|png|webp)$/i.test(value),
+      "Поддерживаются только форматы: JPG, PNG, WEBP"
     ),
   role: z.nativeEnum(UserRole, {
     errorMap: () => ({ message: "Выберите корректную роль" }),
