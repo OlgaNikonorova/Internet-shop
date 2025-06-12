@@ -6,6 +6,10 @@ import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
 import Typography from "@mui/material/Typography";
 import Slider from "../../components/slider/slider";
+import { Box } from "@mui/material";
+import { ColorButton } from "../../theme";
+import { Link } from "react-router-dom";
+import { SkinTypeSection } from "./skin-type-section";
 
 const ShopPage = () => {
   const {
@@ -31,8 +35,16 @@ const ShopPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div
+    <Box
+  display="flex"
+  flexDirection="column"
+  alignItems="center"
+  gap={10}
+  width="100%"
+>
+  <Box width="100%" >
+      <Box
+        px = {0}
         className="flex flex-col w-full"
         style={{
           backgroundImage: 'url("/images/welcome.jpg")',
@@ -41,8 +53,8 @@ const ShopPage = () => {
         }}
       >
         <div className="flex pt-60 px-10 pb-20 flex-col text-white w-1/2 self-end items-start gap-6">
-          <h1 className="text-3xl">Красота снаружи начинается внутри.</h1>
-          <p className="text-align-start">
+          <h1 className="text-4xl">Красота снаружи начинается внутри.</h1>
+          <p className="text-lg">
             Но знаешь, что самое волшебное? Когда внутренний свет отражается в
             сиянии кожи, в блеске глаз, в уверенной улыбке. Ты — это не просто
             отражение в зеркале. Ты — настроение, энергия, настроение дня,
@@ -57,13 +69,28 @@ const ShopPage = () => {
             а ритуала. Не просто покупки, а настроения. Выбирай. Вдохновляйся.
             Сияй.
           </p>
-          <button>К покупкам!</button>
+          <Box display="flex" justifyContent="flex-start" alignItems="center">
+              <ColorButton
+              component="a"
+              onClick={(e) => {
+              e.preventDefault();
+              const el = document.getElementById("catalog");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+                variant="contained"
+                sx={{ px: 4, py: 1, width: "100%", mb: 2 }}
+              >
+                К покупкам!
+              </ColorButton>
+            </Box>
         </div>
-      </div>
+      </Box>
 
       <div className="flex w-full items-center flex-col gap-10 px-[54px] px-4 py-4">
         <Slider
-          title="Новинки"
+          title="НОВИНКИ"
           items={latestProducts}
           renderItem={(product) => (
             <ProductCard key={product.id} product={product} />
@@ -71,7 +98,7 @@ const ShopPage = () => {
         />
 
         <Slider
-          title="Акции"
+          title="АКЦИИ"
           items={promoImages}
           renderItem={(imageSrc, index) => (
             <img
@@ -82,33 +109,44 @@ const ShopPage = () => {
           )}
         />
 
+        <SkinTypeSection />
+
+        <Slider
+          title="ВАС МОЖЕТ ЗАИНТЕРЕСОВАТЬ"
+          items={latestProducts}
+          renderItem={(product) => (
+            <ProductCard key={product.id} product={product} />
+          )}
+        />
+
         {/* Основной контент */}
         <Typography
+          id="catalog"
           variant="h4"
           sx={{ marginTop: "10vh" }}
           className="text-white"
         >
-          Каталог товаров
+          КАТАЛОГ ТОВАРОВ
         </Typography>
-        <div className="w-full">
+        <Box className="w-full">
           {/* Список товаров */}
           {products.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px={10}">
                 {products.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
-              </div>
+              </Box>
 
               {page.hasNextPage && (
-                <div className="mt-8 flex justify-center">
-                  <button
+                <Box className="mt-8 flex justify-center" >
+                  <ColorButton
                     onClick={handleShowMore}
-                    className="border text-white px-6 py-2 rounded hover:bg-gray-100 transition"
+                    className="border border-white px-6 py-2 rounded hover:bg-gray-100 transition"
                   >
                     Показать больше
-                  </button>
-                </div>
+                  </ColorButton>
+                </Box>
               )}
             </>
           ) : (
@@ -116,10 +154,10 @@ const ShopPage = () => {
               <p className="text-xl text-gray-400">No products found</p>
             </div>
           )}
-        </div>
+        </Box>
 
         <Slider
-          title="Парфюмерия"
+          title="ПАРФЮМЕРИЯ"
           items={latestProducts}
           renderItem={(product) => (
             <ProductCard key={product.id} product={product} />
@@ -131,7 +169,7 @@ const ShopPage = () => {
         />
 
         <Slider
-          title="Уходовая косметика"
+          title="УХОДОВАЯ КОСМЕТИКА"
           items={latestProducts}
           renderItem={(product) => (
             <ProductCard key={product.id} product={product} />
@@ -143,7 +181,7 @@ const ShopPage = () => {
         />
 
         <Slider
-          title="Украшения"
+          title="УКРАШЕНИЯ"
           items={latestProducts}
           renderItem={(product) => (
             <ProductCard key={product.id} product={product} />
@@ -154,7 +192,8 @@ const ShopPage = () => {
           }
         />
       </div>
-    </div>
+    </Box>
+    </Box>
   );
 };
 
