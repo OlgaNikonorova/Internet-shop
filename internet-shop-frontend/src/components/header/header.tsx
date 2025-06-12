@@ -42,7 +42,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
       className={`bg-transparent text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
+        <Link to="/shop" className="flex items-center">
           <span className="text-2xl font-bold tracking-tight">SOBACCINI</span>
         </Link>
 
