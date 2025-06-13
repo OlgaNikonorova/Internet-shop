@@ -13,6 +13,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Inject,
   Param,
@@ -148,31 +149,6 @@ export class UsersController {
     const user = await this._usersService.findById(id);
     return this.mapToResponseDto(user);
   }
-  
-// @Patch('me')
-// @ApiOperation({ summary: 'Update current user profile' })
-// @ApiBody({ type: UserUpdateDto })
-// @ApiResponse({
-//   status: 200,
-//   description: 'User updated successfully',
-//   type: UserResponseDto,
-// })
-// @ApiResponse({ status: 401, description: 'Unauthorized' })
-// @ApiResponse({ status: 403, description: 'Forbidden' })
-// @ApiResponse({ status: 404, description: 'User not found' })
-// @ApiResponse({ status: 500, description: 'Internal server error' })
-// @ApiBearerAuth()
-// public async updateMe(
-//   @GetUserId('userId') userId: string,
-//   @Body() updateUserDto: UserUpdateDto,
-// ): Promise<UserResponseDto> {
-
-//   delete updateUserDto.role;
-//   delete updateUserDto.status;
-  
-//   const updatedUser = await this._usersService.update(userId, updateUserDto);
-//   return this.mapToResponseDto(updatedUser);
-// }
 
   @Patch(':id/role')
   @UseGuards(RolesGuard)
@@ -256,8 +232,6 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.Admin)
   @ApiOperation({ summary: 'Update user', operationId: 'updateUserById' })
   @ApiParam({
     name: 'id',
@@ -275,16 +249,21 @@ export class UsersController {
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiBearerAuth()
   public async updateById(
+    @GetUserId('userId') currentUserId: string,
     @Param('id') id: string,
     @Body() updateUserDto: UserUpdateDto,
   ): Promise<UserResponseDto> {
+    const currentUser = await this._usersService.findById(currentUserId);
+
+    if (currentUserId !== id && currentUser.role !== UserRole.Admin) {
+      throw new ForbiddenException('You can only update your own profile');
+    }
+
     const updatedUser = await this._usersService.update(id, updateUserDto);
     return this.mapToResponseDto(updatedUser);
   }
 
   @Delete(':id')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.Admin)
   @ApiOperation({ summary: 'Delete user by id', operationId: 'deleteUserById' })
   @ApiParam({
     name: 'id',
@@ -296,7 +275,16 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @ApiBearerAuth()
-  public async remove(@Param('id') id: string): Promise<void> {
+  public async remove(
+    @GetUserId('userId') currentUserId: string,
+    @Param('id') id: string,
+  ): Promise<void> {
+    const currentUser = await this._usersService.findById(currentUserId);
+
+    if (currentUserId !== id && currentUser.role !== UserRole.Admin) {
+      throw new ForbiddenException('You can only delete your own profile');
+    }
+
     return await this._usersService.delete(id);
   }
 

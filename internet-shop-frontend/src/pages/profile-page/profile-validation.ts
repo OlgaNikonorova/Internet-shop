@@ -30,17 +30,6 @@ export const profileSchema = z.object({
       /^((8|\+374|\+994|\+995|\+375|\+7|\+380|\+38|\+996|\+998|\+993)[ ]?)?\(?\d{3,5}\)?[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}(([ ]?\d{1})?[ ]?\d{1})?$/,
       "Введите корректный номер телефона"
     ),
-
-  avatar: z
-    .any()
-    .refine((file) => !file || file instanceof File, "Файл должен быть изображением")
-    .refine((file) => !file || file.size <= 5 * 1024 * 1024, "Изображение не должно превышать 5MB")
-    .refine(
-      (file) =>
-        !file ||
-        /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name),
-      "Поддерживаются только изображения: JPG, PNG, GIF, WEBP, SVG"
-    ),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
