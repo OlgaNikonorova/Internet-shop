@@ -14,6 +14,13 @@ export const userApi = createApi({
       }),
     }),
 
+    getUserById: builder.query<User, string>({
+      query: (id) => ({
+        url: `/api/users/${id}`,
+        method: "GET",
+      }),
+    }),
+
     updateUserById: builder.mutation<
       User,
       { id: string; updateUser: UpdateUser }
@@ -38,4 +45,5 @@ export const {
   useGetMeQuery,
   useUpdateUserByIdMutation,
   useDeleteUserByIdMutation,
+  useGetUserByIdQuery,
 } = userApi;

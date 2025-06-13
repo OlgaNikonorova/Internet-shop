@@ -33,13 +33,14 @@ const Header = ({ onCartClick }: HeaderProps) => {
   }, [cart, dispatch]);
 
   const getPositionClass = () => {
-    if (pathname === "/shop") return "absolute";
+    if (pathname === "/shop" || pathname.startsWith("/product/"))
+      return "absolute";
     return "relative";
   };
 
   return (
     <header
-      className={`bg-transparent text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
+      className={`z-10 bg-black/15 text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/shop" className="flex items-center">

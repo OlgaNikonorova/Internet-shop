@@ -8,10 +8,17 @@ import {
   useGetUserFavoritesQuery,
   useRemoveProductFromFavoritesMutation,
 } from "../../store/api/favorites-api";
-import { addCartItem } from "../../store/slices/cart-slice";
+import {
+  addCartItem,
+  addCartProductId,
+  cartProductIdsSelector,
+} from "../../store/slices/cart-slice";
+import { useState } from "react";
+import { useTypedSelector } from "../../store/hooks";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
+  const cartProductIds = useTypedSelector(cartProductIdsSelector);
   const dispatch = useDispatch();
 
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
@@ -31,19 +38,26 @@ export const useProductPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
+  const isInCart = cartProductIds.some((id) => id === product?.id);
+
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
   const isFavorite = products.some((p) => p.id === product?.id);
+
+  const [count, setCount] = useState(1);
 
   const handleAddToCart = async () => {
     if (!product) return;
 
     await addToCart({
       productId: product.id,
-      quantity: 1,
+      quantity: count,
     });
 
-    dispatch(addCartItem(1));
+    setCount(1);
+
+    dispatch(addCartItem(count));
+    dispatch(addCartProductId(product.id));
   };
 
   const handleToggleFavorite = async () => {
@@ -68,5 +82,8 @@ export const useProductPage = () => {
     isAddingToFavorites,
     handleAddToCart,
     handleToggleFavorite,
+    count,
+    setCount,
+    isInCart,
   };
 };

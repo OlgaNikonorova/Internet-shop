@@ -6,6 +6,7 @@ export default {
         primary: "#000000",
         white: "#ffffff",
         gray: "#6d6d6d",
+        lightgray: "#e3e1e1",
       },
     },
   },
