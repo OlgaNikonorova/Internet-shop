@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Container,
   Avatar,
@@ -7,117 +6,50 @@ import {
   Button,
   CircularProgress,
   Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Link,
   TextField,
 } from "@mui/material";
-import {
-  useGetMeQuery,
-  useUpdateUserByIdMutation,
-  useDeleteUserByIdMutation,
-} from "../../store/api/user-api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import UpdateUser from "../../store/models/user/update-user";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { ColorButton } from "../../theme";
-import { ProfileFormData, profileSchema } from "./profile-validation";
-import { useForm } from "react-hook-form";
-import { useLogoutUserMutation } from "../../store/api/auth-api";
-import { useDispatch } from "react-redux";
-import { logout } from "../../store/slices/user-slice";
+
+import { useProfile } from "./use-profile-page";
 
 const ProfilePage = () => {
-  const { data: user, isLoading, error, refetch } = useGetMeQuery();
-  const dispatch = useDispatch();
-  const [updateUser] = useUpdateUserByIdMutation();
-  const [deleteUser] = useDeleteUserByIdMutation();
-  const [logoutUser] = useLogoutUserMutation();
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
-  const handleLogout = async () => {
-    await logoutUser();
-    dispatch(logout());
-  };
-
   const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-  });
+    user,
+    form: {
+      register,
+      handleSubmit,
+      formState: { errors },
+    },
+    avatarPreview,
+    isLoading,
+    error,
+    openDeleteDialog,
+    setOpenDeleteDialog,
+    handleUpdateProfile,
+    handleAvatarChange,
+    handleLogout
+  } = useProfile();
 
-  const handleUpdateProfile = async (updateData: UpdateUser) => {
-    if (!user) return;
-    try {
-      await updateUser({
-        id: user.id,
-        updateUser: updateData,
-      }).unwrap();
-      refetch();
-    } catch (err) {
-      console.error("Ошибка обновления профиля:", err);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (!user) return;
-    try {
-      await deleteUser(user.id).unwrap();
-      window.location.href = "/";
-    } catch (err) {
-      console.error("Ошибка удаления аккаунта:", err);
-    } finally {
-      setOpenDeleteDialog(false);
-    }
-  };
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-
-      reader.readAsDataURL(file);
-
-      const formData = new FormData();
-      formData.append("avatar", file);
-    }
-  };
-
-  if (isLoading) {
+  if (isLoading)
     return (
       <Box display="flex" justifyContent="center" mt={4}>
         <CircularProgress />
       </Box>
     );
-  }
-
-  if (error) {
+  if (error)
     return (
       <Alert severity="error" sx={{ mt: 2 }}>
         Ошибка загрузки данных пользователя
       </Alert>
     );
-  }
-
-  if (!user) {
+  if (!user)
     return (
       <Alert severity="warning" sx={{ mt: 2 }}>
         Пользователь не найден
       </Alert>
     );
-  }
-
   return (
     <Box sx={{ bgcolor: "#fff", color: "#000", py: 6 }}>
       <Container sx={{ display: "flex", ml: 15, mr: 15, gap: 25 }}>
@@ -260,160 +192,144 @@ const ProfilePage = () => {
             личная информация
           </Typography>
 
-          <Box sx={{ display: "grid", rowGap: 2.5, fontSize: 24 }}>
-            <TextField
-              label="Электронная почта"
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              variant="outlined"
-              required
-              defaultValue={user.email}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "20px", // размер текста в поле ввода
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "18px", // размер текста у label
-                },
-              }}
-            />
-            <TextField
-              label="Имя"
-              {...register("username")}
-              {...(errors.username && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.username.message}
-                </p>
-              ))}
-              variant="outlined"
-              required
-              defaultValue={user.name || "—"}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "20px", // размер текста в поле ввода
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "18px", // размер текста у label
-                },
-              }}
-            />
-            <TextField
-              label="Адрес"
-              {...register("address")}
-              {...(errors.address && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.address.message}
-                </p>
-              ))}
-              variant="outlined"
-              required
-              defaultValue={user.address || "—"}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "20px", // размер текста в поле ввода
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "18px", // размер текста у label
-                },
-              }}
-            />
-            <TextField
-              label="Номер телефона"
-              {...register("phone")}
-              {...(errors.phone && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.phone.message}
-                </p>
-              ))}
-              variant="outlined"
-              required
-              defaultValue={user.phone || "—"}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "20px", // размер текста в поле ввода
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "18px", // размер текста у label
-                },
-              }}
-            />
-            <TextField
-              label="Роль"
-              variant="outlined"
-              disabled
-              defaultValue={user.role || "—"}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "20px", // размер текста в поле ввода
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "18px", // размер текста у label
-                },
-              }}
-            />
-          </Box>
+          <form onSubmit={handleSubmit(handleUpdateProfile)}>
+            <Box sx={{ display: "grid", rowGap: 2.5, fontSize: 24 }}>
+              <TextField
+                label="Электронная почта"
+                {...register("email")}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                variant="outlined"
+                required
+                defaultValue={user.email}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px", // размер текста в поле ввода
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px", // размер текста у label
+                  },
+                }}
+              />
+              <TextField
+                label="Имя"
+                {...register("username")}
+                {...(errors.username && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.username.message}
+                  </p>
+                ))}
+                variant="outlined"
+                required
+                defaultValue={user.name || "—"}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px", // размер текста в поле ввода
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px", // размер текста у label
+                  },
+                }}
+              />
+              <TextField
+                label="Пароль"
+                {...register("password")}
+                {...(errors.password && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.password.message}
+                  </p>
+                ))}
+                variant="outlined"
+                required
+                defaultValue={"********"}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px",
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px",
+                  },
+                }}
+              />
+              <TextField
+                label="Адрес"
+                {...register("address")}
+                {...(errors.address && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.address.message}
+                  </p>
+                ))}
+                variant="outlined"
+                required
+                defaultValue={user.address || "—"}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px", // размер текста в поле ввода
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px", // размер текста у label
+                  },
+                }}
+              />
+              <TextField
+                label="Номер телефона"
+                {...register("phone")}
+                {...(errors.phone && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.phone.message}
+                  </p>
+                ))}
+                variant="outlined"
+                required
+                defaultValue={user.phone || "—"}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px", // размер текста в поле ввода
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px", // размер текста у label
+                  },
+                }}
+              />
+              <TextField
+                label="Роль"
+                variant="outlined"
+                disabled
+                defaultValue={user.role || "—"}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: "20px", // размер текста в поле ввода
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "18px", // размер текста у label
+                  },
+                }}
+              />
+            </Box>
 
-          <Box sx={{ mt: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <input type="checkbox" style={{ marginRight: 8 }} />
-              <Typography variant="body1">
-                Я даю согласие на обработку своих персональных данных в
-                соответствии с Политикой обработки персональных данных
-              </Typography>
+            <Box sx={{ mt: 4 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <input type="checkbox" style={{ marginRight: 8 }} />
+                <Typography variant="body1">
+                  Я даю согласие на обработку своих персональных данных в
+                  соответствии с Политикой обработки персональных данных
+                </Typography>
+              </Box>
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <ColorButton
+                  variant="contained"
+                  type="submit"
+                  sx={{ px: 4, py: 1, width: "50%", mb: 2 }}
+                >
+                  Сохранить
+                </ColorButton>
+              </Box>
             </Box>
-            <Box display="flex" justifyContent="center" alignItems="center">
-              <ColorButton
-                variant="contained"
-                sx={{ px: 4, py: 1, width: "50%", mb: 2 }}
-              >
-                Сохранить
-              </ColorButton>
-            </Box>
-          </Box>
+          </form>
         </Box>
-
-        {/* Диалог удаления */}
-        <Dialog
-          open={openDeleteDialog}
-          onClose={() => setOpenDeleteDialog(false)}
-        >
-          <DialogTitle>Подтвердите удаление</DialogTitle>
-          <DialogContent>
-            <Typography>
-              Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя
-              отменить.
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenDeleteDialog(false)}>Отмена</Button>
-            <Button
-              onClick={handleDeleteAccount}
-              color="error"
-              variant="contained"
-            >
-              Удалить
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Container>
     </Box>
   );
 };
-
-const Field = ({ label, value }: { label: string; value: string }) => (
-  <Box sx={{ display: "flex", gap: 2 }}>
-    <Typography
-      sx={{
-        minWidth: 180,
-        fontWeight: 400,
-        fontSize: 16,
-        color: "#000",
-      }}
-    >
-      {label}
-    </Typography>
-    <Typography sx={{ fontSize: 16, color: "#000" }}>{value}</Typography>
-  </Box>
-);
 
 export default ProfilePage;

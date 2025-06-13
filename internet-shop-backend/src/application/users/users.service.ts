@@ -165,6 +165,7 @@ export class UsersService implements IUserService {
       );
     }
 
+
     const updateData: Partial<User> = {};
     if (bulkDto.role) {
       updateData.role = bulkDto.role;
@@ -184,4 +185,6 @@ export class UsersService implements IUserService {
   public async delete(id: string): Promise<void> {
     await this._usersRepository.delete(id);
   }
+
+  
 }
