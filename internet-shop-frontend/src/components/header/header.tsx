@@ -49,7 +49,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
         <nav className="flex items-center gap-[35px]">
           <div className="hidden md:flex items-center gap-[81px]">
-            <Link to="/shop" className="text-xl hover:text-gray transition-colors">
+            <Link to="#catalog" className="text-xl hover:text-gray transition-colors">
               Каталог
             </Link>
             <Link to="/about" className="text-xl hover:text-gray transition-colors">

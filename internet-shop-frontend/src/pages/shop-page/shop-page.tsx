@@ -48,7 +48,7 @@ const ShopPage = () => {
         className="flex flex-col w-full"
         style={{
           backgroundImage: 'url("/images/welcome.jpg")',
-          backgroundPosition: "left center",
+          backgroundPosition: "left 27%",
           backgroundSize: "cover",
         }}
       >
