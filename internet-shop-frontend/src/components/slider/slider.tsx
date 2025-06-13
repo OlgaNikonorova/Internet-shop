@@ -5,29 +5,32 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
 
 interface SliderProps {
-  title: string;
+  title?: string;
   items: any[];
   renderItem: (item: any, index: number) => ReactNode;
   bgImagePath?: string;
+  slidesPerView?: number;
 }
 
 const Slider = (props: SliderProps) => {
   const swiperRef = useRef<{ swiper: SwiperType } | null>(null);
 
-  const { title, items, renderItem, bgImagePath } = props;
+  const { title, items, renderItem, bgImagePath, slidesPerView } = props;
 
   return (
-    <>
-      <Typography
-        variant="h4"
-        sx={{ marginTop: "10vh" }}
-        className="text-white"
-      >
-        {title}
-      </Typography>
+    <div className="w-full flex flex-col items-center">
+      {title && (
+        <Typography
+          variant="h4"
+          sx={{ marginTop: "10vh", marginBottom: "6vh" }}
+          className="text-white"
+        >
+          {title}
+        </Typography>
+      )}
       {bgImagePath && (
         <Box
-          className="w-900"
+          className="w-5/6"
           sx={{
             position: "relative",
             "&::before": {
@@ -50,12 +53,12 @@ const Slider = (props: SliderProps) => {
             src={bgImagePath}
             alt="Изображение для секции"
             className="w-full h-auto rounded-lg"
-            style={{ display: 'block' }}
+            style={{ display: "block" }}
           />
         </Box>
       )}
 
-      <Box sx={{ display: "flex" }} className="w-full">
+      <Box sx={{ display: "flex", width: "100%" }}>
         <Button
           onClick={() => swiperRef.current?.swiper.slidePrev()}
           color="secondary"
@@ -65,12 +68,15 @@ const Slider = (props: SliderProps) => {
 
         <Swiper
           spaceBetween={20}
-          slidesPerView={3}
+          slidesPerView={slidesPerView ?? 3}
           ref={swiperRef}
           breakpoints={{
             320: { slidesPerView: 1 },
             640: { slidesPerView: 2 },
             1024: { slidesPerView: 3 },
+          }}
+          style={{
+            width: "100%",
           }}
           className="px-2"
         >
@@ -86,7 +92,7 @@ const Slider = (props: SliderProps) => {
           <ChevronRight fontSize="large" />
         </Button>
       </Box>
-    </>
+    </div>
   );
 };
 

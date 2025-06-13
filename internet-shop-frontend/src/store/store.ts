@@ -64,7 +64,7 @@ const userPersistConfig = {
 const cartPersistConfig = {
   key: "cart",
   storage: storage,
-  whiteList: ["itemsCount"],
+  whiteList: ["itemsCount", "productIds"],
 };
 
 const rootReducer = combineReducers({
