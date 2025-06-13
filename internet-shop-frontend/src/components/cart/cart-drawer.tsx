@@ -4,6 +4,8 @@ import { useGetUserCartQuery } from "../../store/api/cart-api";
 import CartItemCard from "../cart-item-card/cart-item-card";
 import CartItem from "../../store/models/cart/cart-item";
 import List from "@mui/material/List";
+import { useDispatch } from "react-redux";
+import { setCartProductIds } from "../../store/slices/cart-slice";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -11,6 +13,8 @@ interface CartDrawerProps {
 }
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
+  const dispatch = useDispatch();
+
   const {
     data: { items: products = [], totalPrice = 0 } = {},
     isLoading,
@@ -29,6 +33,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   useEffect(() => {
     if (isOpen) {
       refetch();
+      dispatch(setCartProductIds(products.map((product) => product.productId)));
       setShowDrawer(true);
       setTimeout(() => setAnimateDrawer(true), 10);
     } else {
@@ -36,7 +41,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       const timeout = setTimeout(() => setShowDrawer(false), 300);
       return () => clearTimeout(timeout);
     }
-  }, [isOpen, refetch]);
+  }, [dispatch, isOpen, products, refetch]);
 
   if (!showDrawer) return null;
 
