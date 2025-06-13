@@ -58,7 +58,7 @@ const filesApiPersistConfig = {
 const userPersistConfig = {
   key: "user",
   storage: storage,
-  whiteList: ["accessToken", "refreshToken", "username", "avatar"],
+  whiteList: ["accessToken", "refreshToken", "username", "avatar", "role"],
 };
 
 const cartPersistConfig = {

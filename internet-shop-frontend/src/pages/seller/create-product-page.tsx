@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, Alert, Snackbar } from '@mui/material';
 import { useState } from 'react';
 
-import ProductForm from '../../components/seller/productForm';
+import ProductForm from '../../components/seller/product-form';
 import CreateProduct from '../../store/models/product/create-product';
 import { ProductStatus } from '../../store/models/product/product-status';
 

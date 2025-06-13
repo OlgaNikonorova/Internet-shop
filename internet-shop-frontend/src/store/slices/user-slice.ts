@@ -10,12 +10,12 @@ type AuthTokens = {
 type UserState = AuthTokens & {
   username: string | null;
   role: UserRole | null;
-  avatar?: string;
+  avatar: string | null;
 };
 
 const initialState: UserState = {
   username: null,
-  avatar: undefined,
+  avatar: null,
   accessToken: null,
   refreshToken: null,
   role: null,
@@ -30,31 +30,40 @@ export const userSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       state.role = action.payload.role;
+      state.avatar = action.payload.avatar;
     },
+
     updateTokens: (state, action: PayloadAction<AuthTokens>) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
     },
+
     logout: (state) => {
       Object.assign(state, initialState);
     },
 
-    updateUserRole: (state, action: PayloadAction<UserRole>) => {
+    setUserRole: (state, action: PayloadAction<UserRole>) => {
       state.role = action.payload;
-    },  
+    },
 
     setAvatar: (state, action: PayloadAction<string>) => {
       state.avatar = action.payload;
     },
-}
+
+    setUsername: (state, action: PayloadAction<string>) => {
+      state.username = action.payload;
+    },
+  },
 });
 
-export const selectCurrentUser = (state: RootState) => state.user;
-
-export const selectUserRole = (state: RootState) => state.user.role;
-
-export const { login, logout, updateTokens, setAvatar } = userSlice.actions;
-
+export const {
+  login,
+  logout,
+  updateTokens,
+  setAvatar,
+  setUsername,
+  setUserRole,
+} = userSlice.actions;
 
 export const isAuthSelector = (state: RootState) =>
   !!state.user.accessToken && !!state.user.refreshToken;
@@ -62,7 +71,7 @@ export const usernameSelector = (state: RootState) => state.user.username;
 export const accessTokenSelector = (state: RootState) => state.user.accessToken;
 export const refreshTokenSelector = (state: RootState) =>
   state.user.refreshToken;
-export const avatarSelector = (state: RootState) =>
-  state.user.avatar;
+export const avatarSelector = (state: RootState) => state.user.avatar;
+export const userRoleSelector = (state: RootState) => state.user.role;
 
 export default userSlice.reducer;

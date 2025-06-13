@@ -9,7 +9,7 @@ import { profileSchema, ProfileFormData } from "./profile-validation";
 import UpdateUser from "../../store/models/user/update-user";
 import { useLogoutUserMutation } from "../../store/api/auth-api";
 import { useDispatch } from "react-redux";
-import { logout, setAvatar } from "../../store/slices/user-slice";
+import { logout, setAvatar, setUsername } from "../../store/slices/user-slice";
 import { useUploadFileMutation } from "../../store/api/files-api";
 
 export const useProfilePage = () => {
@@ -48,19 +48,19 @@ export const useProfilePage = () => {
     if (!user) return;
 
     const updateData: UpdateUser = {
-      email: data.email,
-      password: data.password,
-      username: data.username,
-      name: data.name,
-      address: data.address,
-      phone: data.phone,
+      email: data.email ?? undefined,
+      password: data.password ?? undefined,
+      username: data.username ?? undefined,
+      name: data.name ?? undefined,
+      address: data.address ?? undefined,
+      phone: data.phone ?? undefined,
       avatar: user.avatar,
       role: user.role,
       status: user.status,
     };
 
-    if (data.password) {
-      updateData.password = data.password;
+    if (data.username) {
+      dispatch(setUsername(data.username));
     }
 
     try {
