@@ -24,6 +24,8 @@ const AuthPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<any>({
     resolver: zodResolver(getSchema(mode)),
@@ -31,6 +33,8 @@ const AuthPage = () => {
       role: UserRole.USER,
     },
   });
+
+  const selectedRole = watch('role');
 
   const handleFormSubmit = async (data: FormData) => {
     await onSubmit(data);
@@ -128,15 +132,20 @@ const AuthPage = () => {
                 <Select
                   labelId="role-label"
                   label="Роль"
+                  value={selectedRole}
                   {...register("role")}
+                  onChange={(e) => {
+                    const value = e.target.value as UserRole;
+                    setValue("role", value);
+                  }}
                   sx={{
-                    alignItems: "center", 
+                    alignItems: "center",
                     ".MuiSelect-select": {
                       alignItems: "center",
-                      backgroundColor: selectedValue ? "#e3f2fd" : "white",
+                      backgroundColor: selectedRole ? "#e3f2fd" : "white",
                     },
                     "&.Mui-focused .MuiSelect-select": {
-                      backgroundColor: "#e3f2fd", 
+                      backgroundColor: "#e3f2fd",
                     },
                   }}
                 >

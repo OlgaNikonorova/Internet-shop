@@ -33,6 +33,7 @@ export const useAuthPage = () => {
           username: data.username,
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
+          role: response.user.role,
         })
       );
 
