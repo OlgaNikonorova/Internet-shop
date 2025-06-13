@@ -3,7 +3,7 @@ import { useTypedSelector } from "../../store/hooks";
 import {
   avatarSelector,
   usernameSelector,
-  selectUserRole
+  selectUserRole,
 } from "../../store/slices/user-slice";
 import { AddBox, Favorite, Inventory, ShoppingCart } from "@mui/icons-material";
 import {
@@ -39,6 +39,12 @@ const Header = ({ onCartClick }: HeaderProps) => {
     }
   }, [cart, dispatch]);
 
+  const getPositionClass = () => {
+    if (pathname === "/shop" || pathname.startsWith("/product/"))
+      return "absolute";
+    return "relative";
+  };
+
   const isSeller = userRole === UserRole.SELLER;
 
   console.log(userRole);
@@ -46,7 +52,9 @@ const Header = ({ onCartClick }: HeaderProps) => {
   const isActiveRoute = (path: string) => pathname.startsWith(path);
 
   return (
-    <header className="z-10 bg-black/15 text-white shadow-md sticky top-0 left-0 right-0">
+    <header
+      className={`z-10 bg-black/15 text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
+    >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Логотип */}
         <Link to="/shop" className="flex items-center">
@@ -54,33 +62,33 @@ const Header = ({ onCartClick }: HeaderProps) => {
         </Link>
 
         {/* Основная навигация */}
-        <nav className="flex items-center gap-6">
-          <div className="hidden md:flex items-center gap-8">
+        <nav className="flex items-center gap-[35px]">
+          <div className="hidden md:flex items-center gap-[81px]">
             {/* Общие ссылки для всех */}
-            <NavLink to="#catalog" active={isActiveRoute('/shop')}>
+            <NavLink to="#catalog" active={isActiveRoute("/shop")}>
               Каталог
             </NavLink>
-            <NavLink to="/about" active={isActiveRoute('/about')}>
+            <NavLink to="/about" active={isActiveRoute("/about")}>
               Новинки
             </NavLink>
-            <NavLink to="/contacts" active={isActiveRoute('/contacts')}>
+            <NavLink to="/contacts" active={isActiveRoute("/contacts")}>
               Бренды
             </NavLink>
 
             {/* Ссылки только для продавцов */}
             {isSeller && (
               <>
-              <Link to="/seller/products">Мои товары</Link>
-                <NavLink 
-                  to="/seller/products" 
-                  active={isActiveRoute('/seller/products')}
+                <Link to="/seller/products">Мои товары</Link>
+                <NavLink
+                  to="/seller/products"
+                  active={isActiveRoute("/seller/products")}
                   icon={<Inventory fontSize="small" />}
                 >
                   Мои товары
                 </NavLink>
-                <NavLink 
-                  to="/seller/products/create" 
-                  active={isActiveRoute('/seller/products/create')}
+                <NavLink
+                  to="/seller/products/create"
+                  active={isActiveRoute("/seller/products/create")}
                   icon={<AddBox fontSize="small" />}
                 >
                   Добавить товар
@@ -90,17 +98,23 @@ const Header = ({ onCartClick }: HeaderProps) => {
           </div>
 
           <div className="flex items-center gap-6">
-            <NavIcon 
-              to="/favorites" 
+            <NavIcon
+              to="/favorites"
               icon={<Favorite fontSize="medium" />}
               badge={null}
             />
-            
-              <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {cartItemsCount}
-              </span>
-              <ShoppingCart fontSize="medium" />
 
+            <button
+              onClick={onCartClick}
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <ShoppingCart fontSize="medium" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
             <button
               className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
@@ -136,10 +150,10 @@ interface NavLinkProps {
 }
 
 const NavLink = ({ to, children, active = false, icon }: NavLinkProps) => (
-  <Link 
-    to={to} 
+  <Link
+    to={to}
     className={`flex items-center gap-1 text-lg hover:text-gray-300 transition-colors ${
-      active ? 'font-semibold text-white' : 'text-gray-200'
+      active ? "font-semibold text-white" : "text-gray-200"
     }`}
   >
     {icon && <span className="mr-1">{icon}</span>}
@@ -156,7 +170,7 @@ interface NavIconProps {
 
 const NavIcon = ({ icon, badge = null, to, onClick }: NavIconProps) => {
   const content = (
-    <button 
+    <button
       className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
       onClick={onClick}
     >
@@ -177,14 +191,14 @@ interface UserButtonProps {
 }
 
 const UserButton = ({ username }: UserButtonProps) => (
-  <Link 
-    to="/profile" 
+  <Link
+    to="/profile"
     className="flex items-center gap-2 hover:bg-white/10 px-3 py-1 rounded-full transition-colors"
   >
     <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-black font-medium">
-      {username?.charAt(0).toUpperCase() || 'U'}
+      {username?.charAt(0).toUpperCase() || "U"}
     </div>
-    <span className="hidden md:inline">{username || 'Профиль'}</span>
+    <span className="hidden md:inline">{username || "Профиль"}</span>
   </Link>
 );
 
