@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
-import { avatarSelector, usernameSelector } from "../../store/slices/user-slice";
+import {
+  avatarSelector,
+  usernameSelector,
+} from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
 import {
   cartItemsCountSelector,
@@ -92,25 +95,24 @@ const Header = ({ onCartClick }: HeaderProps) => {
             </button>
 
             <button
-              className="flex gap-3 p-2 text-xl rounded-full hover:bg-gray transition-colors"
+              className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
             >
-              <Link to="/profile">
+              <Link className="flex gap-3" to="/profile">
                 <div>{username}</div>
+                <Avatar
+                  src={
+                    (avatar && process.env.REACT_APP_API_BASE_URL + avatar) ||
+                    "/default-avatar.png"
+                  }
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    cursor: "pointer",
+                    mx: "auto",
+                  }}
+                />
               </Link>
-              <Avatar
-                src={
-                  (avatar &&
-                    process.env.REACT_APP_API_BASE_URL + avatar) ||
-                  "/default-avatar.png"
-                }
-                sx={{
-                  width: 32,
-                  height: 32,
-                  cursor: "pointer",
-                  mx: "auto",
-                }}
-              />
             </button>
           </div>
         </nav>
