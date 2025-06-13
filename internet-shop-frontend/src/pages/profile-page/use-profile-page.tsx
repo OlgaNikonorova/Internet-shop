@@ -9,7 +9,7 @@ import { profileSchema, ProfileFormData } from "./profile-validation";
 import UpdateUser from "../../store/models/user/update-user";
 import { useLogoutUserMutation } from "../../store/api/auth-api";
 import { useDispatch } from "react-redux";
-import { logout } from "../../store/slices/user-slice";
+import { logout, setAvatar } from "../../store/slices/user-slice";
 import { useUploadFileMutation } from "../../store/api/files-api";
 
 export const useProfilePage = () => {
@@ -100,6 +100,8 @@ export const useProfilePage = () => {
         id: user!.id,
         updateUser: { avatar: uploadResults[0].path },
       });
+
+      dispatch(setAvatar(uploadResults[0].path));
 
       refetch();
     } catch (err) {

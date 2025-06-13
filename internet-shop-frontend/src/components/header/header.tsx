@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
-import { usernameSelector } from "../../store/slices/user-slice";
+import { avatarSelector, usernameSelector } from "../../store/slices/user-slice";
 import { Favorite, ShoppingCart } from "@mui/icons-material";
 import {
   cartItemsCountSelector,
@@ -9,6 +9,7 @@ import {
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGetUserCartQuery } from "../../store/api/cart-api";
+import { Avatar } from "@mui/material";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -16,6 +17,7 @@ interface HeaderProps {
 
 const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
+  const avatar = useTypedSelector(avatarSelector);
   const cartItemsCount = useTypedSelector(cartItemsCountSelector);
   const dispatch = useDispatch();
   const { data: cart } = useGetUserCartQuery();
@@ -49,17 +51,29 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
         <nav className="flex items-center gap-[35px]">
           <div className="hidden md:flex items-center gap-[81px]">
-            <Link to="#catalog" className="text-xl hover:text-gray transition-colors">
+            <Link
+              to="/shop"
+              className="text-xl hover:text-gray transition-colors"
+            >
               Каталог
             </Link>
-            <Link to="/about" className="text-xl hover:text-gray transition-colors">
+            <Link
+              to="/about"
+              className="text-xl hover:text-gray transition-colors"
+            >
               Новинки
             </Link>
-            <Link to="/contacts" className="text-xl hover:text-gray transition-colors">
+            <Link
+              to="/contacts"
+              className="text-xl hover:text-gray transition-colors"
+            >
               Бренды
             </Link>
 
-            <Link to="/favorites" className="text-xl hover:text-gray transition-colors">
+            <Link
+              to="/favorites"
+              className="text-xl hover:text-gray transition-colors"
+            >
               <Favorite fontSize="medium" />
             </Link>
           </div>
@@ -78,12 +92,25 @@ const Header = ({ onCartClick }: HeaderProps) => {
             </button>
 
             <button
-              className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
+              className="flex gap-3 p-2 text-xl rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
             >
               <Link to="/profile">
                 <div>{username}</div>
               </Link>
+              <Avatar
+                src={
+                  (avatar &&
+                    process.env.REACT_APP_API_BASE_URL + avatar) ||
+                  "/default-avatar.png"
+                }
+                sx={{
+                  width: 32,
+                  height: 32,
+                  cursor: "pointer",
+                  mx: "auto",
+                }}
+              />
             </button>
           </div>
         </nav>
