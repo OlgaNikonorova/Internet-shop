@@ -21,21 +21,26 @@ import {
 } from "../../store/api/user-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import UpdateUser from "../../store/models/user/update-user";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { ColorButton } from "../../theme";
 import { ProfileFormData, profileSchema } from "./profile-validation";
 import { useForm } from "react-hook-form";
+import { useLogoutUserMutation } from "../../store/api/auth-api";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/slices/user-slice";
 
 const ProfilePage = () => {
   const { data: user, isLoading, error, refetch } = useGetMeQuery();
+  const dispatch = useDispatch();
   const [updateUser] = useUpdateUserByIdMutation();
   const [deleteUser] = useDeleteUserByIdMutation();
+  const [logoutUser] = useLogoutUserMutation();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/auth";
+  const handleLogout = async () => {
+    await logoutUser();
+    dispatch(logout());
   };
 
   const {
@@ -219,15 +224,20 @@ const ProfilePage = () => {
             >
               служба поддержки
             </Link>
-            <Box display="flex" justifyContent="flex-start" alignItems="center" sx={{mt: 2}}>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleLogout}
-              sx={{ width: "50%", py: 1 }}
+            <Box
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="center"
+              sx={{ mt: 2 }}
             >
-              Выйти из аккаунта
-            </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleLogout}
+                sx={{ width: "50%", py: 1 }}
+              >
+                Выйти из аккаунта
+              </Button>
             </Box>
           </Box>
         </Box>
