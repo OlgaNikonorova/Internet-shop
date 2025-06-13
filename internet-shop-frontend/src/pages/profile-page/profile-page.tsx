@@ -25,94 +25,29 @@ import { Link as RouterLink } from "react-router-dom";
 import { ColorButton } from "../../theme";
 import { ProfileFormData, profileSchema } from "./profile-validation";
 import { useForm } from "react-hook-form";
+import { useProfile } from "./use-profile-page";
 
 const ProfilePage = () => {
-  const { data: user, isLoading, error, refetch } = useGetMeQuery();
-  const [updateUser] = useUpdateUserByIdMutation();
-  const [deleteUser] = useDeleteUserByIdMutation();
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const {
+    user,
+    form: { register, handleSubmit, formState: { errors } },
+    avatarPreview,
+    isLoading,
+    error,
+    openDeleteDialog,
+    setOpenDeleteDialog,
+    handleUpdateProfile,
+    handleAvatarChange,
+  } = useProfile();
 
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/auth";
   };
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-  });
-
-  const handleUpdateProfile = async (updateData: UpdateUser) => {
-    if (!user) return;
-    try {
-      await updateUser({
-        id: user.id,
-        updateUser: updateData,
-      }).unwrap();
-      refetch();
-    } catch (err) {
-      console.error("Ошибка обновления профиля:", err);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    if (!user) return;
-    try {
-      await deleteUser(user.id).unwrap();
-      window.location.href = "/";
-    } catch (err) {
-      console.error("Ошибка удаления аккаунта:", err);
-    } finally {
-      setOpenDeleteDialog(false);
-    }
-  };
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-
-      reader.readAsDataURL(file);
-
-      const formData = new FormData();
-      formData.append("avatar", file);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        Ошибка загрузки данных пользователя
-      </Alert>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Alert severity="warning" sx={{ mt: 2 }}>
-        Пользователь не найден
-      </Alert>
-    );
-  }
-
+  if (isLoading) return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
+  if (error) return <Alert severity="error" sx={{ mt: 2 }}>Ошибка загрузки данных пользователя</Alert>;
+  if (!user) return <Alert severity="warning" sx={{ mt: 2 }}>Пользователь не найден</Alert>;
   return (
     <Box sx={{ bgcolor: "#fff", color: "#000", py: 6 }}>
       <Container sx={{ display: "flex", ml: 15, mr: 15, gap: 25 }}>
@@ -250,9 +185,12 @@ const ProfilePage = () => {
             личная информация
           </Typography>
 
+
+        <form onSubmit={handleSubmit(handleUpdateProfile)}>
           <Box sx={{ display: "grid", rowGap: 2.5, fontSize: 24 }}>
             <TextField
               label="Электронная почта"
+              {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
               variant="outlined"
@@ -284,6 +222,26 @@ const ProfilePage = () => {
                 },
                 "& .MuiInputLabel-root": {
                   fontSize: "18px", // размер текста у label
+                },
+              }}
+            />
+            <TextField
+              label="Пароль"
+              {...register("password")}
+              {...(errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              ))}
+              variant="outlined"
+              required
+              defaultValue={"********"}
+              sx={{
+                "& .MuiInputBase-input": {
+                  fontSize: "20px", 
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: "18px", 
                 },
               }}
             />
@@ -354,38 +312,17 @@ const ProfilePage = () => {
             <Box display="flex" justifyContent="center" alignItems="center">
               <ColorButton
                 variant="contained"
+                type="submit"
                 sx={{ px: 4, py: 1, width: "50%", mb: 2 }}
               >
                 Сохранить
               </ColorButton>
             </Box>
           </Box>
+          </form>
         </Box>
 
-        {/* Диалог удаления */}
-        <Dialog
-          open={openDeleteDialog}
-          onClose={() => setOpenDeleteDialog(false)}
-        >
-          <DialogTitle>Подтвердите удаление</DialogTitle>
-          <DialogContent>
-            <Typography>
-              Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя
-              отменить.
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenDeleteDialog(false)}>Отмена</Button>
-            <Button
-              onClick={handleDeleteAccount}
-              color="error"
-              variant="contained"
-            >
-              Удалить
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+        </Container>
     </Box>
   );
 };
