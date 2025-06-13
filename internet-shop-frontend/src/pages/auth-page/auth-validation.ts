@@ -28,13 +28,6 @@ export const registerSchema = loginSchema.extend({
       /^((8|\+374|\+994|\+995|\+375|\+7|\+380|\+38|\+996|\+998|\+993)[ ]?)?\(?\d{3,5}\)?[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}(([ ]?\d{1})?[ ]?\d{1})?$/,
       "Введите корректный номер телефона"
     ),
-  avatar: z
-    .string()
-    .url("Некорректный URL изображения")
-    .refine(
-      (value: string) => /\.(jpe?g|png|webp)$/i.test(value),
-      "Поддерживаются только форматы: JPG, PNG, WEBP"
-    ),
   role: z.nativeEnum(UserRole, {
     errorMap: () => ({ message: "Выберите корректную роль" }),
   }),

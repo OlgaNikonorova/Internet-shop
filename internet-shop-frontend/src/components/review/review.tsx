@@ -23,7 +23,9 @@ const Review = (props: ReviewProps) => {
           sx={{ width: 64, height: 64 }}
         />
         <div className="flex flex-col items-center">
-          <h5>{user?.name}</h5>
+          <h5 style={{ wordBreak: "break-word" }}>
+            {user?.name ?? `Пользователь ${review.id.replaceAll("-", "")}`}
+          </h5>
           <span className="text-xs text-gray">
             {format(new Date(review.createdAt), "dd.MM.yyyy")}
           </span>

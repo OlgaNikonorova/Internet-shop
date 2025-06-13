@@ -7,6 +7,5 @@ export default interface RegisterCredentials {
   name: string;
   address: string;
   phone: string;
-  avatar: string;
   role: UserRole;
 }

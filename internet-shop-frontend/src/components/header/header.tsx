@@ -1,7 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTypedSelector } from "../../store/hooks";
-import { usernameSelector, selectUserRole } from "../../store/slices/user-slice";
-import { Favorite, ShoppingCart, Dashboard, Inventory, AddBox } from "@mui/icons-material";
+import {
+  avatarSelector,
+  usernameSelector,
+  selectUserRole
+} from "../../store/slices/user-slice";
+import { AddBox, Favorite, Inventory, ShoppingCart } from "@mui/icons-material";
 import {
   cartItemsCountSelector,
   setCartItemsCount,
@@ -10,7 +14,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGetUserCartQuery } from "../../store/api/cart-api";
 import { UserRole } from "../../store/models/user/user-role";
-
+import { Avatar } from "@mui/material";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -19,6 +23,7 @@ interface HeaderProps {
 const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
   const userRole = useTypedSelector(selectUserRole);
+  const avatar = useTypedSelector(avatarSelector);
   const cartItemsCount = useTypedSelector(cartItemsCountSelector);
   const dispatch = useDispatch();
   const { data: cart } = useGetUserCartQuery();
@@ -84,7 +89,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
             )}
           </div>
 
-          {/* Иконки действий */}
           <div className="flex items-center gap-6">
             <NavIcon 
               to="/favorites" 
@@ -92,21 +96,37 @@ const Header = ({ onCartClick }: HeaderProps) => {
               badge={null}
             />
             
-            <NavIcon 
-              onClick={onCartClick}
-              icon={<ShoppingCart fontSize="medium" />}
-              badge={cartItemsCount}
-            />
-            
-            <UserButton username={username} />
+              <span className="absolute -top-1 -right-1 bg-red text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemsCount}
+              </span>
+              <ShoppingCart fontSize="medium" />
+
+            <button
+              className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
+              aria-label="Профиль"
+            >
+              <Link className="flex gap-3" to="/profile">
+                <div>{username}</div>
+                <Avatar
+                  src={
+                    (avatar && process.env.REACT_APP_API_BASE_URL + avatar) ||
+                    "/default-avatar.png"
+                  }
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    cursor: "pointer",
+                    mx: "auto",
+                  }}
+                />
+              </Link>
+            </button>
           </div>
         </nav>
       </div>
     </header>
   );
 };
-
-// Вспомогательные компоненты
 
 interface NavLinkProps {
   to: string;

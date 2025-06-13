@@ -6,22 +6,12 @@ export const filesApi = createApi({
   reducerPath: "filesApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    uploadFile: builder.mutation<FileUploadResult[], string[]>({
-      query: (images) => {
-        var bodyFormData = new FormData();
-
-        images.forEach((image) => {
-          bodyFormData.append("files", image);
-        });
-
+    uploadFile: builder.mutation<FileUploadResult[], FormData>({
+      query: (formData) => {
         return {
-          url: "/api/auth/register",
+          url: "/api/files/upload",
           method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data;",
-          },
-          body: bodyFormData,
-          formData: true,
+          body: formData,
         };
       },
     }),
