@@ -65,7 +65,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
         <nav className="flex items-center gap-[35px]">
           <div className="hidden md:flex items-center gap-[81px]">
             {/* Общие ссылки для всех */}
-            <NavLink to="#catalog" active={isActiveRoute("/shop")}>
+            <NavLink to="/shop" active={isActiveRoute("/shop")} >
               Каталог
             </NavLink>
             <NavLink to="/about" active={isActiveRoute("/about")}>
@@ -78,7 +78,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
             {/* Ссылки только для продавцов */}
             {isSeller && (
               <>
-                <Link to="/seller/products">Мои товары</Link>
                 <NavLink
                   to="/seller/products"
                   active={isActiveRoute("/seller/products")}
@@ -152,7 +151,7 @@ interface NavLinkProps {
 const NavLink = ({ to, children, active = false, icon }: NavLinkProps) => (
   <Link
     to={to}
-    className={`flex items-center gap-1 text-lg hover:text-gray-300 transition-colors ${
+    className={`flex items-center gap-1 text-xl hover:text-gray-300 transition-colors ${
       active ? "font-semibold text-white" : "text-gray-200"
     }`}
   >
@@ -175,31 +174,16 @@ const NavIcon = ({ icon, badge = null, to, onClick }: NavIconProps) => {
       onClick={onClick}
     >
       {badge !== null && badge > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <span className="absolute -top-1 -right-1 bg-red-500 text-xl rounded-full w-5 h-5 flex items-center justify-center">
           {badge}
         </span>
       )}
       {icon}
     </button>
-  );
+  );      
 
   return to ? <Link to={to}>{content}</Link> : content;
 };
 
-interface UserButtonProps {
-  username: string | null;
-}
-
-const UserButton = ({ username }: UserButtonProps) => (
-  <Link
-    to="/profile"
-    className="flex items-center gap-2 hover:bg-white/10 px-3 py-1 rounded-full transition-colors"
-  >
-    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-black font-medium">
-      {username?.charAt(0).toUpperCase() || "U"}
-    </div>
-    <span className="hidden md:inline">{username || "Профиль"}</span>
-  </Link>
-);
 
 export default Header;
