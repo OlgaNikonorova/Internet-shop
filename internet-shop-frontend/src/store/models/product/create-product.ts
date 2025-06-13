@@ -7,5 +7,5 @@ export default interface CreateProduct {
   category: string;
   status: ProductStatus;
   stock: number;
-  images?: File[];
+  images?: string[];
 }

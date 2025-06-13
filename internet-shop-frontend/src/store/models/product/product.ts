@@ -8,7 +8,7 @@ export default interface Product {
   category: string;
   status: ProductStatus;
   stock: number;
-  images?: string[];
+  images: string[];
   rating: number;
   reviewsCount: number;
   createdAt: Date;

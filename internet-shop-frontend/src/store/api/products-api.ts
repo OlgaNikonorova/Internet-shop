@@ -1,9 +1,11 @@
 import { baseQueryWithReauth } from "./base-query";
-import Product from "../models/product/product";
+
 import { createApi } from "@reduxjs/toolkit/query/react";
 import PaginatedProductsRequest from "../models/product/paginated-products-request";
 import CreateProduct from "../models/product/create-product";
 import ProductsPage from "../models/product/products-page";
+import Product from "../models/product/product";
+
 
 export const productsApi = createApi({
   reducerPath: "productsApi",
@@ -50,6 +52,24 @@ export const productsApi = createApi({
       query: () => ({
         url: "/api/products",
         method: "POST",
+      }),
+    }),
+
+    updateProduct: builder.mutation<
+      Product,
+      { id: string; data: Partial<Product> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/products/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+
+    deleteProduct: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/api/products/${id}`,
+        method: "DELETE",
       }),
     }),
   }),
