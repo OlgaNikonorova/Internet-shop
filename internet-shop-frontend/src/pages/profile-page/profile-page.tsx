@@ -10,9 +10,9 @@ import {
   TextField,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { ColorButton } from "../../theme";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
-import { useProfile } from "./use-profile-page";
+import { useProfilePage } from "./use-profile-page";
 
 const ProfilePage = () => {
   const {
@@ -22,15 +22,12 @@ const ProfilePage = () => {
       handleSubmit,
       formState: { errors },
     },
-    avatarPreview,
     isLoading,
     error,
-    openDeleteDialog,
-    setOpenDeleteDialog,
     handleUpdateProfile,
     handleAvatarChange,
-    handleLogout
-  } = useProfile();
+    handleLogout,
+  } = useProfilePage();
 
   if (isLoading)
     return (
@@ -38,18 +35,21 @@ const ProfilePage = () => {
         <CircularProgress />
       </Box>
     );
+
   if (error)
     return (
       <Alert severity="error" sx={{ mt: 2 }}>
         Ошибка загрузки данных пользователя
       </Alert>
     );
+
   if (!user)
     return (
       <Alert severity="warning" sx={{ mt: 2 }}>
         Пользователь не найден
       </Alert>
     );
+
   return (
     <Box sx={{ bgcolor: "#fff", color: "#000", py: 6 }}>
       <Container sx={{ display: "flex", ml: 15, mr: 15, gap: 25 }}>
@@ -82,10 +82,41 @@ const ProfilePage = () => {
                   style={{ display: "none" }}
                   onChange={handleAvatarChange}
                 />
-                <Avatar
-                  src={avatarPreview || user.avatar || "/default-avatar.png"}
-                  sx={{ width: 64, height: 64, cursor: "pointer", mx: "auto" }}
-                />
+                <Box
+                  sx={{
+                    position: "relative",
+                  }}
+                >
+                  <Avatar
+                    src={
+                      (user.avatar &&
+                        process.env.REACT_APP_API_BASE_URL + user.avatar) ||
+                      "/default-avatar.png"
+                    }
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      cursor: "pointer",
+                      mx: "auto",
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      right: -5,
+                      bottom: -5,
+                      backgroundColor: "white",
+                      borderRadius: "50%",
+                      padding: '2px',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <BorderColorIcon sx={{ fontSize: 25 }} />
+                  </Box>
+                </Box>
               </label>
             </Box>
           </Box>
@@ -106,7 +137,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black" }}
             >
-              мои покупки
+              Мои покупки
             </Link>
             <Link
               component={RouterLink}
@@ -114,7 +145,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black" }}
             >
-              избранное
+              Избранное
             </Link>
             <Link
               component={RouterLink}
@@ -122,7 +153,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black" }}
             >
-              мои карты
+              Мои карты
             </Link>
             <Link
               component={RouterLink}
@@ -130,7 +161,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black" }}
             >
-              мои адреса
+              Мои адреса
             </Link>
             <Link
               component={RouterLink}
@@ -138,7 +169,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black" }}
             >
-              настройки уведомлений
+              Настройки уведомлений
             </Link>
             <Link
               component={RouterLink}
@@ -154,7 +185,7 @@ const ProfilePage = () => {
               underline="none"
               sx={{ color: "black", mt: 2 }}
             >
-              служба поддержки
+              Служба поддержки
             </Link>
             <Box
               display="flex"
@@ -181,7 +212,7 @@ const ProfilePage = () => {
             sx={{ fontWeight: "bold", mb: 4.75 }}
             gutterBottom
           >
-            мой профиль
+            Мой профиль
           </Typography>
           <Typography
             variant="h3"
@@ -189,89 +220,49 @@ const ProfilePage = () => {
             gutterBottom
             sx={{ mb: 3.5 }}
           >
-            личная информация
+            Личная информация
           </Typography>
 
           <form onSubmit={handleSubmit(handleUpdateProfile)}>
             <Box sx={{ display: "grid", rowGap: 2.5, fontSize: 24 }}>
               <TextField
-                label="Электронная почта"
+                label="Email"
+                fullWidth
                 {...register("email")}
                 error={!!errors.email}
-                helperText={errors.email?.message}
-                variant="outlined"
-                required
-                defaultValue={user.email}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px", // размер текста в поле ввода
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px", // размер текста у label
-                  },
-                }}
+                helperText={errors.email?.message?.toString()}
               />
+
               <TextField
-                label="Имя"
+                label="Логин"
+                fullWidth
                 {...register("username")}
-                {...(errors.username && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.username.message}
-                  </p>
-                ))}
-                variant="outlined"
-                required
-                defaultValue={user.name || "—"}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px", // размер текста в поле ввода
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px", // размер текста у label
-                  },
-                }}
+                error={!!errors.username}
+                helperText={errors.username?.message?.toString()}
               />
+
               <TextField
                 label="Пароль"
+                type="password"
+                fullWidth
                 {...register("password")}
-                {...(errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.password.message}
-                  </p>
-                ))}
-                variant="outlined"
-                required
-                defaultValue={"********"}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px",
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px",
-                  },
-                }}
+                error={!!errors.password}
+                helperText={errors.password?.message?.toString()}
+                defaultValue="*********"
               />
+
               <TextField
                 label="Адрес"
+                fullWidth
                 {...register("address")}
                 {...(errors.address && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.address.message}
                   </p>
                 ))}
-                variant="outlined"
-                required
-                defaultValue={user.address || "—"}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px", // размер текста в поле ввода
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px", // размер текста у label
-                  },
-                }}
               />
               <TextField
+                fullWidth
                 label="Номер телефона"
                 {...register("phone")}
                 {...(errors.phone && (
@@ -279,50 +270,19 @@ const ProfilePage = () => {
                     {errors.phone.message}
                   </p>
                 ))}
-                variant="outlined"
-                required
-                defaultValue={user.phone || "—"}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px", // размер текста в поле ввода
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px", // размер текста у label
-                  },
-                }}
-              />
-              <TextField
-                label="Роль"
-                variant="outlined"
-                disabled
-                defaultValue={user.role || "—"}
-                sx={{
-                  "& .MuiInputBase-input": {
-                    fontSize: "20px", // размер текста в поле ввода
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "18px", // размер текста у label
-                  },
-                }}
+                defaultValue={user.phone}
               />
             </Box>
 
             <Box sx={{ mt: 4 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <input type="checkbox" style={{ marginRight: 8 }} />
-                <Typography variant="body1">
-                  Я даю согласие на обработку своих персональных данных в
-                  соответствии с Политикой обработки персональных данных
-                </Typography>
-              </Box>
               <Box display="flex" justifyContent="center" alignItems="center">
-                <ColorButton
+                <Button
                   variant="contained"
                   type="submit"
                   sx={{ px: 4, py: 1, width: "50%", mb: 2 }}
                 >
                   Сохранить
-                </ColorButton>
+                </Button>
               </Box>
             </Box>
           </form>

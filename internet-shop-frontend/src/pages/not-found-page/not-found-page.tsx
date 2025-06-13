@@ -1,6 +1,5 @@
 import { Box, Typography, Button, Container, Paper } from "@mui/material";
 import { Link } from "react-router-dom";
-import { ColorButton } from "../../theme";
 
 const NotFoundPage = () => {
   return (
@@ -35,7 +34,7 @@ const NotFoundPage = () => {
           </Typography>
 
       <Link to="/shop">
-          <ColorButton
+          <Button
             variant="contained"
             sx={{
               mt: 2,
@@ -43,7 +42,7 @@ const NotFoundPage = () => {
             }}
           >
             В главное меню
-          </ColorButton>
+          </Button>
           </Link>
         </Paper>
 

@@ -149,31 +149,6 @@ export class UsersController {
     const user = await this._usersService.findById(id);
     return this.mapToResponseDto(user);
   }
-  
-// @Patch('me')
-// @ApiOperation({ summary: 'Update current user profile' })
-// @ApiBody({ type: UserUpdateDto })
-// @ApiResponse({
-//   status: 200,
-//   description: 'User updated successfully',
-//   type: UserResponseDto,
-// })
-// @ApiResponse({ status: 401, description: 'Unauthorized' })
-// @ApiResponse({ status: 403, description: 'Forbidden' })
-// @ApiResponse({ status: 404, description: 'User not found' })
-// @ApiResponse({ status: 500, description: 'Internal server error' })
-// @ApiBearerAuth()
-// public async updateMe(
-//   @GetUserId('userId') userId: string,
-//   @Body() updateUserDto: UserUpdateDto,
-// ): Promise<UserResponseDto> {
-
-//   delete updateUserDto.role;
-//   delete updateUserDto.status;
-  
-//   const updatedUser = await this._usersService.update(userId, updateUserDto);
-//   return this.mapToResponseDto(updatedUser);
-// }
 
   @Patch(':id/role')
   @UseGuards(RolesGuard)

@@ -1,5 +1,6 @@
 import { UserDto } from '@dto/users/user.dto';
 import { PickType } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class RegisterDto extends PickType(UserDto, [
   'username',
@@ -10,4 +11,7 @@ export class RegisterDto extends PickType(UserDto, [
   'password',
   'avatar',
   'role',
-] as const) {}
+] as const) {
+  @IsOptional()
+  avatar?: string;
+}

@@ -1,4 +1,4 @@
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSchema, FormData } from "./auth-validation";
 import { useAuthPage } from "./use-auth-page";
@@ -16,7 +16,6 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import { useState } from "react";
 
 const AuthPage = () => {
   const { mode, error, onSubmit, toggleMode } = useAuthPage();
@@ -37,8 +36,6 @@ const AuthPage = () => {
   };
 
   const isLogin = mode === AuthMode.Login;
-
-  const [selectedValue, setSelectedValue] = useState(UserRole.USER);
 
   return (
     <Box
@@ -114,32 +111,9 @@ const AuthPage = () => {
                 helperText={errors.phone?.message?.toString()}
               />
 
-              <TextField
-                label="Аватар (URL)"
-                fullWidth
-                margin="normal"
-                {...register("avatar")}
-                error={!!errors.avatar}
-                helperText={errors.avatar?.message?.toString()}
-              />
-
               <FormControl fullWidth margin="normal" error={!!errors.role}>
                 <InputLabel id="role-label">Роль</InputLabel>
-                <Select
-                  labelId="role-label"
-                  label="Роль"
-                  {...register("role")}
-                  sx={{
-                    alignItems: "center", 
-                    ".MuiSelect-select": {
-                      alignItems: "center",
-                      backgroundColor: selectedValue ? "#e3f2fd" : "white",
-                    },
-                    "&.Mui-focused .MuiSelect-select": {
-                      backgroundColor: "#e3f2fd", 
-                    },
-                  }}
-                >
+                <Select labelId="role-label" label="Роль" {...register("role")}>
                   <MenuItem value={UserRole.USER} sx={{ fontSize: 20 }}>
                     Покупатель
                   </MenuItem>
@@ -151,6 +125,14 @@ const AuthPage = () => {
                   {errors.role?.message?.toString()}
                 </Typography>
               </FormControl>
+
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <input type="checkbox" style={{ marginRight: 8 }} />
+                <Typography variant="body1">
+                  Я даю согласие на обработку своих персональных данных в
+                  соответствии с Политикой обработки персональных данных
+                </Typography>
+              </Box>
             </>
           )}
 
