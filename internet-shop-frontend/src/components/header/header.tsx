@@ -15,8 +15,8 @@ import { useDispatch } from "react-redux";
 import { useGetUserCartQuery } from "../../store/api/cart-api";
 import { UserRole } from "../../store/models/user/user-role";
 import { Avatar } from "@mui/material";
-import NavIcon from "../nav/nav-icon";
 import NavLink from "../nav/nav-link";
+import NavIcon from "../nav/nav-icon";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -78,7 +78,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
             {/* Ссылки только для продавцов */}
             {isSeller && (
               <>
-                <Link to="/seller/products">Мои товары</Link>
                 <NavLink
                   to="/seller/products"
                   active={isActiveRoute("/seller/products")}
