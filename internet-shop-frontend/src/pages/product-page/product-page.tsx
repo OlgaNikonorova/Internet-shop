@@ -38,7 +38,7 @@ const ProductPage = () => {
 
   if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
     return (
-      <div className="text-center py-12 text-white">
+      <div className="text-center mt-10 py-12 text-white">
         <h2 className="text-2xl font-semibold text-gray-700">
           Товар не найден
         </h2>

@@ -67,19 +67,7 @@ const CreateProductPage = () => {
       )}
 
       <Box className="bg-white p-6 rounded-lg shadow-md">
-        <ProductForm
-          key={formKey}
-          onSubmit={handleSubmit}
-          initialValues={{
-            name: "",
-            description: "",
-            price: 0,
-            category: "",
-            status: ProductStatus.DRAFT,
-            stock: 0,
-            images: [],
-          }}
-        />
+        <ProductForm key={formKey} onSubmit={handleSubmit} />
       </Box>
 
       {/* Модальное окно успешного добавления товара */}

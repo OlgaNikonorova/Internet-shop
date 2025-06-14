@@ -18,8 +18,9 @@ const ProductCard = (props: ProductCardProps) => {
 
   return (
     <div
-      className="bg-white border border-white rounded-2xl p-4 shadow-md flex flex-col justify-between hover:cursor-pointer"
+      className="bg-white border border-white rounded-2xl p-4 shadow-md flex flex-col justify-between cursor-pointer"
       onClick={handleToProductClick}
+      style={{ height: "100%" }}
     >
       <img
         src={
@@ -33,7 +34,7 @@ const ProductCard = (props: ProductCardProps) => {
       />
 
       <h3 className="text-lg font-bold text-primary mb-1">{name}</h3>
-      <p className="text-sm text-gray mb-2">{description}</p>
+      <p className="text-sm text-gray mb-2 break-all">{description}</p>
       <p className="text-primary font-semibold mb-4">{price} ₽</p>
     </div>
   );

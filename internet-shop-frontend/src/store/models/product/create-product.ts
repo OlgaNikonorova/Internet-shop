@@ -5,7 +5,7 @@ export default interface CreateProduct {
   description: string;
   price: number;
   category: string;
-  status: ProductStatus;
+  status?: ProductStatus;
   stock: number;
   images?: string[];
 }
