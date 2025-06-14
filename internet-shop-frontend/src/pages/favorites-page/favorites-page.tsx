@@ -7,12 +7,13 @@ import {
 } from "../../store/api/favorites-api";
 import { Order } from "../../store/models/order";
 import PaginatedFavoriteProductsRequest from "../../store/models/favorites/paginated-favorite-products-request";
-import ProductCard from "../../components/product-card/product-card";
+
 import CartItem from "../../store/models/cart/cart-item";
 import Product from "../../store/models/product/product";
 
 import { Select, MenuItem } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import ProductCard from "../../components/product-card/product-card";
 
 const FavoritesPage = () => {
   const [pageSize, setPageSize] = useState(8);
@@ -132,6 +133,8 @@ const FavoritesPage = () => {
                 await removeFromFavorites(product.id);
                 refetch();
               }}
+              refetchFavorites={() => {return;}}
+              refetchCart={() => {return;}}
             />
           ))}
         </div>
