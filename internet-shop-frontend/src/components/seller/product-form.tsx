@@ -1,104 +1,194 @@
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, Grid, Typography, Paper } from "@mui/material";
-import Product from "../../store/models/product/product";
-
-
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Paper,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Grid,
+} from "@mui/material";
+import { ProductStatus } from "../../store/models/product/product-status";
+import CreateProduct from "../../store/models/product/create-product";
+import { ProductCategory } from "../../store/models/product/product-category";
 
 interface ProductFormProps {
-  onSubmit: (data: Product) => void;
-  initialValues?: Partial<Product>;
+  onSubmit: (data: CreateProduct) => void;
+  initialValues?: Partial<CreateProduct>;
+  isLoading?: boolean;
 }
 
-const ProductForm = ({ onSubmit, initialValues }: ProductFormProps) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<Product>({
-    defaultValues: initialValues
+const ProductForm = ({
+  onSubmit,
+  initialValues,
+  isLoading,
+}: ProductFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateProduct>({
+    defaultValues: {
+      status: ProductStatus.Активный,
+      stock: 0,
+      images: [],
+      ...initialValues,
+    },
   });
 
   return (
-    <Paper className="p-6 shadow-lg">
+    <Paper
+      className="p-6"
+      sx={{
+        backgroundColor: "white",
+        boxShadow: 3,
+      }}
+    >
       <Typography variant="h5" className="mb-6 text-center font-bold">
-        {initialValues ? "Edit Product" : "Create New Product"}
+        {initialValues ? "Новый товар" : "Редактировать товар"}
       </Typography>
-      
-      <Box 
-        component="form" 
-        onSubmit={handleSubmit(onSubmit)} 
-        className="w-full max-w-2xl mx-auto"
+
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-2xl mx-auto backround-white"
       >
-        <Grid container spacing={3}>
-          <Grid container>
+        <Box mb={3}>
+          <TextField
+            fullWidth
+            label="Название товара"
+            variant="outlined"
+            {...register("name", {
+              required: "Добавьте цназвание товара",
+              minLength: { value: 3, message: "Минимум 3 символа" },
+            })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
+          />
+        </Box>
+
+        <Box mb={3}>
+          <TextField
+            fullWidth
+            label="Описание"
+            variant="outlined"
+            multiline
+            rows={4}
+            {...register("description", {
+              required: "Добавьте описание товара",
+              minLength: { value: 10, message: "Минимум 10 символов" },
+            })}
+            error={!!errors.description}
+            helperText={errors.description?.message}
+          />
+        </Box>
+
+        <Box display="flex" gap={2} mb={3}>
+          <Box flex={1}>
             <TextField
               fullWidth
-              label="Product Name"
-              variant="outlined"
-              className="bg-white rounded-lg"
-              {...register("name", { required: "Product name is required" })}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-            />
-          </Grid>
-          
-          <Grid container>
-            <TextField
-              fullWidth
-              label="Price"
+              label="Цена, ₽"
               type="number"
               variant="outlined"
-              className="bg-white rounded-lg"
-              {...register("price", { 
-                required: "Price is required",
-                min: { value: 0.01, message: "Price must be greater than 0" }
+              inputProps={{ step: "0.01", min: "0.01" }}
+              {...register("price", {
+                required: "Добавьте цену товара",
+                min: { value: 0.01, message: "Цена должна быть больше 0" },
+                valueAsNumber: true,
               })}
               error={!!errors.price}
               helperText={errors.price?.message}
             />
-          </Grid>
-          
-          <Grid container>
+          </Box>
+          <Box flex={1}>
             <TextField
               fullWidth
-              label="Category"
+              label="Количество в продаже"
+              type="number"
               variant="outlined"
-              className="bg-white rounded-lg"
-              {...register("category", { required: "Category is required" })}
-              error={!!errors.category}
-              helperText={errors.category?.message}
+              inputProps={{ min: "0" }}
+              {...register("stock", {
+                required: "Добавьте количество товара в продаже",
+                min: {
+                  value: 0,
+                  message: "Количество товара должно быть больше или равно 0",
+                },
+                valueAsNumber: true,
+              })}
+              error={!!errors.stock}
+              helperText={errors.stock?.message}
             />
-          </Grid>
-          
-          <Grid container>
-            <TextField
-              fullWidth
-              label="Description"
-              variant="outlined"
-              multiline
-              rows={4}
-              className="bg-white rounded-lg"
-              {...register("description")}
-            />
-          </Grid>
-          
-          <Grid container>
-            <TextField
-              fullWidth
-              label="Image URL"
-              variant="outlined"
-              className="bg-white rounded-lg"
-              {...register("images.0")}
-              placeholder="https://example.com/product.jpg"
-            />
-          </Grid>
-          
-          <Grid container className="flex justify-end">
-            <Button 
-              type="submit" 
-              variant="contained" 
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg shadow-md transition-colors"
+          </Box>
+        </Box>
+
+        <Box display="flex" gap={2} mb={3}>
+          <Box flex={1}>
+            <FormControl fullWidth error={!!errors.category}>
+              <InputLabel>Категория</InputLabel>
+              <Select
+                label="Категория"
+                {...register("category", {
+                  required: "Добавьте категорию товара",
+                  validate: (value: string) =>
+                    Object.values(ProductCategory).includes(
+                      value as ProductCategory
+                    ) || "Invalid category",
+                })}
+              >
+                {Object.entries(ProductStatus).map(([key, value]) => (
+                  <MenuItem key={value} value={value}>
+                    {key}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>{errors.category?.message}</FormHelperText>
+            </FormControl>
+          </Box>
+          <Box flex={1}>
+            <FormControl fullWidth error={!!errors.status}>
+              <InputLabel>Статус товара</InputLabel>
+              <Select
+                label="Статус товара"
+                {...register("status", {
+                  required: "Добавьте статус товара",
+                  validate: (value) =>
+                    Object.values(ProductStatus).includes(value) ||
+                    "Invalid status",
+                })}
+              >
+                {Object.values(ProductStatus).map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>{errors.status?.message}</FormHelperText>
+            </FormControl>
+          </Box>
+          <Box style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isLoading}
+              sx={{
+                bgcolor: "primary.main",
+                "&:hover": { bgcolor: "primary.dark" },
+                px: 6,
+                py: 2,
+              }}
             >
-              {initialValues ? "Update Product" : "Create Product"}
+              {isLoading
+                ? "Создание..."
+                : initialValues
+                ? "Создать товар"
+                : "Сохранить изменения"}
             </Button>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
     </Paper>
   );

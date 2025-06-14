@@ -28,6 +28,8 @@ export const useAuthPage = () => {
         throw new Error();
       }
 
+      localStorage.setItem('token', response.accessToken);
+
       dispatch(
         login({
           username: data.username,

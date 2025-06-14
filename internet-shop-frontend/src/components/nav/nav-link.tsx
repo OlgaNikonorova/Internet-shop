@@ -11,7 +11,7 @@ export interface NavLinkProps {
 const NavLink = ({ to, children, active = false, icon }: NavLinkProps) => (
   <Link
     to={to}
-    className={`flex items-center gap-1 text-lg hover:text-gray-300 transition-colors ${
+    className={`flex items-center gap-1 text-xl hover:text-gray-300 transition-colors ${
       active ? "font-bold text-white" : "text-gray-200"
     }`}
   >
