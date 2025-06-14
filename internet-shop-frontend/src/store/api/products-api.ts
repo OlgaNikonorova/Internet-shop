@@ -6,7 +6,6 @@ import CreateProduct from "../models/product/create-product";
 import ProductsPage from "../models/product/products-page";
 import Product from "../models/product/product";
 
-
 export const productsApi = createApi({
   reducerPath: "productsApi",
   baseQuery: baseQueryWithReauth,
@@ -49,10 +48,10 @@ export const productsApi = createApi({
     ),
 
     createProduct: builder.mutation<Product, CreateProduct>({
-      query: () => ({
+      query: (body) => ({
         url: "/api/products",
         method: "POST",
-        body: "body",
+        body: body,
       }),
     }),
 

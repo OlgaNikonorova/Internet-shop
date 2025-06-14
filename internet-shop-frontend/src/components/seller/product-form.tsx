@@ -10,11 +10,10 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  Grid,
 } from "@mui/material";
-import { ProductStatus } from "../../store/models/product/product-status";
+import { convertProductStatusToRussian, ProductStatus } from "../../store/models/product/product-status";
 import CreateProduct from "../../store/models/product/create-product";
-import { ProductCategory } from "../../store/models/product/product-category";
+import { convertProductCategoryToRussian, ProductCategory } from "../../store/models/product/product-category";
 
 interface ProductFormProps {
   onSubmit: (data: CreateProduct) => void;
@@ -33,7 +32,7 @@ const ProductForm = ({
     formState: { errors },
   } = useForm<CreateProduct>({
     defaultValues: {
-      status: ProductStatus.Активный,
+      status: ProductStatus.DRAFT,
       stock: 0,
       images: [],
       ...initialValues,
@@ -139,9 +138,9 @@ const ProductForm = ({
                     ) || "Invalid category",
                 })}
               >
-                {Object.entries(ProductStatus).map(([key, value]) => (
+                {Object.values(ProductCategory).map((value) => (
                   <MenuItem key={value} value={value}>
-                    {key}
+                    {convertProductCategoryToRussian(value)}
                   </MenuItem>
                 ))}
               </Select>
@@ -160,9 +159,9 @@ const ProductForm = ({
                     "Invalid status",
                 })}
               >
-                {Object.values(ProductStatus).map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {status}
+                {Object.values(ProductStatus).map((value) => (
+                  <MenuItem key={value} value={value}>
+                    {convertProductStatusToRussian(value)}
                   </MenuItem>
                 ))}
               </Select>

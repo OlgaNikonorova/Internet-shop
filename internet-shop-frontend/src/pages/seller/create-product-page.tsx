@@ -16,8 +16,6 @@ import { useState } from "react";
 import ProductForm from "../../components/seller/product-form";
 import CreateProduct from "../../store/models/product/create-product";
 import { ProductStatus } from "../../store/models/product/product-status";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import { CheckCircle } from "@mui/icons-material";
 
 const CreateProductPage = () => {
@@ -26,7 +24,6 @@ const CreateProductPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const { accessToken } = useSelector((state: RootState) => state.user);
 
   const refreshForm = () => {
     setFormKey((prevKey) => prevKey + 1);
@@ -34,43 +31,11 @@ const CreateProductPage = () => {
 
   const handleSubmit = async (productData: CreateProduct) => {
     try {
-      // Валидация перед отправкой
-      if (
-        !productData.name ||
-        !productData.description ||
-        productData.price <= 0
-      ) {
-        throw new Error("Please fill all required fields");
-      }
-
-      const jsonData = JSON.stringify({
-        name: productData.name,
-        description: productData.description,
-        price: Number(productData.price),
-        category: productData.category || "decorative cosmetics",
-        status: productData.status || ProductStatus.Активный,
-        stock: Number(productData.stock) || 0,
-        images: productData.images || [],
-      });
-
-      const response = await fetch("http://localhost:3000/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: jsonData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Server error");
-      }
-
+      await createProduct(productData).unwrap();
       setSuccessModalOpen(true);
     } catch (err) {
-      console.error("Error:", err);
-      setError(err instanceof Error ? err.message : "Failed to create product");
+      console.error(err);
+      setError("Не удалось создать товар");
     }
   };
 
@@ -81,7 +46,10 @@ const CreateProductPage = () => {
 
   return (
     <Container maxWidth="md" className="py-8">
-      <Box className="mb-6" sx = {{display: "flex", justifyContent: "center", alignItems: "center"}}>
+      <Box
+        className="mb-6"
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
         <Typography
           variant="h4"
           component="h1"
@@ -107,7 +75,7 @@ const CreateProductPage = () => {
             description: "",
             price: 0,
             category: "",
-            status: ProductStatus.Активный,
+            status: ProductStatus.DRAFT,
             stock: 0,
             images: [],
           }}
