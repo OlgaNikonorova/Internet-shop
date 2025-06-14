@@ -17,6 +17,7 @@ import NotFoundPage from "./pages/not-found-page/not-found-page";
 import CartDrawer from "./components/cart/cart-drawer";
 import { useState } from "react";
 import CreateProductPage from "./pages/seller/create-product-page";
+import { UserRole } from "./store/models/user/user-role";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -42,10 +43,6 @@ const protectedRoutes: RouteObject[] = [
     path: "/product/:id",
     element: <ProductPage />,
   },
-  {
-    path: "/seller/products/create", 
-    element: <CreateProductPage />,
-  },
 ];
 
 const routes: RouteObject[] = [
@@ -63,6 +60,17 @@ const routes: RouteObject[] = [
       {
         element: <ProtectedLayout />,
         children: protectedRoutes,
+      },
+      {
+        element: (
+          <ProtectedLayout allowedRoles={[UserRole.SELLER, UserRole.ADMIN]} />
+        ),
+        children: [
+          {
+            path: "/seller/products/create",
+            element: <CreateProductPage />,
+          },
+        ],
       },
       {
         path: "*",
