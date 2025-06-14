@@ -1,5 +1,6 @@
 import { Order } from "../order";
 import Product from "./product";
+import { ProductCategory } from "./product-category";
 import { ProductStatus } from "./product-status";
 
 export default interface PaginatedProductsRequest {
@@ -13,7 +14,7 @@ export default interface PaginatedProductsRequest {
   reviewsCountTo?: number;
   ratingFrom?: number;
   ratingTo?: number;
-  category?: string;
+  category?: ProductCategory;
   status?: ProductStatus;
   createdDateFrom?: Date;
   createdDateTo?: Date;

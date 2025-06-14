@@ -10,34 +10,78 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  IconButton,
 } from "@mui/material";
-import { convertProductStatusToRussian, ProductStatus } from "../../store/models/product/product-status";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import CreateProduct from "../../store/models/product/create-product";
-import { convertProductCategoryToRussian, ProductCategory } from "../../store/models/product/product-category";
+import {
+  convertProductCategoryToRussian,
+  ProductCategory,
+} from "../../store/models/product/product-category";
+import { useUploadFileMutation } from "../../store/api/files-api";
 
 interface ProductFormProps {
   onSubmit: (data: CreateProduct) => void;
-  initialValues?: Partial<CreateProduct>;
   isLoading?: boolean;
 }
 
-const ProductForm = ({
-  onSubmit,
-  initialValues,
-  isLoading,
-}: ProductFormProps) => {
+const ProductForm = ({ onSubmit, isLoading }: ProductFormProps) => {
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+
   const {
+    setValue,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateProduct>({
     defaultValues: {
-      status: ProductStatus.DRAFT,
       stock: 0,
-      images: [],
-      ...initialValues,
+      images: uploadedImages,
     },
   });
+
+  const [uploadFile, { isLoading: isUploading }] = useUploadFileMutation();
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      try {
+        setUploadError(null);
+        const formData = new FormData();
+        acceptedFiles.forEach((file) => {
+          formData.append("files", file);
+        });
+
+        const result = await uploadFile(formData).unwrap();
+        const newImageUrls = result.map((result) => result.path);
+
+        setUploadedImages((prev) => [...prev, ...newImageUrls]);
+        setValue("images", [...uploadedImages, ...newImageUrls]);
+      } catch (err) {
+        setUploadError("Ошибка при загрузке файлов. Попробуйте снова.");
+        console.error("Upload error:", err);
+      }
+    },
+    [uploadFile, uploadedImages, setValue]
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".webp"],
+    },
+    maxFiles: 10,
+    multiple: true,
+  });
+
+  const removeImage = (index: number) => {
+    const newImages = [...uploadedImages];
+    newImages.splice(index, 1);
+    setUploadedImages(newImages);
+    setValue("images", newImages);
+  };
 
   return (
     <Paper
@@ -47,8 +91,12 @@ const ProductForm = ({
         boxShadow: 3,
       }}
     >
-      <Typography variant="h5" className="mb-6 text-center font-bold">
-        {initialValues ? "Новый товар" : "Редактировать товар"}
+      <Typography
+        variant="h5"
+        style={{ marginBottom: "20px", fontWeight: "bold" }}
+        className="text-center font-bold"
+      >
+        Новый товар
       </Typography>
 
       <Box
@@ -109,7 +157,6 @@ const ProductForm = ({
               label="Количество в продаже"
               type="number"
               variant="outlined"
-              inputProps={{ min: "0" }}
               {...register("stock", {
                 required: "Добавьте количество товара в продаже",
                 min: {
@@ -147,7 +194,7 @@ const ProductForm = ({
               <FormHelperText>{errors.category?.message}</FormHelperText>
             </FormControl>
           </Box>
-          <Box flex={1}>
+          {/* <Box flex={1}>
             <FormControl fullWidth error={!!errors.status}>
               <InputLabel>Статус товара</InputLabel>
               <Select
@@ -167,26 +214,113 @@ const ProductForm = ({
               </Select>
               <FormHelperText>{errors.status?.message}</FormHelperText>
             </FormControl>
+          </Box> */}
+        </Box>
+        <Box mb={3}>
+          <Typography variant="subtitle1" gutterBottom>
+            Фотографии товара
+          </Typography>
+
+          <Box
+            {...getRootProps()}
+            sx={{
+              border: "1px dashed",
+              borderColor: isDragActive ? "primary.main" : "grey.400",
+              borderRadius: 1,
+              p: 3,
+              textAlign: "center",
+              cursor: "pointer",
+              mb: 2,
+              backgroundColor: isDragActive
+                ? "action.hover"
+                : "background.paper",
+            }}
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <Typography>Перетащите файлы сюда...</Typography>
+            ) : (
+              <Typography>
+                Перетащите сюда фотографии или кликните для выбора
+              </Typography>
+            )}
+            <Typography variant="caption" color="text.secondary">
+              (Поддерживаются JPG, PNG, WEBP. Максимум 10 файлов)
+            </Typography>
           </Box>
-          <Box style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={isLoading}
-              sx={{
-                bgcolor: "primary.main",
-                "&:hover": { bgcolor: "primary.dark" },
-                px: 6,
-                py: 2,
-              }}
+
+          {uploadError && (
+            <Typography
+              color="error"
+              variant="caption"
+              display="block"
+              gutterBottom
             >
-              {isLoading
-                ? "Создание..."
-                : initialValues
-                ? "Создать товар"
-                : "Сохранить изменения"}
-            </Button>
-          </Box>
+              {uploadError}
+            </Typography>
+          )}
+
+          {isUploading && (
+            <Typography variant="caption" display="block" gutterBottom>
+              Загрузка файлов...
+            </Typography>
+          )}
+
+          {uploadedImages.length > 0 && (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 2 }}>
+              {uploadedImages.map((image, index) => (
+                <Box
+                  key={index}
+                  sx={{ position: "relative", width: 100, height: 100 }}
+                >
+                  <img
+                    src={process.env.REACT_APP_API_BASE_URL + image}
+                    alt={`Preview ${index}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: 4,
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      width: "20px",
+                      height: "20px",
+                      right: 0,
+                      color: "error.main",
+                      backgroundColor: "background.paper",
+                      "&:hover": {
+                        backgroundColor: "error.light",
+                        color: "white",
+                      },
+                    }}
+                    onClick={() => removeImage(index)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+        <Box style={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isLoading}
+            sx={{
+              bgcolor: "primary.main",
+              "&:hover": { bgcolor: "primary.dark" },
+              px: 6,
+              py: 2,
+            }}
+          >
+            {isLoading ? "Создание..." : "Создать товар"}
+          </Button>
         </Box>
       </Box>
     </Paper>
