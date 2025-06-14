@@ -1,14 +1,14 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { useTypedSelector } from '../store/hooks';
-import { selectCurrentUser } from '../store/slices/user-slice';
-import SellerDashboard from '../pages/seller/sellerDashboard';
-import SellerProducts from '../pages/seller/sellerProducts';
-import CreateProductPage from '../pages/seller/createProductPage';
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useTypedSelector } from "../store/hooks";
+import SellerDashboard from "../pages/seller/seller-dashboard";
+import SellerProducts from "../pages/seller/seller-products";
+import CreateProductPage from "../pages/seller/create-product-page";
+import { userRoleSelector } from "../store/slices/user-slice";
 
 const SellerRoutes = () => {
-  const user = useTypedSelector(selectCurrentUser);
+  const userRole = useTypedSelector(userRoleSelector);
 
-  if (!user || user.role !== 'seller') {
+  if (userRole !== "seller") {
     return <Navigate to="/" replace />;
   }
 

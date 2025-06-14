@@ -1,5 +1,5 @@
 import { useGetProductsQuery } from '../../store/api/products-api';
-import ProductList from './productsList';
+import ProductList from './products-list';
 
 
 const SellerProducts = () => {

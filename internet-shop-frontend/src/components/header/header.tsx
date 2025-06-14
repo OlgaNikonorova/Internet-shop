@@ -3,7 +3,7 @@ import { useTypedSelector } from "../../store/hooks";
 import {
   avatarSelector,
   usernameSelector,
-  selectUserRole,
+  userRoleSelector,
 } from "../../store/slices/user-slice";
 import { AddBox, Favorite, Inventory, ShoppingCart } from "@mui/icons-material";
 import {
@@ -15,6 +15,8 @@ import { useDispatch } from "react-redux";
 import { useGetUserCartQuery } from "../../store/api/cart-api";
 import { UserRole } from "../../store/models/user/user-role";
 import { Avatar } from "@mui/material";
+import NavLink from "../nav/nav-link";
+import NavIcon from "../nav/nav-icon";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -22,7 +24,7 @@ interface HeaderProps {
 
 const Header = ({ onCartClick }: HeaderProps) => {
   const username = useTypedSelector(usernameSelector);
-  const userRole = useTypedSelector(selectUserRole);
+  const userRole = useTypedSelector(userRoleSelector);
   const avatar = useTypedSelector(avatarSelector);
   const cartItemsCount = useTypedSelector(cartItemsCountSelector);
   const dispatch = useDispatch();
@@ -47,8 +49,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
   const isSeller = userRole === UserRole.SELLER;
 
-  console.log(userRole);
-
   const isActiveRoute = (path: string) => pathname.startsWith(path);
 
   return (
@@ -65,7 +65,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
         <nav className="flex items-center gap-[35px]">
           <div className="hidden md:flex items-center gap-[81px]">
             {/* Общие ссылки для всех */}
-            <NavLink to="/shop" active={isActiveRoute("/shop")} >
+            <NavLink to="/shop" active={isActiveRoute("/shop")}>
               Каталог
             </NavLink>
             <NavLink to="/about" active={isActiveRoute("/about")}>
@@ -97,23 +97,19 @@ const Header = ({ onCartClick }: HeaderProps) => {
           </div>
 
           <div className="flex items-center gap-6">
-            <NavIcon
-              to="/favorites"
-              icon={<Favorite fontSize="medium" />}
-              badge={null}
-            />
+            <NavIcon to="/favorites" icon={<Favorite fontSize="medium" />} />
 
-            <button
+            <div
               onClick={onCartClick}
               className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <ShoppingCart fontSize="medium" />
+              <NavIcon icon={<ShoppingCart fontSize="medium" />} />
               {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span onClick={onCartClick} className="absolute top-1 right-1 bg-red-500 text-white text-l rounded-full w-5 h-5 flex items-center justify-center cursor-pointer">
                   {cartItemsCount}
                 </span>
               )}
-            </button>
+            </div>
             <button
               className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
               aria-label="Профиль"
@@ -140,50 +136,5 @@ const Header = ({ onCartClick }: HeaderProps) => {
     </header>
   );
 };
-
-interface NavLinkProps {
-  to: string;
-  children: React.ReactNode;
-  active?: boolean;
-  icon?: React.ReactNode;
-}
-
-const NavLink = ({ to, children, active = false, icon }: NavLinkProps) => (
-  <Link
-    to={to}
-    className={`flex items-center gap-1 text-xl hover:text-gray-300 transition-colors ${
-      active ? "font-semibold text-white" : "text-gray-200"
-    }`}
-  >
-    {icon && <span className="mr-1">{icon}</span>}
-    {children}
-  </Link>
-);
-
-interface NavIconProps {
-  icon: React.ReactNode;
-  badge?: number | null;
-  to?: string;
-  onClick?: () => void;
-}
-
-const NavIcon = ({ icon, badge = null, to, onClick }: NavIconProps) => {
-  const content = (
-    <button
-      className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
-      onClick={onClick}
-    >
-      {badge !== null && badge > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-xl rounded-full w-5 h-5 flex items-center justify-center">
-          {badge}
-        </span>
-      )}
-      {icon}
-    </button>
-  );      
-
-  return to ? <Link to={to}>{content}</Link> : content;
-};
-
 
 export default Header;

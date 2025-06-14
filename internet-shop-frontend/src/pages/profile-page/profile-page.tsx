@@ -64,7 +64,7 @@ const ProfilePage = () => {
             }}
           >
             <Typography variant="h5" sx={{ mb: 2 }}>
-              +7 960-448-52-74
+              {user.phone ?? user.name}
             </Typography>
             <Box
               sx={{
@@ -107,7 +107,7 @@ const ProfilePage = () => {
                       bottom: -5,
                       backgroundColor: "white",
                       borderRadius: "50%",
-                      padding: '2px',
+                      padding: "2px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

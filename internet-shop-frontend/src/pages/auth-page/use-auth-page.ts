@@ -34,6 +34,7 @@ export const useAuthPage = () => {
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
           role: response.user.role,
+          avatar: response.user.avatar ?? null
         })
       );
 

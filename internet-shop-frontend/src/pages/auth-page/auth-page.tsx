@@ -1,4 +1,4 @@
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getSchema, FormData } from "./auth-validation";
 import { useAuthPage } from "./use-auth-page";
@@ -16,7 +16,6 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import { useState } from "react";
 
 const AuthPage = () => {
   const { mode, error, onSubmit, toggleMode } = useAuthPage();
@@ -41,8 +40,6 @@ const AuthPage = () => {
   };
 
   const isLogin = mode === AuthMode.Login;
-
-  const [selectedValue, setSelectedValue] = useState(UserRole.USER);
 
   return (
     <Box
@@ -116,15 +113,6 @@ const AuthPage = () => {
                 {...register("phone")}
                 error={!!errors.phone}
                 helperText={errors.phone?.message?.toString()}
-              />
-
-              <TextField
-                label="Аватар (URL)"
-                fullWidth
-                margin="normal"
-                {...register("avatar")}
-                error={!!errors.avatar}
-                helperText={errors.avatar?.message?.toString()}
               />
 
               <FormControl fullWidth margin="normal" error={!!errors.role}>

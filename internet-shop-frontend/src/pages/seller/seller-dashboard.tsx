@@ -1,7 +1,7 @@
 import { Box, Typography, Button, Card, CardContent, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
-import ProductStats from "./productsStats";
-import RecentProducts from "./recentProducts";
+import ProductStats from "./products-stats";
+import RecentProducts from "./recent-products";
 
 
 const SellerDashboard = () => {
