@@ -11,7 +11,7 @@ export class CreateProductDto extends OmitType(ProductDto, [
 ] as const) {
   @ApiProperty({
     type: 'array',
-    items: { type: 'string', format: 'binary' },
+    items: { type: 'string'},
     description: 'Product images',
     required: false,
   })

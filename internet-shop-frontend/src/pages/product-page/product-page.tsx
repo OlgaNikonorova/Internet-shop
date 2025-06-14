@@ -36,7 +36,7 @@ const ProductPage = () => {
 
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
 
-  if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
+  if (isProductError || !product || product.status !== ProductStatus.Активный) {
     return (
       <div className="text-center py-12 text-white">
         <h2 className="text-2xl font-semibold text-gray-700">

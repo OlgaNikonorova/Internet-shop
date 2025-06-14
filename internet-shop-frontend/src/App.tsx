@@ -16,6 +16,7 @@ import FavoritesPage from "./pages/favorites-page/favorites-page";
 import NotFoundPage from "./pages/not-found-page/not-found-page";
 import CartDrawer from "./components/cart/cart-drawer";
 import { useState } from "react";
+import CreateProductPage from "./pages/seller/create-product-page";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -40,6 +41,10 @@ const protectedRoutes: RouteObject[] = [
   {
     path: "/product/:id",
     element: <ProductPage />,
+  },
+  {
+    path: "/seller/products/create", 
+    element: <CreateProductPage />,
   },
 ];
 

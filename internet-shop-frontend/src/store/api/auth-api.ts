@@ -30,6 +30,13 @@ export const authApi = createApi({
         method: "POST",
       }),
     }),
+    forgotPassword: builder.mutation<void, { email: string }>({
+      query: (data) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
