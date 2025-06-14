@@ -1,89 +1,216 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
 import { useGetReviewsQuery } from "../../store/api/reviews-api";
-import { useAddItemToCartMutation } from "../../store/api/cart-api";
+import { 
+  useAddItemToCartMutation, 
+  useGetUserCartQuery, 
+  useRemoveItemFromCartMutation, 
+  useUpdateCartItemQuantityMutation 
+} from "../../store/api/cart-api";
 import {
   useAddProductToFavoritesMutation,
   useGetUserFavoritesQuery,
   useRemoveProductFromFavoritesMutation,
 } from "../../store/api/favorites-api";
-import {
-  addCartItem,
-  addCartProductId,
-  cartProductIdsSelector,
-} from "../../store/slices/cart-slice";
-import { useState } from "react";
+import { addCartItem } from "../../store/slices/cart-slice";
 import { useTypedSelector } from "../../store/hooks";
+import CartItem from "../../store/models/cart/cart-item";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
-  const cartProductIds = useTypedSelector(cartProductIdsSelector);
   const dispatch = useDispatch();
 
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [actionNotification, setActionNotification] = useState<{
+    message: string;
+    type: "cart" | "favorite";
+  } | null>(null);
+
+  // Запросы данных
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
+    skip: !id,
     refetchOnMountOrArgChange: true,
   });
-  const { data: reviews = [], error: isReviewsError } = useGetReviewsQuery(
-    id!,
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+
+  const { data: reviews = [], error: isReviewsError } = useGetReviewsQuery(id!, {
+    skip: !id,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const { data: favoriteProducts = [], refetch: refetchFavorites } = 
+    useGetUserFavoritesQuery();
+
+  // Корзина
+  const { data: cartResponse, refetch: refetchCart } = useGetUserCartQuery();
+const cartItems = cartResponse?.items || []; // Получаем массив items из корзины
+
+const [deleteCartItem] = useRemoveItemFromCartMutation();
+
   const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
-  const [addToFavorites, { isLoading: isAddingToFavorites }] =
-    useAddProductToFavoritesMutation();
+  const [removeFromCart] = useRemoveItemFromCartMutation();
+  const [updateCartItem] = useUpdateCartItemQuantityMutation();
 
-  const { data: products = [], refetch } = useGetUserFavoritesQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-
-  const isInCart = cartProductIds.some((id) => id === product?.id);
-
+  // Избранное
+  const [addToFavorites] = useAddProductToFavoritesMutation();
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
-  const isFavorite = products.some((p) => p.id === product?.id);
+  // Состояние
+  const isFavorite = !!product && favoriteProducts.some(p => p.id === product.id);
 
-  const [count, setCount] = useState(1);
+  const cartItem = cartItems.find((item: CartItem) => item.productId === product?.id);
+  const isInCart = !!cartItem && typeof cartItem.quantity === 'number';
+  const [count, setCount] = useState(cartItem?.quantity || 1);
+
+  const onDelete = async (cartItemId: string) => {
+    try {
+      await deleteCartItem(cartItemId).unwrap();
+      dispatch(addCartItem(-1));
+      await refetchCart();
+      setActionNotification({
+        message: `Товар удален из корзины`,
+        type: "cart",
+      });
+    } catch (error) {
+      console.error("Ошибка удаления из корзины:", error);
+      await refetchCart(); // Принудительное обновление при ошибке
+    }
+  };
+
+  const onIncrease = async (cartItemId: string, quantity: number) => {
+    try {
+      await updateCartItem({
+        cartItemId,
+        updateCartItem: { quantity: quantity + 1 }
+      }).unwrap();
+      await refetchCart();
+    } catch (error) {
+      console.error("Ошибка увеличения количества:", error);
+    }
+  };
+
+  const onDecrease = async (cartItemId: string, quantity: number) => {
+    try {
+      if (quantity > 1) {
+        await updateCartItem({
+          cartItemId,
+          updateCartItem: { quantity: quantity - 1 }
+        }).unwrap();
+      } else {
+        await onDelete(cartItemId);
+      }
+      await refetchCart();
+    } catch (error) {
+      console.error("Ошибка уменьшения количества:", error);
+    }
+  };
+
+  // Обработчики
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setIsImageModalOpen(true);
+  };
 
   const handleAddToCart = async () => {
     if (!product) return;
 
-    await addToCart({
-      productId: product.id,
-      quantity: count,
-    });
+    try {
+      await addToCart({ productId: product.id, quantity: count }).unwrap();
+      dispatch(addCartItem(1));
+      await refetchCart();
+      setActionNotification({
+        message: `Товар "${product.name}" добавлен в корзину`,
+        type: "cart",
+      });
+    } catch (error) {
+      console.error("Ошибка добавления в корзину:", error);
+    }
+  };
 
-    setCount(1);
+  const handleRemoveFromCart = async () => {
+    if (!product || !cartItem) return;
+    
+    try {
+      await removeFromCart(cartItem.id).unwrap();
+      dispatch(addCartItem(-1));
+      await refetchCart();
+      setActionNotification({
+        message: `Товар "${product.name}" удален из корзины`,
+        type: "cart",
+      });
+    } catch (error) {
+      console.error("Ошибка удаления из корзины:", error);
+    }
+  };
 
-    dispatch(addCartItem(count));
-    dispatch(addCartProductId(product.id));
+  const handleUpdateQuantity = async (newQuantity: number) => {
+    if (!product || !cartItem) return;
+    
+    try {
+      await updateCartItem({
+        cartItemId: cartItem.id,
+        updateCartItem: {        
+        quantity: newQuantity,
+      }
+      }).unwrap();
+      await refetchCart();
+      setCount(newQuantity);
+    } catch (error) {
+      console.error("Ошибка обновления количества:", error);
+    }
   };
 
   const handleToggleFavorite = async () => {
     if (!product) return;
 
-    if (isFavorite) {
-      await removeFromFavorites(product.id);
-    } else {
-      await addToFavorites({ productId: product.id });
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(product.id).unwrap();
+        setActionNotification({
+          message: `Товар "${product.name}" удален из избранного`,
+          type: "favorite",
+        });
+      } else {
+        await addToFavorites({ productId: product.id }).unwrap();
+        setActionNotification({
+          message: `Товар "${product.name}" добавлен в избранное`,
+          type: "favorite",
+        });
+      }
+      refetchFavorites();
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
     }
-
-    refetch();
   };
 
   return {
     product,
-    isProductError,
+    isProductError: !!isProductError,
     reviews,
-    isReviewsError,
+    isReviewsError: !!isReviewsError,
     isFavorite,
     isAddingToCart,
-    isAddingToFavorites,
+    isAddingToFavorites: false,
     handleAddToCart,
+    handleRemoveFromCart,
+    handleUpdateQuantity,
     handleToggleFavorite,
     count,
     setCount,
     isInCart,
+    cartItem,
+    isImageModalOpen,
+    setIsImageModalOpen,
+    selectedImage,
+    setSelectedImage,
+    handleImageClick,
+    actionNotification,
+    setActionNotification,
+    refetchCart,
+    onDelete,
+    onIncrease,
+    onDecrease,
   };
 };

@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
 import { Order } from "../../store/models/order";
+import { useGetUserFavoritesQuery } from "../../store/api/favorites-api";
+import { useGetUserCartQuery } from "../../store/api/cart-api";
 import { useDebounce } from "../../store/hooks";
 import { ProductCategory } from "../../store/models/product/product-category";
 import Product from "../../store/models/product/product";
@@ -76,6 +78,9 @@ export const useShopPage = () => {
     }
   );
 
+  const {data: favoriteProducts = [], refetch: refetchFavorites} = useGetUserFavoritesQuery();
+  const {data: {items: cartItems = []} = {}, refetch: refetchCart} = useGetUserCartQuery()
+
   const handleShowMore = () => {
     setPageSize((prev) => prev + 8);
   };
@@ -114,6 +119,10 @@ export const useShopPage = () => {
     latestProducts,
     isLatestLoading,
     isLatestError,
+    favoriteProductIds: favoriteProducts.map(product => product.id),
+    cartItemIds: cartItems.map(item => item.productId),
+    refetchFavorites,
+    refetchCart,
     search,
     handleSearch,
     sortOption,

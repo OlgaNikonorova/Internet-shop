@@ -1,13 +1,13 @@
 import "swiper/css";
 import "swiper/css/navigation";
 
-import ProductCard from "../../components/product-card/product-card";
 import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
 import Typography from "@mui/material/Typography";
 import Slider from "../../components/slider/slider";
 import { Box, Button } from "@mui/material";
 import { SkinTypeSection } from "./skin-type-section";
+import ProductCard from "../../components/product-card/product-card";
 import { Search } from "../../components/search/search";
 import { SortOptions } from "../../components/pagination/sort";
 import { Filters } from "../../components/pagination/filters";
@@ -19,6 +19,10 @@ const ShopPage = () => {
     isLoading,
     handleShowMore,
     latestProducts,
+    favoriteProductIds,
+    cartItemIds,
+    refetchFavorites,
+    refetchCart,
     search,
     handleSearch,
     handleCategoryToggle,
@@ -106,7 +110,14 @@ const ShopPage = () => {
             title="НОВИНКИ"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.some((id) => id === product.id)}
+                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+              />
             )}
           />
 
@@ -128,7 +139,14 @@ const ShopPage = () => {
             title="ВАС МОЖЕТ ЗАИНТЕРЕСОВАТЬ"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.some((id) => id === product.id)}
+                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+              />
             )}
           />
 
@@ -170,18 +188,27 @@ const ShopPage = () => {
               <>
                 <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px={10}">
                   {products.map((product: Product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      isInCart={cartItemIds.some((id) => id === product.id)}
+                      isFavorite={favoriteProductIds.some(
+                        (id) => id === product.id
+                      )}
+                      refetchCart={refetchCart}
+                      refetchFavorites={refetchFavorites}
+                    />
                   ))}
                 </Box>
 
                 {page.hasNextPage && (
                   <Box className="mt-8 flex justify-center">
-                    <Button
+                    <button
                       onClick={handleShowMore}
-                      className="border border-white px-6 py-2 rounded hover:bg-gray-100 transition"
+                      className="border border-white px-6 py-2 rounded transition text-white"
                     >
                       Показать больше
-                    </Button>
+                    </button>
                   </Box>
                 )}
               </>
@@ -196,7 +223,14 @@ const ShopPage = () => {
             title="ПАРФЮМЕРИЯ"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.some((id) => id === product.id)}
+                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+              />
             )}
             bgImagePath={
               process.env.REACT_APP_API_BASE_URL +
@@ -208,7 +242,14 @@ const ShopPage = () => {
             title="УХОДОВАЯ КОСМЕТИКА"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.some((id) => id === product.id)}
+                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+              />
             )}
             bgImagePath={
               process.env.REACT_APP_API_BASE_URL +
@@ -220,7 +261,14 @@ const ShopPage = () => {
             title="УКРАШЕНИЯ"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.some((id) => id === product.id)}
+                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+              />
             )}
             bgImagePath={
               process.env.REACT_APP_API_BASE_URL +
