@@ -8,6 +8,9 @@ import Typography from "@mui/material/Typography";
 import Slider from "../../components/slider/slider";
 import { Box, Button } from "@mui/material";
 import { SkinTypeSection } from "./skin-type-section";
+import { Search } from "../../components/search/search";
+import { SortOptions } from "../../components/pagination/sort";
+import { Filters } from "../../components/pagination/filters";
 
 const ShopPage = () => {
   const {
@@ -16,8 +19,20 @@ const ShopPage = () => {
     isLoading,
     handleShowMore,
     latestProducts,
-    isLatestLoading,
-    isLatestError,
+    search,
+    handleSearch,
+    handleCategoryToggle,
+    category,
+    handlePriceChange,
+    priceRange,
+    handleSortChange,
+    sortOption,
+    handleRatingChange,
+    ratingRange,
+    isPriceFilterEnabled,
+    setIsPriceFilterEnabled,
+    isRatingFilterEnabled,
+    setIsRatingFilterEnabled,
   } = useShopPage();
 
   const promoImages = [
@@ -126,6 +141,29 @@ const ShopPage = () => {
           >
             КАТАЛОГ ТОВАРОВ
           </Typography>
+
+          <Search search={search} handleSearch={handleSearch} />
+
+          <div className="flex p-5 gap-5 self-start w-full justify-between">
+            <SortOptions
+              sortOption={sortOption}
+              onSortChange={handleSortChange}
+            />
+
+            <Filters
+              priceRange={priceRange}
+              onPriceChange={handlePriceChange}
+              selectedCategory={category}
+              onCategoryToggle={handleCategoryToggle}
+              ratingRange={ratingRange}
+              onRatingChange={handleRatingChange}
+              isPriceFilterEnabled={isPriceFilterEnabled}
+              onTogglePriceFilter={(value) => setIsPriceFilterEnabled(value)}
+              isRatingFilterEnabled={isRatingFilterEnabled}
+              onToggleRatingFilter={(value) => setIsRatingFilterEnabled(value)}
+            />
+          </div>
+
           <Box className="w-full">
             {/* Список товаров */}
             {products.length > 0 ? (
@@ -149,7 +187,7 @@ const ShopPage = () => {
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-xl text-gray-400">No products found</p>
+                <p className="text-xl text-white">Ничего не найдено</p>
               </div>
             )}
           </Box>
