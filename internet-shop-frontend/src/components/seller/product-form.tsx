@@ -21,6 +21,7 @@ import {
   ProductCategory,
 } from "../../store/models/product/product-category";
 import { useUploadFileMutation } from "../../store/api/files-api";
+import { ProductStatus } from "../../store/models/product/product-status";
 
 interface ProductFormProps {
   onSubmit: (data: CreateProduct) => void;
@@ -39,6 +40,7 @@ const ProductForm = ({ onSubmit, isLoading }: ProductFormProps) => {
     defaultValues: {
       stock: 0,
       images: uploadedImages,
+      status: ProductStatus.ACTIVE,
     },
   });
 

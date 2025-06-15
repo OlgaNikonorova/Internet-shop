@@ -15,7 +15,6 @@ import {
 import { useState } from "react";
 import ProductForm from "../../components/seller/product-form";
 import CreateProduct from "../../store/models/product/create-product";
-import { ProductStatus } from "../../store/models/product/product-status";
 import { CheckCircle } from "@mui/icons-material";
 
 const CreateProductPage = () => {
