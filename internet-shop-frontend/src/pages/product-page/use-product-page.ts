@@ -2,12 +2,17 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
-import { useCreateReviewMutation, useDeleteReviewMutation, useGetReviewsQuery, useUpdateReviewByIdMutation } from "../../store/api/reviews-api";
-import { 
-  useAddItemToCartMutation, 
-  useGetUserCartQuery, 
-  useRemoveItemFromCartMutation, 
-  useUpdateCartItemQuantityMutation 
+import {
+  useCreateReviewMutation,
+  useDeleteReviewMutation,
+  useGetReviewsQuery,
+  useUpdateReviewByIdMutation,
+} from "../../store/api/reviews-api";
+import {
+  useAddItemToCartMutation,
+  useGetUserCartQuery,
+  useRemoveItemFromCartMutation,
+  useUpdateCartItemQuantityMutation,
 } from "../../store/api/cart-api";
 import {
   useAddProductToFavoritesMutation,
@@ -23,35 +28,38 @@ export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
 
-
-type ActionNotificationType = {
-  message: string;
-  type: "cart" | "favorite" | "success" | "error";
-};
+  type ActionNotificationType = {
+    message: string;
+    type: "cart" | "favorite" | "success" | "error";
+  };
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
-const [actionNotification, setActionNotification] = useState<ActionNotificationType | null>(null);
+  const [actionNotification, setActionNotification] =
+    useState<ActionNotificationType | null>(null);
 
-  // Запросы данных
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
 
-  const { data: reviews = [], error: isReviewsError } = useGetReviewsQuery(id!, {
+  const {
+    data: reviews = [],
+    error: isReviewsError,
+    refetch: refetchReviews,
+  } = useGetReviewsQuery(id!, {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
 
-  const { data: favoriteProducts = [], refetch: refetchFavorites } = 
+  const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
 
   // Корзина
   const { data: cartResponse, refetch: refetchCart } = useGetUserCartQuery();
-const cartItems = cartResponse?.items || []; // Получаем массив items из корзины
+  const cartItems = cartResponse?.items || []; // Получаем массив items из корзины
 
-const [deleteCartItem] = useRemoveItemFromCartMutation();
+  const [deleteCartItem] = useRemoveItemFromCartMutation();
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
   const [removeFromCart] = useRemoveItemFromCartMutation();
@@ -60,84 +68,86 @@ const [deleteCartItem] = useRemoveItemFromCartMutation();
   const [addToFavorites] = useAddProductToFavoritesMutation();
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
-  const isFavorite = !!product && favoriteProducts.some(p => p.id === product.id);
+  const isFavorite =
+    !!product && favoriteProducts.some((p) => p.id === product.id);
 
-  const cartItem = cartItems.find((item: CartItem) => item.productId === product?.id);
-  const isInCart = !!cartItem && typeof cartItem.quantity === 'number';
+  const cartItem = cartItems.find(
+    (item: CartItem) => item.productId === product?.id
+  );
+  const isInCart = !!cartItem && typeof cartItem.quantity === "number";
   const [count, setCount] = useState(cartItem?.quantity || 1);
 
   const [reviewText, setReviewText] = useState("");
-const [reviewRating, setReviewRating] = useState(0);
-const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
-const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-const [addReview] = useCreateReviewMutation();
-const [deleteReview] = useDeleteReviewMutation();
-const [updateReview] = useUpdateReviewByIdMutation();
+  const [addReview] = useCreateReviewMutation();
+  const [deleteReview] = useDeleteReviewMutation();
+  const [updateReview] = useUpdateReviewByIdMutation();
 
-const handleSubmitReview = async () => {
-  if (!reviewText || reviewRating === 0 || !product) return;
-  
-  setIsSubmittingReview(true);
-  try {
-    if (editingReviewId) {
-      await updateReview({
-        reviewId: editingReviewId,
-        updateReview: {
-          rating: reviewRating,
-          comment: reviewText
-        }
-      }).unwrap();
-    } else {
-      await addReview({
-        productId: product.id,
-        createReview: {
-          rating: reviewRating,
-          comment: reviewText
-        }
-      }).unwrap();
+  const handleSubmitReview = async () => {
+    if (!reviewText || reviewRating === 0 || !product) return;
+
+    setIsSubmittingReview(true);
+    try {
+      if (editingReviewId) {
+        await updateReview({
+          reviewId: editingReviewId,
+          updateReview: {
+            rating: reviewRating,
+            comment: reviewText,
+          },
+        }).unwrap();
+      } else {
+        await addReview({
+          productId: product.id,
+          createReview: {
+            rating: reviewRating,
+            comment: reviewText,
+          },
+        }).unwrap();
+      }
+
+      setReviewText("");
+      setReviewRating(0);
+      setEditingReviewId(null);
+      setActionNotification({
+        message: editingReviewId
+          ? "Отзыв успешно обновлен"
+          : "Отзыв успешно добавлен",
+        type: "success",
+      });
+    } catch (error) {
+      setActionNotification({
+        message: "Ошибка при отправке отзыва",
+        type: "error",
+      });
+    } finally {
+      setIsSubmittingReview(false);
     }
-    
-    setReviewText("");
-    setReviewRating(0);
-    setEditingReviewId(null);
-    setActionNotification({
-      message: editingReviewId 
-        ? "Отзыв успешно обновлен" 
-        : "Отзыв успешно добавлен",
-      type: "success",
-    });
+  };
 
-  } catch (error) {
-    setActionNotification({
-      message: "Ошибка при отправке отзыва",
-      type: "error",
-    });
-  } finally {
-    setIsSubmittingReview(false);
-  }
-};
+  const handleEditReview = (review: Review) => {
+    setReviewText(review.comment);
+    setReviewRating(review.rating);
+    setEditingReviewId(review.id);
+  };
 
-const handleEditReview = (review: Review) => {
-  setReviewText(review.comment);
-  setReviewRating(review.rating);
-  setEditingReviewId(review.id);
-};
-
-const handleDeleteReview = async (reviewId: string) => {
-  try {
-    await deleteReview(reviewId).unwrap();
-    setActionNotification({
-      message: "Отзыв успешно удален",
-      type: "success",
-    });
-  } catch (error) {
-    setActionNotification({
-      message: "Ошибка при удалении отзыва",
-      type: "error",
-    });
-  }
-};
+  const handleDeleteReview = async (reviewId: string) => {
+    try {
+      await deleteReview(reviewId).unwrap();
+      setActionNotification({
+        message: "Отзыв успешно удален",
+        type: "success",
+      });
+    } catch (error) {
+      setActionNotification({
+        message: "Ошибка при удалении отзыва",
+        type: "error",
+      });
+    }
+  };
 
   const onDelete = async (cartItemId: string) => {
     try {
@@ -158,7 +168,7 @@ const handleDeleteReview = async (reviewId: string) => {
     try {
       await updateCartItem({
         cartItemId,
-        updateCartItem: { quantity: quantity + 1 }
+        updateCartItem: { quantity: quantity + 1 },
       }).unwrap();
       await refetchCart();
     } catch (error) {
@@ -171,7 +181,7 @@ const handleDeleteReview = async (reviewId: string) => {
       if (quantity > 1) {
         await updateCartItem({
           cartItemId,
-          updateCartItem: { quantity: quantity - 1 }
+          updateCartItem: { quantity: quantity - 1 },
         }).unwrap();
       } else {
         await onDelete(cartItemId);
@@ -182,7 +192,6 @@ const handleDeleteReview = async (reviewId: string) => {
     }
   };
 
-  // Обработчики
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
     setIsImageModalOpen(true);
@@ -206,7 +215,7 @@ const handleDeleteReview = async (reviewId: string) => {
 
   const handleRemoveFromCart = async () => {
     if (!product || !cartItem) return;
-    
+
     try {
       await removeFromCart(cartItem.id).unwrap();
       dispatch(addCartItem(-1));
@@ -222,13 +231,13 @@ const handleDeleteReview = async (reviewId: string) => {
 
   const handleUpdateQuantity = async (newQuantity: number) => {
     if (!product || !cartItem) return;
-    
+
     try {
       await updateCartItem({
         cartItemId: cartItem.id,
-        updateCartItem: {        
-        quantity: newQuantity,
-      }
+        updateCartItem: {
+          quantity: newQuantity,
+        },
       }).unwrap();
       await refetchCart();
       setCount(newQuantity);
@@ -288,14 +297,15 @@ const handleDeleteReview = async (reviewId: string) => {
     onIncrease,
     onDecrease,
     reviewText,
-  setReviewText,
-  reviewRating,
-  setReviewRating,
-  isSubmittingReview,
-  handleSubmitReview,
-  handleEditReview,
-  handleDeleteReview,
-  editingReviewId,
-  setEditingReviewId,
+    setReviewText,
+    reviewRating,
+    setReviewRating,
+    isSubmittingReview,
+    handleSubmitReview,
+    handleEditReview,
+    handleDeleteReview,
+    editingReviewId,
+    setEditingReviewId,
+    refetchReviews,
   };
 };

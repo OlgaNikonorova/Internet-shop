@@ -5,9 +5,6 @@ import { Avatar, Box, Rating as MuiRating } from "@mui/material";
 
 interface ReviewProps {
   review: ReviewModel;
-  onEdit?: (review: ReviewModel) => void;
-  onDelete?: (reviewId: string) => void;
-  isOwn?: boolean;
 }
 
 const Review = (props: ReviewProps) => {
@@ -20,10 +17,7 @@ const Review = (props: ReviewProps) => {
   return (
     <div className="flex flex-col justify-between gap-5">
       <div className="flex gap-5 items-center">
-        <Avatar
-          src={user?.avatar || "/default-avatar.png"}
-          sx={{ width: 64, height: 64 }}
-        />
+        <Avatar src={user?.avatar} sx={{ width: 64, height: 64 }} />
         <div className="flex flex-col items-center">
           <h5 style={{ wordBreak: "break-word" }}>
             {user?.name ?? `Пользователь ${review.id.replaceAll("-", "")}`}
@@ -33,29 +27,29 @@ const Review = (props: ReviewProps) => {
           </span>
         </div>
         <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontStyle: "italic",
-                      fontSize: "1.25rem",
-                    }}
-                  >
-                    <MuiRating
-                      component="span"
-                      value={parseFloat(review.rating.toFixed(1))}
-                      precision={0.1}
-                      readOnly
-                      sx={{
-                        "& .MuiRating-iconFilled": {
-                          color: "black",
-                        },
-                        "& .MuiRating-iconEmpty": {
-                          color: "black",
-                          opacity: 0.3,
-                        },
-                      }}
-                    />
-                  </Box>
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            fontStyle: "italic",
+            fontSize: "1.25rem",
+          }}
+        >
+          <MuiRating
+            component="span"
+            value={parseFloat(review.rating.toFixed(1))}
+            precision={0.1}
+            readOnly
+            sx={{
+              "& .MuiRating-iconFilled": {
+                color: "black",
+              },
+              "& .MuiRating-iconEmpty": {
+                color: "black",
+                opacity: 0.3,
+              },
+            }}
+          />
+        </Box>
       </div>
 
       <p>{review.comment}</p>

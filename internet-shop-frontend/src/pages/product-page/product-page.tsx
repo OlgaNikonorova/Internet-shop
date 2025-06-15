@@ -4,7 +4,6 @@ import {
   Favorite,
   FavoriteBorder,
   ShoppingCart,
-  Delete,
   Add,
   Remove,
   Star,
@@ -15,17 +14,27 @@ import {
 } from "@mui/icons-material";
 import { useProductPage } from "./use-product-page";
 import { ProductStatus } from "../../store/models/product/product-status";
-import { Avatar, Box, Button, Chip, IconButton, Rating as MuiRating, Paper, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Rating as MuiRating,
+  Paper,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import Review from "../../components/review/review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
 import { useRef, useState } from "react";
 import { Thumbs, EffectFade, Autoplay } from "swiper/modules";
-import Counter from "../../components/counter/counter";
-import Slider from "../../components/slider/slider";
 import { ActionNotification } from "../modal/ActionNotification";
 import { ImageModal } from "../modal/ImageModal";
 import ProductCard from "../../components/product-card/product-card";
+import Slider from "../../components/slider/slider";
 
 const ProductPage = () => {
   const {
@@ -48,8 +57,6 @@ const ProductPage = () => {
     actionNotification,
     setActionNotification,
     handleRemoveFromCart,
-    handleUpdateQuantity,
-    onDelete,
     onIncrease,
     onDecrease,
     cartItem,
@@ -63,6 +70,7 @@ const ProductPage = () => {
     handleDeleteReview,
     editingReviewId,
     setEditingReviewId,
+    refetchReviews,
   } = useProductPage();
 
   const imagesSwiperRef = useRef<{ swiper: SwiperType } | null>(null);
@@ -71,11 +79,12 @@ const ProductPage = () => {
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
 
-    // Устанавливаем рейтинг по умолчанию
-  const productWithDefaultRating = product ? {
-    ...product,
-    rating: typeof product.rating === 'number' ? product.rating : 0
-  } : null;
+  const productWithDefaultRating = product
+    ? {
+        ...product,
+        rating: typeof product.rating === "number" ? product.rating : 0,
+      }
+    : null;
 
   const similarProducts = [
     {
@@ -128,7 +137,11 @@ const ProductPage = () => {
     setTabValue(newValue);
   };
 
-  if (isProductError || !productWithDefaultRating || productWithDefaultRating.status !== ProductStatus.ACTIVE) {
+  if (
+    isProductError ||
+    !productWithDefaultRating ||
+    productWithDefaultRating.status !== ProductStatus.ACTIVE
+  ) {
     return (
       <div className="text-center mt-10 py-12 text-white">
         <h2 className="text-2xl font-semibold text-gray-700">
@@ -173,6 +186,7 @@ const ProductPage = () => {
 
   const handleSubmitReviewAndClose = async () => {
     await handleSubmitReview();
+    refetchReviews();
     setIsReviewFormOpen(false);
   };
 
@@ -262,7 +276,9 @@ const ProductPage = () => {
 
       {/* Информация о товаре */}
       <div className="text-primary px-15 py-5 m-10">
-        <h1 className="text-4xl font-bold mb-1">{productWithDefaultRating.name}</h1>
+        <h1 className="text-4xl font-bold mb-1">
+          {productWithDefaultRating.name}
+        </h1>
         <div className="flex gap-5">
           <Box
             sx={{
@@ -306,11 +322,12 @@ const ProductPage = () => {
 
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Левый блок - описание и характеристики */}
-          <Box sx={{ width: '50%' }}>
-  <Typography variant="h5" paragraph>
-    {productWithDefaultRating.description || "Описание товара отсутствует"}
-  </Typography>
-</Box>
+          <Box sx={{ width: "50%" }}>
+            <Typography variant="h5" paragraph>
+              {productWithDefaultRating.description ||
+                "Описание товара отсутствует"}
+            </Typography>
+          </Box>
 
           {/* Правый блок - цена и кнопки */}
           <div className="lg:w-80 flex flex-col gap-6">
@@ -322,9 +339,7 @@ const ProductPage = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {(productWithDefaultRating.price * 0.8).toFixed(2)} ₽
                 </Typography>
-                <Typography variant="body2">
-                  по скидочной карте
-                </Typography>
+                <Typography variant="body2">по скидочной карте</Typography>
               </div>
             </div>
 
@@ -333,7 +348,9 @@ const ProductPage = () => {
               {isInCart && cartItem ? (
                 <div className="flex items-center bg-black rounded-lg overflow-hidden">
                   <IconButton
-                    onClick={() => onDecrease(cartItem.id, cartItem.quantity ?? 1)}
+                    onClick={() =>
+                      onDecrease(cartItem.id, cartItem.quantity ?? 1)
+                    }
                     className="!text-white !p-2 hover:!bg-gray-800"
                     size="small"
                   >
@@ -345,7 +362,9 @@ const ProductPage = () => {
                   </span>
 
                   <IconButton
-                    onClick={() => onIncrease(cartItem.id, cartItem.quantity ?? 1)}
+                    onClick={() =>
+                      onIncrease(cartItem.id, cartItem.quantity ?? 1)
+                    }
                     className="!text-white !p-2 hover:!bg-gray-800"
                     size="small"
                   >
@@ -384,170 +403,216 @@ const ProductPage = () => {
             </div>
 
             <Typography variant="body1" textAlign="center">
-              {isInStock ? `В наличии ${productWithDefaultRating.stock} шт.` : "Нет в наличии"}
+              {isInStock
+                ? `В наличии ${productWithDefaultRating.stock} шт.`
+                : "Нет в наличии"}
             </Typography>
           </div>
         </div>
 
-<div className="mt-10 ml-10">
+        <div className="mt-10 ml-10">
           {/* Гарантии и доставка */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-around',
-            mb: 4,
-            flexWrap: 'wrap',
-            gap: 2,
-            width: 0.4,
-          }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
-                  <DiamondIcon color="inherit" />
-                </Avatar>
-                <Typography variant="body1" textAlign="center">
-                  Гарантия качества продукции
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
-                  <Typography fontWeight="bold" color="inherit">FREE</Typography>
-                </Avatar>
-                <Typography variant="body1" textAlign="center">
-                  Бесплатная доставка от 1500 ₽
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
-                  <Typography fontWeight="bold" color="inherit">RU</Typography>
-                </Avatar>
-                <Typography variant="body1" textAlign="center">
-                  Доставка по всей территории РФ
-                </Typography>
-              </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              mb: 4,
+              flexWrap: "wrap",
+              gap: 2,
+              width: 0.4,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Avatar
+                sx={{ bgcolor: "background.paper", mb: 1, color: "black" }}
+              >
+                <DiamondIcon color="inherit" />
+              </Avatar>
+              <Typography variant="body1" textAlign="center">
+                Гарантия качества продукции
+              </Typography>
             </Box>
 
-            {/* Варианты доставки */}
-            <Typography variant="h6" gutterBottom>
-              Способы доставки:
-            </Typography>
-            
-            <Box sx={{ mb: 4, width: 0.3 }}>
-              <Paper elevation={0} sx={{ 
-                p: 2, 
-                mb: 1, 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                border: '1px solid black',
-                backgroundColor: 'white', 
-                borderColor: 'divider'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LocalShipping fontSize="small" />
-                  <Typography>ПВЗ Sobaccini</Typography>
-                </Box>
-                <Chip label="завтра" size="medium" />
-              </Paper>
-
-              <Paper elevation={0} sx={{ 
-                p: 2, 
-                mb: 1, 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                border: '1px solid black',
-                backgroundColor: 'white', 
-                borderColor: 'divider'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Person fontSize="small" />
-                  <Typography>Курьер</Typography>
-                </Box>
-                <Chip label="завтра" size="medium" />
-              </Paper>
-
-              <Paper elevation={0} sx={{ 
-                p: 2, 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                border: '1px solid black',
-                backgroundColor: 'white', 
-                borderColor: 'divider'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Home fontSize="small" />
-                  <Typography>Самовывоз из магазина</Typography>
-                </Box>
-                <Chip label="завтра" size="medium" />
-              </Paper>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Avatar
+                sx={{ bgcolor: "background.paper", mb: 1, color: "black" }}
+              >
+                <Typography fontWeight="bold" color="inherit">
+                  FREE
+                </Typography>
+              </Avatar>
+              <Typography variant="body1" textAlign="center">
+                Бесплатная доставка от 1500 ₽
+              </Typography>
             </Box>
-            </div>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Avatar
+                sx={{ bgcolor: "background.paper", mb: 1, color: "black" }}
+              >
+                <Typography fontWeight="bold" color="inherit">
+                  RU
+                </Typography>
+              </Avatar>
+              <Typography variant="body1" textAlign="center">
+                Доставка по всей территории РФ
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Варианты доставки */}
+          <Typography variant="h6" gutterBottom>
+            Способы доставки:
+          </Typography>
+
+          <Box sx={{ mb: 4, width: 0.3 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                mb: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                border: "1px solid black",
+                backgroundColor: "white",
+                borderColor: "divider",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <LocalShipping fontSize="small" />
+                <Typography>ПВЗ Sobaccini</Typography>
+              </Box>
+              <Chip label="завтра" size="medium" />
+            </Paper>
+
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                mb: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                border: "1px solid black",
+                backgroundColor: "white",
+                borderColor: "divider",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Person fontSize="small" />
+                <Typography>Курьер</Typography>
+              </Box>
+              <Chip label="завтра" size="medium" />
+            </Paper>
+
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                border: "1px solid black",
+                backgroundColor: "white",
+                borderColor: "divider",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Home fontSize="small" />
+                <Typography>Самовывоз из магазина</Typography>
+              </Box>
+              <Chip label="завтра" size="medium" />
+            </Paper>
+          </Box>
+        </div>
 
         <div className="flex flex-col gap-20 m-10">
           {/* Основное описание и характеристики */}
           <div className="flex flex-col">
             {/* Вкладки с информацией */}
-<Box sx={{ width: '100%' }}>
-  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-    <Tabs 
-      value={tabValue} 
-      onChange={handleTabChange} 
-      aria-label="product info tabs"
-    >
-      <Tab 
-        label="Описание" 
-        sx={{ 
-          fontWeight: tabValue === 0 ? 'bold' : 'normal',
-          '&.Mui-selected': { color: 'black' }
-        }} 
-      />
-      <Tab 
-        label="Состав" 
-        sx={{ 
-          fontWeight: tabValue === 1 ? 'bold' : 'normal',
-          '&.Mui-selected': { color: 'black' }
-        }} 
-      />
-      <Tab 
-        label="Бренд" 
-        sx={{ 
-          fontWeight: tabValue === 2 ? 'bold' : 'normal',
-          '&.Mui-selected': { color: 'black' }
-        }} 
-      />
-      <Tab 
-        label="Дополнительная информация" 
-        sx={{ 
-          fontWeight: tabValue === 3 ? 'bold' : 'normal',
-          '&.Mui-selected': { color: 'black' }
-        }} 
-      />
-    </Tabs>
-  </Box>
-  <Box sx={{ p: 3 }}>
-    {tabValue === 0 && (
-      <>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-          {productWithDefaultRating.name}
-        </Typography>
-        <Typography>
-          {productWithDefaultRating.description || "Описание товара отсутствует"}
-        </Typography>
-      </>
-    )}
-    {tabValue === 1 && (
-      <Typography>Состав товара будет указан здесь</Typography>
-    )}
-    {tabValue === 2 && (
-      <Typography>Информация о бренде будет здесь</Typography>
-    )}
-    {tabValue === 3 && (
-      <Typography>Дополнительная информация о товаре</Typography>
-    )}
-  </Box>
-  </Box>
-  </div>
-  </div>
-  </div>
+            <Box sx={{ width: "100%" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  aria-label="product info tabs"
+                >
+                  <Tab
+                    label="Описание"
+                    sx={{
+                      fontWeight: tabValue === 0 ? "bold" : "normal",
+                      "&.Mui-selected": { color: "black" },
+                    }}
+                  />
+                  <Tab
+                    label="Состав"
+                    sx={{
+                      fontWeight: tabValue === 1 ? "bold" : "normal",
+                      "&.Mui-selected": { color: "black" },
+                    }}
+                  />
+                  <Tab
+                    label="Бренд"
+                    sx={{
+                      fontWeight: tabValue === 2 ? "bold" : "normal",
+                      "&.Mui-selected": { color: "black" },
+                    }}
+                  />
+                  <Tab
+                    label="Дополнительная информация"
+                    sx={{
+                      fontWeight: tabValue === 3 ? "bold" : "normal",
+                      "&.Mui-selected": { color: "black" },
+                    }}
+                  />
+                </Tabs>
+              </Box>
+              <Box sx={{ p: 3 }}>
+                {tabValue === 0 && (
+                  <>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {productWithDefaultRating.name}
+                    </Typography>
+                    <Typography>
+                      {productWithDefaultRating.description ||
+                        "Описание товара отсутствует"}
+                    </Typography>
+                  </>
+                )}
+                {tabValue === 1 && (
+                  <Typography>Состав товара будет указан здесь</Typography>
+                )}
+                {tabValue === 2 && (
+                  <Typography>Информация о бренде будет здесь</Typography>
+                )}
+                {tabValue === 3 && (
+                  <Typography>Дополнительная информация о товаре</Typography>
+                )}
+              </Box>
+            </Box>
+          </div>
+        </div>
+      </div>
 
       {/* Список отзывов */}
       {!isReviewsError && (
@@ -556,7 +621,9 @@ const ProductPage = () => {
           {reviews.length > 0 ? (
             <div className="flex items-center p-6 justify-between gap-6">
               <div className="flex gap-7">
-                <h3 className="text-5xl font-bold">{productWithDefaultRating.rating}</h3>
+                <h3 className="text-5xl font-bold">
+                  {productWithDefaultRating.rating}
+                </h3>
                 <div className="flex flex-col items-center gap-1">
                   <Box
                     sx={{
@@ -568,7 +635,9 @@ const ProductPage = () => {
                   >
                     <MuiRating
                       component="span"
-                      value={parseFloat(productWithDefaultRating.rating.toFixed(1))}
+                      value={parseFloat(
+                        productWithDefaultRating.rating.toFixed(1)
+                      )}
                       precision={1}
                       readOnly
                       sx={{
@@ -609,7 +678,9 @@ const ProductPage = () => {
               </div>
             </div>
           ) : (
-            <div className="my-8 text-center">Отзывов еще нет. Оставьте отзыв первым!</div>
+            <div className="my-8 text-center">
+              Отзывов еще нет. Оставьте отзыв первым!
+            </div>
           )}
 
           {/* Кнопка для открытия формы отзыва */}
@@ -661,7 +732,10 @@ const ProductPage = () => {
                       },
                     }}
                     icon={
-                      <Star fontSize="inherit" style={{ fontStyle: "italic" }} />
+                      <Star
+                        fontSize="inherit"
+                        style={{ fontStyle: "italic" }}
+                      />
                     }
                     emptyIcon={
                       <Star
@@ -713,22 +787,23 @@ const ProductPage = () => {
           )}
 
           <div className="m-12 mt-2">
-        <h2 className="text-2xl font-bold mb-6">Похожие товары</h2>
-        <Slider
-          slidesPerView={4}
-          items={similarProducts}
-          renderItem={(product) => (
-            <ProductCard
-              key={productWithDefaultRating.id}
-              product={product}
-              isInCart={false} // Здесь нужно передать реальное значение из корзины
-              isFavorite={false} // Здесь нужно передать реальное значение из избранного
-              refetchCart={() => {}} // Здесь нужно передать реальную функцию обновления корзины
-              refetchFavorites={() => {}} // Здесь нужно передать реальную функцию обновления избранного
+            <h2 className="text-2xl font-bold mb-6">Похожие товары</h2>
+            <Slider
+              slidesPerView={4}
+              items={similarProducts}
+              renderItem={(product) => (
+                <ProductCard
+                  key={productWithDefaultRating.id}
+                  product={product}
+                  isInCart={false}
+                  isFavorite={false}
+                  refetchCart={() => {}}
+                  refetchFavorites={() => {}}
+                  removeFromCart={() => {}}
+                />
+              )}
             />
-          )}
-        />
-      </div>
+          </div>
         </div>
       )}
 
