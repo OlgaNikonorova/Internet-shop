@@ -129,8 +129,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.Admin)
   @ApiOperation({ summary: 'Get user by ID', operationId: 'getUserById' })
   @ApiParam({
     name: 'id',
