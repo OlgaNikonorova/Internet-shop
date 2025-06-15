@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
-import { useGetReviewsQuery } from "../../store/api/reviews-api";
+import { useCreateReviewMutation, useDeleteReviewMutation, useGetReviewsQuery, useUpdateReviewByIdMutation } from "../../store/api/reviews-api";
 import { 
   useAddItemToCartMutation, 
   useGetUserCartQuery, 
@@ -17,17 +17,21 @@ import {
 import { addCartItem } from "../../store/slices/cart-slice";
 import { useTypedSelector } from "../../store/hooks";
 import CartItem from "../../store/models/cart/cart-item";
+import Review from "../../store/models/review/review";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
 
+
+type ActionNotificationType = {
+  message: string;
+  type: "cart" | "favorite" | "success" | "error";
+};
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [actionNotification, setActionNotification] = useState<{
-    message: string;
-    type: "cart" | "favorite";
-  } | null>(null);
+const [actionNotification, setActionNotification] = useState<ActionNotificationType | null>(null);
 
   // Запросы данных
   const { data: product, error: isProductError } = useGetProductQuery(id!, {
@@ -63,6 +67,93 @@ const [deleteCartItem] = useRemoveItemFromCartMutation();
   const cartItem = cartItems.find((item: CartItem) => item.productId === product?.id);
   const isInCart = !!cartItem && typeof cartItem.quantity === 'number';
   const [count, setCount] = useState(cartItem?.quantity || 1);
+
+  const [reviewText, setReviewText] = useState("");
+const [reviewRating, setReviewRating] = useState(0);
+const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+// Добавьте эти мутации:
+const [addReview] = useCreateReviewMutation();
+const [deleteReview] = useDeleteReviewMutation();
+const [updateReview] = useUpdateReviewByIdMutation();
+
+
+
+
+// Добавьте эти функции:
+
+/**
+ * Обработчик отправки отзыва
+ */
+const handleSubmitReview = async () => {
+  if (!reviewText || reviewRating === 0 || !product) return;
+  
+  setIsSubmittingReview(true);
+  try {
+    if (editingReviewId) {
+      await updateReview({
+        reviewId: editingReviewId,
+        updateReview: {
+          rating: reviewRating,
+          comment: reviewText
+        }
+      }).unwrap();
+    } else {
+      await addReview({
+        productId: product.id,
+        createReview: {
+          rating: reviewRating,
+          comment: reviewText
+        }
+      }).unwrap();
+    }
+    
+    setReviewText("");
+    setReviewRating(0);
+    setEditingReviewId(null);
+    setActionNotification({
+      message: editingReviewId 
+        ? "Отзыв успешно обновлен" 
+        : "Отзыв успешно добавлен",
+      type: "success",
+    });
+  } catch (error) {
+    setActionNotification({
+      message: "Ошибка при отправке отзыва",
+      type: "error",
+    });
+  } finally {
+    setIsSubmittingReview(false);
+  }
+};
+
+/**
+ * Обработчик редактирования отзыва
+ */
+const handleEditReview = (review: Review) => {
+  setReviewText(review.comment);
+  setReviewRating(review.rating);
+  setEditingReviewId(review.id);
+};
+
+/**
+ * Обработчик удаления отзыва
+ */
+const handleDeleteReview = async (reviewId: string) => {
+  try {
+    await deleteReview(reviewId).unwrap();
+    setActionNotification({
+      message: "Отзыв успешно удален",
+      type: "success",
+    });
+  } catch (error) {
+    setActionNotification({
+      message: "Ошибка при удалении отзыва",
+      type: "error",
+    });
+  }
+};
 
   const onDelete = async (cartItemId: string) => {
     try {
@@ -212,5 +303,15 @@ const [deleteCartItem] = useRemoveItemFromCartMutation();
     onDelete,
     onIncrease,
     onDecrease,
+    reviewText,
+  setReviewText,
+  reviewRating,
+  setReviewRating,
+  isSubmittingReview,
+  handleSubmitReview,
+  handleEditReview,
+  handleDeleteReview,
+  editingReviewId,
+  setEditingReviewId,
   };
 };

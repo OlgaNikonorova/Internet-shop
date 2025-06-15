@@ -16,11 +16,11 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
 import { useRef, useState } from "react";
 import { Thumbs, EffectFade, Autoplay } from "swiper/modules";
-import Rating from "../../components/review/rating";
 import Counter from "../../components/counter/counter";
 import Slider from "../../components/slider/slider";
 import { ActionNotification } from "../modal/ActionNotification";
 import { ImageModal } from "../modal/ImageModal";
+import Rating from "../../components/rating/rating";
 
 const ProductPage = () => {
   const {
@@ -48,6 +48,16 @@ const ProductPage = () => {
     onIncrease,
     onDecrease,
     cartItem,
+    reviewText,
+    setReviewText,
+  reviewRating,
+  setReviewRating,
+  isSubmittingReview,
+  handleSubmitReview,
+  handleEditReview,
+  handleDeleteReview,
+  editingReviewId,
+  setEditingReviewId,
   } = useProductPage();
 
   const imagesSwiperRef = useRef<{ swiper: SwiperType } | null>(null);
@@ -269,35 +279,73 @@ const ProductPage = () => {
           </div>
         </div>
 
-        {/* Отзывы */}
-        {!isReviewsError && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold mb-10">Рейтинг и отзывы</h2>
-            {reviews.length > 0 ? (
-              <div className="flex items-center p-6 justify-between gap-6">
-                <div className="flex gap-7">
-                  <h3 className="text-5xl font-bold">{product.rating}</h3>
-                  <div className="flex flex-col items-center gap-1">
-                    <Rating value={product.rating} />
-                    <p>{reviews.length} оценок</p>
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <Slider
-                    slidesPerView={3}
-                    items={reviews}
-                    renderItem={(review) => (
-                      <Review key={review.id} review={review} />
-                    )}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="my-8 text-center">Отзывов пока что нет</div>
-            )}
-          </div>
-        )}
-      </div>
+        <div className="mt-8 mb-12">
+  <h3 className="text-xl font-semibold mb-4">
+    {editingReviewId ? "Редактировать отзыв" : "Оставить отзыв"}
+  </h3>
+  <div className="bg-gray-50 p-6 rounded-lg">
+    <Rating 
+      value={reviewRating}
+      onChange={setReviewRating}
+      editable
+      className="mb-4"
+    />
+    <textarea
+      className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent"
+      placeholder="Напишите ваш отзыв..."
+      value={reviewText}
+      onChange={(e) => setReviewText(e.target.value)}
+    />
+    <div className="flex gap-3">
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmitReview}
+        disabled={isSubmittingReview || !reviewText || reviewRating === 0}
+        className="!bg-black !text-white hover:!bg-gray-800"
+      >
+        {isSubmittingReview 
+          ? "Отправка..." 
+          : editingReviewId 
+            ? "Обновить отзыв" 
+            : "Отправить отзыв"}
+      </Button>
+      {editingReviewId && (
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setEditingReviewId(null);
+            setReviewText("");
+            setReviewRating(0);
+          }}
+          className="!border-black !text-black"
+        >
+          Отмена
+        </Button>
+      )}
+    </div>
+    </div>
+  </div>
+</div>
+
+{/* Список отзывов */}
+{reviews.length > 0 ? (
+  <div className="space-y-4">
+    {reviews.map((review) => (
+      <Review
+        key={review.id}
+        review={review}
+        isOwn={review.isOwn}
+        onEdit={handleEditReview}
+        onDelete={handleDeleteReview}
+      />
+    ))}
+  </div>
+) : (
+  <div className="my-8 text-center text-gray-500">
+    Пока нет отзывов. Будьте первым!
+  </div>
+)}
 
       {/* Модальное окно изображения */}
       {productImages.length > 0 && (

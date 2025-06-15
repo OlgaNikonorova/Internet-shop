@@ -7,7 +7,7 @@ interface ActionNotificationProps {
   open: boolean;
   onClose: () => void;
   message: string;
-  type: "cart" | "favorite";
+  type: "cart" | "favorite" | "success" | "error";
 }
 
 function SlideTransition(props: SlideProps) {

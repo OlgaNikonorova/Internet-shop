@@ -5,4 +5,5 @@ export default interface Review {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+  isOwn?: boolean;
 }
