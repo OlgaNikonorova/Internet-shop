@@ -1,11 +1,7 @@
 import ReviewModel from "../../store/models/review/review";
 import { format } from "date-fns";
-import { ru } from "date-fns/locale";
 import { useGetUserByIdQuery } from "../../store/api/user-api";
-import { Avatar, IconButton, Typography } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
-import { useState } from "react";
-import Rating from "../rating/rating";
+import { Avatar, Box, Rating as MuiRating } from "@mui/material";
 
 interface ReviewProps {
   review: ReviewModel;
@@ -14,65 +10,55 @@ interface ReviewProps {
   isOwn?: boolean;
 }
 
-const Review = ({ review, onEdit, onDelete, isOwn = false }: ReviewProps) => {
+const Review = (props: ReviewProps) => {
+  const { review } = props;
+
   const { data: user } = useGetUserByIdQuery(review.userId, {
     refetchOnMountOrArgChange: true,
   });
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div 
-      className="flex flex-col gap-4 p-4 bg-gray-50 rounded-lg shadow-sm"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex justify-between items-start">
-        <div className="flex gap-4 items-center">
-          <Avatar
-            src={user?.avatar || "/default-avatar.png"}
-            sx={{ width: 56, height: 56 }}
-            className="!bg-gray-200"
-          />
-          <div className="flex flex-col">
-            <Typography variant="subtitle1" className="!font-medium">
-              {user?.name ?? `Пользователь ${review.userId.slice(0, 8)}`}
-            </Typography>
-            <Typography variant="body2" className="!text-gray-500">
-              {format(new Date(review.createdAt), "dd MMMM yyyy", { locale: ru })}
-            </Typography>
-          </div>
+    <div className="flex flex-col justify-between gap-5">
+      <div className="flex gap-5 items-center">
+        <Avatar
+          src={user?.avatar || "/default-avatar.png"}
+          sx={{ width: 64, height: 64 }}
+        />
+        <div className="flex flex-col items-center">
+          <h5 style={{ wordBreak: "break-word" }}>
+            {user?.name ?? `Пользователь ${review.id.replaceAll("-", "")}`}
+          </h5>
+          <span className="text-xs text-gray">
+            {format(new Date(review.createdAt), "dd.MM.yyyy")}
+          </span>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Rating value={review.rating} readOnly />
-          {isOwn && isHovered && (
-            <div className="flex gap-1 ml-2">
-              {onEdit && (
-                <IconButton
-                  onClick={() => onEdit(review)}
-                  size="small"
-                  className="!p-1"
-                >
-                  <Edit fontSize="small" />
-                </IconButton>
-              )}
-              {onDelete && (
-                <IconButton
-                  onClick={() => onDelete(review.id)}
-                  size="small"
-                  className="!p-1"
-                >
-                  <Delete fontSize="small" />
-                </IconButton>
-              )}
-            </div>
-          )}
-        </div>
+        <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontStyle: "italic",
+                      fontSize: "1.25rem",
+                    }}
+                  >
+                    <MuiRating
+                      component="span"
+                      value={parseFloat(review.rating.toFixed(1))}
+                      precision={0.1}
+                      readOnly
+                      sx={{
+                        "& .MuiRating-iconFilled": {
+                          color: "black",
+                        },
+                        "& .MuiRating-iconEmpty": {
+                          color: "black",
+                          opacity: 0.3,
+                        },
+                      }}
+                    />
+                  </Box>
       </div>
 
-      <Typography variant="body1" className="!text-gray-700 !mt-2">
-        {review.comment}
-      </Typography>
+      <p>{review.comment}</p>
     </div>
   );
 };

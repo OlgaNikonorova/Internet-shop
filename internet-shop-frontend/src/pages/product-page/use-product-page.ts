@@ -57,11 +57,9 @@ const [deleteCartItem] = useRemoveItemFromCartMutation();
   const [removeFromCart] = useRemoveItemFromCartMutation();
   const [updateCartItem] = useUpdateCartItemQuantityMutation();
 
-  // Избранное
   const [addToFavorites] = useAddProductToFavoritesMutation();
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
-  // Состояние
   const isFavorite = !!product && favoriteProducts.some(p => p.id === product.id);
 
   const cartItem = cartItems.find((item: CartItem) => item.productId === product?.id);
@@ -73,19 +71,10 @@ const [reviewRating, setReviewRating] = useState(0);
 const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-// Добавьте эти мутации:
 const [addReview] = useCreateReviewMutation();
 const [deleteReview] = useDeleteReviewMutation();
 const [updateReview] = useUpdateReviewByIdMutation();
 
-
-
-
-// Добавьте эти функции:
-
-/**
- * Обработчик отправки отзыва
- */
 const handleSubmitReview = async () => {
   if (!reviewText || reviewRating === 0 || !product) return;
   
@@ -118,6 +107,7 @@ const handleSubmitReview = async () => {
         : "Отзыв успешно добавлен",
       type: "success",
     });
+
   } catch (error) {
     setActionNotification({
       message: "Ошибка при отправке отзыва",
@@ -128,18 +118,12 @@ const handleSubmitReview = async () => {
   }
 };
 
-/**
- * Обработчик редактирования отзыва
- */
 const handleEditReview = (review: Review) => {
   setReviewText(review.comment);
   setReviewRating(review.rating);
   setEditingReviewId(review.id);
 };
 
-/**
- * Обработчик удаления отзыва
- */
 const handleDeleteReview = async (reviewId: string) => {
   try {
     await deleteReview(reviewId).unwrap();
