@@ -26,9 +26,6 @@ export const useProfilePage = () => {
   const dispatch = useDispatch();
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    context: {
-      _isPasswordEditable: isPasswordEditable,
-    },
     defaultValues: {
       email: user?.email,
       password: undefined,
