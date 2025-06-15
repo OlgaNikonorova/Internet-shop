@@ -1,0 +1,45 @@
+name: Deploy to Ngrok
+
+on:
+  push:
+    branches: [main]  # Запускать при пуше в main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Шаг 2: Устанавливаем Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Шаг 3: Устанавливаем зависимости и собираем проект
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+
+      # Шаг 4: Запускаем сервер в фоне
+      - name: Start Server
+        run: |
+          npx serve -s build &
+          sleep 5  # Даем серверу время запуститься
+
+      # Шаг 5: Запускаем ngrok
+      - name: Expose with Ngrok
+        uses: gabrielbb/ngrok-action@v1
+        with:
+          authToken: ${{ secrets.NGROK_TOKEN }}
+          region: us  # Регион (us, eu, ap, au)
+          port: 3000  # Порт, на котором работает serve (по умолчанию 3000)
+
+      # Шаг 6 (опционально): Получаем публичный URL
+      - name: Get Ngrok URL
+        run: |
+          curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' > url.txt
+          echo "Public URL: $(cat url.txt)"
