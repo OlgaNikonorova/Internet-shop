@@ -20,7 +20,7 @@ const Review = (props: ReviewProps) => {
         <Avatar src={user?.avatar} sx={{ width: 64, height: 64 }} />
         <div className="flex flex-col items-center">
           <h5 style={{ wordBreak: "break-word" }}>
-            {user?.name ?? `Пользователь ${review.id.replaceAll("-", "")}`}
+            {user?.username ?? `Пользователь ${review.id.replaceAll("-", "")}`}
           </h5>
           <span className="text-xs text-gray">
             {format(new Date(review.createdAt), "dd.MM.yyyy")}
