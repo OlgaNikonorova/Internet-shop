@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
 import {
   useCreateReviewMutation,
-  useDeleteReviewMutation,
   useGetReviewsQuery,
   useUpdateReviewByIdMutation,
 } from "../../store/api/reviews-api";
@@ -20,9 +19,7 @@ import {
   useRemoveProductFromFavoritesMutation,
 } from "../../store/api/favorites-api";
 import { addCartItem } from "../../store/slices/cart-slice";
-import { useTypedSelector } from "../../store/hooks";
 import CartItem from "../../store/models/cart/cart-item";
-import Review from "../../store/models/review/review";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -55,14 +52,12 @@ export const useProductPage = () => {
   const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
 
-  // Корзина
   const { data: cartResponse, refetch: refetchCart } = useGetUserCartQuery();
-  const cartItems = cartResponse?.items || []; // Получаем массив items из корзины
+  const cartItems = cartResponse?.items || [];
 
   const [deleteCartItem] = useRemoveItemFromCartMutation();
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
-  const [removeFromCart] = useRemoveItemFromCartMutation();
   const [updateCartItem] = useUpdateCartItemQuantityMutation();
 
   const [addToFavorites] = useAddProductToFavoritesMutation();
@@ -83,7 +78,6 @@ export const useProductPage = () => {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const [addReview] = useCreateReviewMutation();
-  const [deleteReview] = useDeleteReviewMutation();
   const [updateReview] = useUpdateReviewByIdMutation();
 
   const handleSubmitReview = async () => {
@@ -128,27 +122,6 @@ export const useProductPage = () => {
     }
   };
 
-  const handleEditReview = (review: Review) => {
-    setReviewText(review.comment);
-    setReviewRating(review.rating);
-    setEditingReviewId(review.id);
-  };
-
-  const handleDeleteReview = async (reviewId: string) => {
-    try {
-      await deleteReview(reviewId).unwrap();
-      setActionNotification({
-        message: "Отзыв успешно удален",
-        type: "success",
-      });
-    } catch (error) {
-      setActionNotification({
-        message: "Ошибка при удалении отзыва",
-        type: "error",
-      });
-    }
-  };
-
   const onDelete = async (cartItemId: string) => {
     try {
       await deleteCartItem(cartItemId).unwrap();
@@ -160,7 +133,7 @@ export const useProductPage = () => {
       });
     } catch (error) {
       console.error("Ошибка удаления из корзины:", error);
-      await refetchCart(); // Принудительное обновление при ошибке
+      await refetchCart();
     }
   };
 
@@ -213,22 +186,6 @@ export const useProductPage = () => {
     }
   };
 
-  const handleRemoveFromCart = async () => {
-    if (!product || !cartItem) return;
-
-    try {
-      await removeFromCart(cartItem.id).unwrap();
-      dispatch(addCartItem(-1));
-      await refetchCart();
-      setActionNotification({
-        message: `Товар "${product.name}" удален из корзины`,
-        type: "cart",
-      });
-    } catch (error) {
-      console.error("Ошибка удаления из корзины:", error);
-    }
-  };
-
   const handleUpdateQuantity = async (newQuantity: number) => {
     if (!product || !cartItem) return;
 
@@ -278,7 +235,6 @@ export const useProductPage = () => {
     isAddingToCart,
     isAddingToFavorites: false,
     handleAddToCart,
-    handleRemoveFromCart,
     handleUpdateQuantity,
     handleToggleFavorite,
     count,
@@ -302,8 +258,6 @@ export const useProductPage = () => {
     setReviewRating,
     isSubmittingReview,
     handleSubmitReview,
-    handleEditReview,
-    handleDeleteReview,
     editingReviewId,
     setEditingReviewId,
     refetchReviews,

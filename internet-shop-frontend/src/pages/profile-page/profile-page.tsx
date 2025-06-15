@@ -14,26 +14,28 @@ import { Link as RouterLink } from "react-router-dom";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 import { useProfilePage } from "./use-profile-page";
-import { useState } from "react";
-import { Check, Edit } from "@mui/icons-material";
-
-
+import { Edit } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ProfilePage = () => {
-  const [isPasswordEditable, setIsPasswordEditable] = useState(false);
   const {
     user,
-    form: {
-      register,
-      handleSubmit,
-      formState: { errors },
-    },
+    form,
     isLoading,
     error,
     handleUpdateProfile,
     handleAvatarChange,
     handleLogout,
+    isPasswordEditable,
+    setIsPasswordEditable,
   } = useProfilePage();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = form;
 
   if (isLoading)
     return (
@@ -247,26 +249,6 @@ const ProfilePage = () => {
                 helperText={errors.username?.message?.toString()}
               />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TextField
-                label="Пароль"
-                type="password"
-                fullWidth
-                disabled={!isPasswordEditable}
-                {...register("password")}
-                error={!!errors.password}
-                helperText={errors.password?.message?.toString()}
-                defaultValue={isPasswordEditable ? "" : "*********"}
-              />
-              <IconButton 
-                onClick={() => setIsPasswordEditable(!isPasswordEditable)}
-                color={isPasswordEditable ? "primary" : "default"}
-              >
-                {isPasswordEditable ? <Check /> : <Edit />}
-              </IconButton>
-            </Box>
-
-
               <TextField
                 label="Адрес"
                 fullWidth
@@ -288,6 +270,38 @@ const ProfilePage = () => {
                 ))}
                 defaultValue={user.phone}
               />
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <TextField
+                  label="Пароль"
+                  type="password"
+                  fullWidth
+                  disabled={!isPasswordEditable}
+                  {...register("password")}
+                  error={!!errors.password}
+                  helperText={errors.password?.message?.toString()}
+                  required={false}
+                  value={isPasswordEditable ? undefined : "**********"}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                />
+                <IconButton
+                  onClick={() => {
+                    setIsPasswordEditable(!isPasswordEditable);
+                    if (isPasswordEditable) {
+                      setValue("password", undefined);
+                    } else {
+                      setValue("password", "");
+                    }
+                  }}
+                  color={isPasswordEditable ? "primary" : "default"}
+                >
+                  {isPasswordEditable ? <CloseIcon /> : <Edit />}
+                </IconButton>
+              </Box>
             </Box>
 
             <Box sx={{ mt: 4 }}>
