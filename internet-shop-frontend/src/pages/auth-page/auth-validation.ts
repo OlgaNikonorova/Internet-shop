@@ -7,7 +7,7 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(8, "Пароль должен содержать не менее 8 символов")
-    .regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву"),
+    .regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву A-Z"),
 });
 
 export const registerSchema = loginSchema.extend({
@@ -33,17 +33,29 @@ export const registerSchema = loginSchema.extend({
   }),
 });
 
-export const forgotPasswordSchema = z.object({
-  username: z.string().min(3, "Псевдоним должен быть не менее 3 символов"),
-  email: z.string().email("Введите корректный email"),
-});
-
-export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().regex(/^\S+@\S+\.\S+$/, "Введите корректную электронную почту"),
+  username: z.string().min(3, "Псевдоним должен быть не менее 3 символов"),
+});
+
+// Обновляем тип FormData
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type FormData = LoginFormData | RegisterFormData | ForgotPasswordFormData;
 
-export const getSchema = (mode: AuthMode) =>
-  mode === AuthMode.Login ? loginSchema : registerSchema;
+// Обновляем getSchema
+export const getSchema = (mode: AuthMode) => {
+  switch (mode) {
+    case AuthMode.Login:
+      return loginSchema;
+    case AuthMode.Register:
+      return registerSchema;
+    case AuthMode.ForgotPassword:
+      return forgotPasswordSchema;
+    default:
+      return loginSchema;
+  }
+};

@@ -6,7 +6,6 @@ export class ResetPasswordDto {
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
     description: 'reset password token',
   })
-  @IsString()
   token: string;
 
   @ApiProperty({
