@@ -4,18 +4,18 @@ export const profileSchema = z.object({
   username: z
     .string()
     .min(3, "Псевдоним должен быть не менее 3 символов")
-    .nullable(),
+    .optional(),
 
   password: z
     .string()
     .min(8, "Пароль должен содержать не менее 8 символов")
     .regex(/[a-zA-Z]/, "Пароль должен содержать хотя бы одну букву")
-    .nullable(),
+    .optional(),
 
   email: z
     .string()
     .regex(/^\S+@\S+\.\S+$/, "Введите корректную электронную почту")
-    .nullable(),
+    .optional(),
 
   name: z
     .string()
@@ -24,12 +24,12 @@ export const profileSchema = z.object({
       /^[A-ZА-ЯЁ][a-zа-яё]+\s[A-ZА-ЯЁ][a-zа-яё]+$/,
       "Имя и фамилия должны начинаться с заглавной буквы и содержать пробел между именем и фамилией"
     )
-    .nullable(),
+    .optional(),
 
   address: z
     .string()
     .min(10, "Адрес должен быть не менее 10 символов")
-    .nullable(),
+    .optional(),
 
   phone: z
     .string()
@@ -37,7 +37,7 @@ export const profileSchema = z.object({
       /^((8|\+374|\+994|\+995|\+375|\+7|\+380|\+38|\+996|\+998|\+993)[ ]?)?\(?\d{3,5}\)?[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}[ ]?\d{1}(([ ]?\d{1})?[ ]?\d{1})?$/,
       "Введите корректный номер телефона"
     )
-    .nullable(),
+    .optional(),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;

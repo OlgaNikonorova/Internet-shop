@@ -255,7 +255,7 @@ export class UsersController {
   ): Promise<UserResponseDto> {
     const currentUser = await this._usersService.findById(currentUserId);
 
-    if (currentUserId !== id && currentUser.role !== UserRole.Admin) {
+    if (!(currentUserId === id || currentUser.role === UserRole.Admin)) {
       throw new ForbiddenException('You can only update your own profile');
     }
 

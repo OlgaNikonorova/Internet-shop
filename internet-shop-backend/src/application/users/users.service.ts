@@ -122,8 +122,10 @@ export class UsersService implements IUserService {
   }
 
   public async update(id: string, userUpdateDto: UserUpdateDto): Promise<User> {
-    await this._usersRepository.update(id, userUpdateDto);
-    return (await this._usersRepository.findOneBy({ id }))!;
+    const user = await this.findById(id);
+    Object.assign(user, userUpdateDto);
+    await this._usersRepository.save(user);
+    return user;
   }
 
   public async updateRole(id: string, role: UserRole): Promise<User> {
@@ -165,7 +167,6 @@ export class UsersService implements IUserService {
       );
     }
 
-
     const updateData: Partial<User> = {};
     if (bulkDto.role) {
       updateData.role = bulkDto.role;
@@ -185,6 +186,4 @@ export class UsersService implements IUserService {
   public async delete(id: string): Promise<void> {
     await this._usersRepository.delete(id);
   }
-
-  
 }
