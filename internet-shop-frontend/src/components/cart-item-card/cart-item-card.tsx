@@ -7,14 +7,18 @@ import {
 } from "../../store/api/cart-api";
 import { useDispatch } from "react-redux";
 import { addCartItem } from "../../store/slices/cart-slice";
+import { useNavigate } from "react-router-dom";
 
 interface CartItemCardProps {
   cartItem: CartItem;
   refetchCart: () => void;
+  onNavigateProduct: () => void;
 }
 
 const CartItemCard = (props: CartItemCardProps) => {
-  const { cartItem, refetchCart } = props;
+  const { cartItem, refetchCart, onNavigateProduct } = props;
+
+  const navigate = useNavigate();
 
   const mainImage =
     (cartItem.productImages &&
@@ -71,7 +75,11 @@ const CartItemCard = (props: CartItemCardProps) => {
         <img
           src={mainImage}
           alt={productName}
-          className="w-full h-auto object-cover rounded"
+          className="w-full h-auto object-cover rounded cursor-pointer"
+          onClick={() => {
+            navigate(`/product/${cartItem.productId}`);
+            onNavigateProduct();
+          }}
         />
       </div>
 

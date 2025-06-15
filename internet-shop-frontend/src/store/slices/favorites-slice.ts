@@ -2,11 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 type FavoritesState = {
-  lastUpdated: number;
+  lastUpdatedFavorites: number;
 };
 
 const initialState: FavoritesState = {
-  lastUpdated: Date.now(),
+  lastUpdatedFavorites: Date.now(),
 };
 
 export const favoritesSlice = createSlice({
@@ -14,14 +14,14 @@ export const favoritesSlice = createSlice({
   initialState,
   reducers: {
     refreshFavorites(state) {
-      state.lastUpdated = Date.now();
+      state.lastUpdatedFavorites = Date.now();
     },
   },
 });
 
 export const { refreshFavorites } = favoritesSlice.actions;
 
-export const lastUpdatedSelector = (state: RootState) =>
-  state.favorites.lastUpdated;
+export const lastUpdatedFavoritesSelector = (state: RootState) =>
+  state.favorites.lastUpdatedFavorites;
 
 export default favoritesSlice.reducer;

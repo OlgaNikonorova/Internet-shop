@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import {
   useGetPaginatedFavoriteProductsQuery,
   useClearFavoritesMutation,
 } from "../../store/api/favorites-api";
 import { Order } from "../../store/models/order";
 
-import CartItem from "../../store/models/cart/cart-item";
 import Product from "../../store/models/product/product";
 
 import ProductCard from "../../components/product-card/product-card";

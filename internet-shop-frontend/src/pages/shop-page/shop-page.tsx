@@ -13,7 +13,7 @@ import { SortOptions } from "../../components/pagination/sort";
 import { Filters } from "../../components/pagination/filters";
 import { useEffect } from "react";
 import { useTypedSelector } from "../../store/hooks";
-import { lastUpdatedSelector } from "../../store/slices/favorites-slice";
+import { lastUpdatedFavoritesSelector } from "../../store/slices/favorites-slice";
 
 const ShopPage = () => {
   const {
@@ -51,7 +51,7 @@ const ShopPage = () => {
     "/uploads/files-1749583702973-607901801.jpeg",
   ];
 
-  const lastUpdated = useTypedSelector(lastUpdatedSelector);
+  const lastUpdated = useTypedSelector(lastUpdatedFavoritesSelector);
 
   useEffect(() => {
     refetchFavorites();
