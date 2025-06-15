@@ -8,13 +8,19 @@ import {
   Alert,
   Link,
   TextField,
+  IconButton,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 import { useProfilePage } from "./use-profile-page";
+import { useState } from "react";
+import { Check, Edit } from "@mui/icons-material";
+
+
 
 const ProfilePage = () => {
+  const [isPasswordEditable, setIsPasswordEditable] = useState(false);
   const {
     user,
     form: {
@@ -241,15 +247,25 @@ const ProfilePage = () => {
                 helperText={errors.username?.message?.toString()}
               />
 
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TextField
                 label="Пароль"
                 type="password"
                 fullWidth
+                disabled={!isPasswordEditable}
                 {...register("password")}
                 error={!!errors.password}
                 helperText={errors.password?.message?.toString()}
-                defaultValue="*********"
+                defaultValue={isPasswordEditable ? "" : "*********"}
               />
+              <IconButton 
+                onClick={() => setIsPasswordEditable(!isPasswordEditable)}
+                color={isPasswordEditable ? "primary" : "default"}
+              >
+                {isPasswordEditable ? <Check /> : <Edit />}
+              </IconButton>
+            </Box>
+
 
               <TextField
                 label="Адрес"

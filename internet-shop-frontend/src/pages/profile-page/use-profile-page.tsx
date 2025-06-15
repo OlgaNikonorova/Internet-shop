@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -12,13 +12,14 @@ import { useDispatch } from "react-redux";
 import { logout, setAvatar, setUsername } from "../../store/slices/user-slice";
 import { useUploadFileMutation } from "../../store/api/files-api";
 
+
 export const useProfilePage = () => {
+  const [isPasswordEditable, setIsPasswordEditable] = useState(false);
   const { data: user, isLoading, error, refetch } = useGetMeQuery();
   const [updateUser] = useUpdateUserByIdMutation();
   const [uploadFile] = useUploadFileMutation();
   const [logoutUser] = useLogoutUserMutation();
   const dispatch = useDispatch();
-
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -45,31 +46,38 @@ export const useProfilePage = () => {
   }, [form, user]);
 
   const handleUpdateProfile = async (data: ProfileFormData) => {
-    if (!user) return;
+  if (!user) return;
 
-    const updateData: UpdateUser = {
-      email: data.email ?? undefined,
-      password: data.password ?? undefined,
-      username: data.username ?? undefined,
-      name: data.name ?? undefined,
-      address: data.address ?? undefined,
-      phone: data.phone ?? undefined,
-      avatar: user.avatar,
-      role: user.role,
-      status: user.status,
-    };
-
-    if (data.username) {
-      dispatch(setUsername(data.username));
-    }
-
-    try {
-      await updateUser({ id: user.id, updateUser: updateData }).unwrap();
-      refetch();
-    } catch (err) {
-      console.error("Ошибка при обновлении профиля:", err);
-    }
+  // Очищаем null значения перед отправкой
+  const cleanData = {
+    ...data,
+    password: data.password ?? undefined, // преобразуем null в undefined
+    email: data.email ?? undefined,
+    username: data.username ?? undefined,
+    name: data.name ?? undefined,
+    address: data.address ?? undefined,
+    phone: data.phone ?? undefined,
   };
+
+  const updateData: UpdateUser = {
+    ...cleanData,
+    avatar: user.avatar,
+    role: user.role,
+    status: user.status,
+  };
+
+  // Включаем пароль только если поле редактировалось
+  if (!isPasswordEditable) {
+    delete updateData.password;
+  }
+
+  try {
+    await updateUser({ id: user.id, updateUser: updateData }).unwrap();
+    refetch();
+  } catch (err) {
+    console.error("Ошибка при обновлении профиля:", err);
+  }
+};
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -122,5 +130,9 @@ export const useProfilePage = () => {
     handleUpdateProfile,
     handleAvatarChange,
     handleLogout,
+    isPasswordEditable,
+    setIsPasswordEditable
   };
 };
+
+
