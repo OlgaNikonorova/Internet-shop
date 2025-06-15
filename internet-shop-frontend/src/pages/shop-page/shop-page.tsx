@@ -11,6 +11,9 @@ import ProductCard from "../../components/product-card/product-card";
 import { Search } from "../../components/search/search";
 import { SortOptions } from "../../components/pagination/sort";
 import { Filters } from "../../components/pagination/filters";
+import { useEffect } from "react";
+import { useTypedSelector } from "../../store/hooks";
+import { lastUpdatedSelector } from "../../store/slices/favorites-slice";
 
 const ShopPage = () => {
   const {
@@ -37,6 +40,7 @@ const ShopPage = () => {
     setIsPriceFilterEnabled,
     isRatingFilterEnabled,
     setIsRatingFilterEnabled,
+    handleRemoveFromCart,
   } = useShopPage();
 
   const promoImages = [
@@ -46,6 +50,12 @@ const ShopPage = () => {
     "/uploads/files-1749583702973-607901801.jpeg",
     "/uploads/files-1749583702973-607901801.jpeg",
   ];
+
+  const lastUpdated = useTypedSelector(lastUpdatedSelector);
+
+  useEffect(() => {
+    refetchFavorites();
+  }, [lastUpdated, refetchFavorites]);
 
   if (isLoading) {
     return <div className="text-center py-8">Загрузка...</div>;
@@ -113,10 +123,11 @@ const ShopPage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                isInCart={cartItemIds.some((id) => id === product.id)}
-                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
                 refetchCart={refetchCart}
                 refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
               />
             )}
           />
@@ -142,10 +153,11 @@ const ShopPage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                isInCart={cartItemIds.some((id) => id === product.id)}
-                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
                 refetchCart={refetchCart}
                 refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
               />
             )}
           />
@@ -191,12 +203,11 @@ const ShopPage = () => {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      isInCart={cartItemIds.some((id) => id === product.id)}
-                      isFavorite={favoriteProductIds.some(
-                        (id) => id === product.id
-                      )}
+                      isInCart={cartItemIds.includes(product.id)}
+                      isFavorite={favoriteProductIds.includes(product.id)}
                       refetchCart={refetchCart}
                       refetchFavorites={refetchFavorites}
+                      removeFromCart={handleRemoveFromCart}
                     />
                   ))}
                 </Box>
@@ -226,10 +237,11 @@ const ShopPage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                isInCart={cartItemIds.some((id) => id === product.id)}
-                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
                 refetchCart={refetchCart}
                 refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
               />
             )}
             bgImagePath={
@@ -245,10 +257,11 @@ const ShopPage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                isInCart={cartItemIds.some((id) => id === product.id)}
-                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
                 refetchCart={refetchCart}
                 refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
               />
             )}
             bgImagePath={
@@ -264,10 +277,11 @@ const ShopPage = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                isInCart={cartItemIds.some((id) => id === product.id)}
-                isFavorite={favoriteProductIds.some((id) => id === product.id)}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
                 refetchCart={refetchCart}
                 refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
               />
             )}
             bgImagePath={

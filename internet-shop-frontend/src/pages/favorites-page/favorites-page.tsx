@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   useGetPaginatedFavoriteProductsQuery,
   useClearFavoritesMutation,
-  useRemoveProductFromFavoritesMutation,
 } from "../../store/api/favorites-api";
 import { Order } from "../../store/models/order";
 import PaginatedFavoriteProductsRequest from "../../store/models/favorites/paginated-favorite-products-request";
@@ -14,12 +13,19 @@ import Product from "../../store/models/product/product";
 import { Select, MenuItem } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ProductCard from "../../components/product-card/product-card";
+import {
+  useGetUserCartQuery,
+  useRemoveItemFromCartMutation,
+} from "../../store/api/cart-api";
+import { refreshFavorites } from "../../store/slices/favorites-slice";
+import { useDispatch } from "react-redux";
 
 const FavoritesPage = () => {
   const [pageSize, setPageSize] = useState(8);
   const [sortField, setSortField] = useState<keyof CartItem>("updatedAt");
   const [orderBy] = useState<Order>(Order.DESCENDING);
-  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
+
+  const dispatch = useDispatch();
 
   const requestParams: PaginatedFavoriteProductsRequest = {
     pageSize,
@@ -40,20 +46,33 @@ const FavoritesPage = () => {
     } = {},
     isLoading,
     isError,
-    refetch,
+    refetch: refetchFavorites,
   } = useGetPaginatedFavoriteProductsQuery(requestParams, {
     refetchOnMountOrArgChange: true,
   });
 
+  const { data: { items: cartItems = [] } = {}, refetch: refetchCart } =
+    useGetUserCartQuery();
+
   const [clearFavorites] = useClearFavoritesMutation();
+  const [removeFromCart] = useRemoveItemFromCartMutation();
 
   const handleClearAll = async () => {
     await clearFavorites();
-    refetch();
+    dispatch(refreshFavorites());
+    refetchFavorites();
   };
 
   const handleShowMore = () => {
     setPageSize((prev) => prev + 8);
+  };
+
+  const handleRemoveFromCart = async (productId: string) => {
+    const cartItemId = cartItems.find(
+      (item) => item.productId === productId
+    )?.id;
+
+    if (cartItemId) await removeFromCart(cartItemId);
   };
 
   if (isError) {
@@ -129,12 +148,10 @@ const FavoritesPage = () => {
               key={product.id}
               product={product}
               isFavorite={true}
-              onToggleFavorite={async () => {
-                await removeFromFavorites(product.id);
-                refetch();
-              }}
-              refetchFavorites={() => {return;}}
-              refetchCart={() => {return;}}
+              isInCart={cartItems.some((item) => item.productId === product.id)}
+              refetchFavorites={refetchFavorites}
+              refetchCart={refetchCart}
+              removeFromCart={handleRemoveFromCart}
             />
           ))}
         </div>

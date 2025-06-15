@@ -2,7 +2,10 @@ import { useMemo, useState } from "react";
 import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
 import { Order } from "../../store/models/order";
 import { useGetUserFavoritesQuery } from "../../store/api/favorites-api";
-import { useGetUserCartQuery } from "../../store/api/cart-api";
+import {
+  useGetUserCartQuery,
+  useRemoveItemFromCartMutation,
+} from "../../store/api/cart-api";
 import { useDebounce } from "../../store/hooks";
 import { ProductCategory } from "../../store/models/product/product-category";
 import Product from "../../store/models/product/product";
@@ -23,6 +26,8 @@ export const useShopPage = () => {
 
   const [isPriceFilterEnabled, setIsPriceFilterEnabled] = useState(false);
   const [isRatingFilterEnabled, setIsRatingFilterEnabled] = useState(false);
+
+  const [removeFromCart] = useRemoveItemFromCartMutation();
 
   const requestParams = useMemo(
     () => ({
@@ -78,8 +83,10 @@ export const useShopPage = () => {
     }
   );
 
-  const {data: favoriteProducts = [], refetch: refetchFavorites} = useGetUserFavoritesQuery();
-  const {data: {items: cartItems = []} = {}, refetch: refetchCart} = useGetUserCartQuery()
+  const { data: favoriteProducts = [], refetch: refetchFavorites } =
+    useGetUserFavoritesQuery();
+  const { data: { items: cartItems = [] } = {}, refetch: refetchCart } =
+    useGetUserCartQuery();
 
   const handleShowMore = () => {
     setPageSize((prev) => prev + 8);
@@ -110,6 +117,14 @@ export const useShopPage = () => {
     setPageSize(8);
   };
 
+  const handleRemoveFromCart = async (productId: string) => {
+    const cartItemId = cartItems.find(
+      (item) => item.productId === productId
+    )?.id;
+
+    if (cartItemId) await removeFromCart(cartItemId);
+  };
+
   return {
     products,
     page,
@@ -119,8 +134,8 @@ export const useShopPage = () => {
     latestProducts,
     isLatestLoading,
     isLatestError,
-    favoriteProductIds: favoriteProducts.map(product => product.id),
-    cartItemIds: cartItems.map(item => item.productId),
+    favoriteProductIds: favoriteProducts.map((product) => product.id),
+    cartItemIds: cartItems.map((item) => item.productId),
     refetchFavorites,
     refetchCart,
     search,
@@ -137,5 +152,6 @@ export const useShopPage = () => {
     setIsPriceFilterEnabled,
     isRatingFilterEnabled,
     setIsRatingFilterEnabled,
+    handleRemoveFromCart,
   };
 };
