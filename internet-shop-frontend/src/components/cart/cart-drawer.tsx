@@ -89,7 +89,11 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             >
               {products.map((product: CartItem) => (
                 <div key={product.id} className="relative p-4">
-                  <CartItemCard cartItem={product} refetchCart={refetch} />
+                  <CartItemCard
+                    cartItem={product}
+                    refetchCart={refetch}
+                    onNavigateProduct={() => onClose()}
+                  />
                 </div>
               ))}
             </List>
