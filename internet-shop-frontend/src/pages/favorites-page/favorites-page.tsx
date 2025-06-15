@@ -1,31 +1,69 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
 import {
   useGetPaginatedFavoriteProductsQuery,
   useClearFavoritesMutation,
-  useRemoveProductFromFavoritesMutation,
 } from "../../store/api/favorites-api";
 import { Order } from "../../store/models/order";
-import PaginatedFavoriteProductsRequest from "../../store/models/favorites/paginated-favorite-products-request";
 
-import CartItem from "../../store/models/cart/cart-item";
 import Product from "../../store/models/product/product";
 
-import { Select, MenuItem } from "@mui/material";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import ProductCard from "../../components/product-card/product-card";
+import {
+  useGetUserCartQuery,
+  useRemoveItemFromCartMutation,
+} from "../../store/api/cart-api";
+import { refreshFavorites } from "../../store/slices/favorites-slice";
+import { useDispatch } from "react-redux";
+import { Search } from "../../components/search/search";
+import { SortOptions } from "../../components/pagination/sort";
+import { Filters } from "../../components/pagination/filters";
+import { useDebounce } from "../../store/hooks";
+import { ProductCategory } from "../../store/models/product/product-category";
 
 const FavoritesPage = () => {
   const [pageSize, setPageSize] = useState(8);
-  const [sortField, setSortField] = useState<keyof CartItem>("updatedAt");
-  const [orderBy] = useState<Order>(Order.DESCENDING);
-  const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
-  const requestParams: PaginatedFavoriteProductsRequest = {
-    pageSize,
-    sortField: String(sortField),
-    orderBy,
-  };
+  const dispatch = useDispatch();
+
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 500);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
+  const [ratingRange, setRatingRange] = useState<[number, number]>([0, 5]);
+  const [category, setCategory] = useState<ProductCategory | undefined>(
+    undefined
+  );
+  const [sortOption, setSortOption] = useState<{
+    field: keyof Product;
+    order: Order;
+  }>({ field: "rating", order: Order.DESCENDING });
+
+  const [isPriceFilterEnabled, setIsPriceFilterEnabled] = useState(false);
+  const [isRatingFilterEnabled, setIsRatingFilterEnabled] = useState(false);
+
+  const requestParams = useMemo(
+    () => ({
+      pageSize,
+      search: debouncedSearch,
+      sortField: sortOption.field,
+      orderBy: sortOption.order,
+      priceFrom: isPriceFilterEnabled ? priceRange[0] : undefined,
+      priceTo: isPriceFilterEnabled ? priceRange[1] : undefined,
+      category: category,
+      ratingFrom: isRatingFilterEnabled ? ratingRange[0] : undefined,
+      ratingTo: isRatingFilterEnabled ? ratingRange[1] : undefined,
+    }),
+    [
+      pageSize,
+      debouncedSearch,
+      sortOption.field,
+      sortOption.order,
+      isPriceFilterEnabled,
+      priceRange,
+      category,
+      isRatingFilterEnabled,
+      ratingRange,
+    ]
+  );
 
   const {
     data: {
@@ -40,20 +78,58 @@ const FavoritesPage = () => {
     } = {},
     isLoading,
     isError,
-    refetch,
+    refetch: refetchFavorites,
   } = useGetPaginatedFavoriteProductsQuery(requestParams, {
     refetchOnMountOrArgChange: true,
   });
 
+  const { data: { items: cartItems = [] } = {}, refetch: refetchCart } =
+    useGetUserCartQuery();
+
   const [clearFavorites] = useClearFavoritesMutation();
+  const [removeFromCart] = useRemoveItemFromCartMutation();
 
   const handleClearAll = async () => {
     await clearFavorites();
-    refetch();
+    dispatch(refreshFavorites());
+    refetchFavorites();
   };
 
   const handleShowMore = () => {
     setPageSize((prev) => prev + 8);
+  };
+
+  const handleRemoveFromCart = async (productId: string) => {
+    const cartItemId = cartItems.find(
+      (item) => item.productId === productId
+    )?.id;
+
+    if (cartItemId) await removeFromCart(cartItemId);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearch(query);
+    setPageSize(8);
+  };
+
+  const handleSortChange = (field: keyof Product, order: Order) => {
+    setSortOption({ field, order });
+    setPageSize(8);
+  };
+
+  const handlePriceChange = (newRange: [number, number]) => {
+    setPriceRange(newRange);
+    setPageSize(8);
+  };
+
+  const handleCategoryToggle = (category: ProductCategory) => {
+    setCategory(category);
+    setPageSize(8);
+  };
+
+  const handleRatingChange = (newRange: [number, number]) => {
+    setRatingRange(newRange);
+    setPageSize(8);
   };
 
   if (isError) {
@@ -72,31 +148,13 @@ const FavoritesPage = () => {
     );
   }
 
-  if (products.length === 0) {
-    return (
-      <div className="container mx-auto p-4 text-center">
-        <div className="text-4xl text-gray mb-2">♡</div>
-        <h2 className="text-xl font-semibold text-gray">
-          Ваш список избранного пуст
-        </h2>
-        <p className="text-gray">Добавляйте товары, чтобы не потерять их</p>
-        <Link to="/shop">
-          <button className="mt-4 border px-4 py-2 rounded bg-gray">
-            Перейти к товарам
-          </button>
-        </Link>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white text-black flex flex-col">
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 my-6">
         {/* Заголовок + Очистка */}
         <div className="mb-6 flex flex-col md:flex-row justify-between gap-4 md:items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">Избранное</h1>
-            <span className="text-gray-500 text-sm">{products.length}</span>
           </div>
           <button
             className="border px-3 py-2 rounded text-sm hover:bg-gray-100 disabled:opacity-50"
@@ -107,37 +165,50 @@ const FavoritesPage = () => {
           </button>
         </div>
 
-        {/* Фильтр и сортировка */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2 text-gray-700 text-sm">
-            <FilterListIcon fontSize="small" />
-            <span>Фильтры</span>
-          </div>
-          <Select
-            size="small"
-            value={sortField}
-            onChange={(e) => setSortField(e.target.value as keyof CartItem)}
-          >
-            <MenuItem value="updatedAt">по дате добавления</MenuItem>
-          </Select>
+        <Search search={search} handleSearch={handleSearch} />
+
+        <div className="flex p-5 gap-5 self-start w-full justify-between">
+          <SortOptions
+            sortOption={sortOption}
+            onSortChange={handleSortChange}
+          />
+
+          <Filters
+            priceRange={priceRange}
+            onPriceChange={handlePriceChange}
+            selectedCategory={category}
+            onCategoryToggle={handleCategoryToggle}
+            ratingRange={ratingRange}
+            onRatingChange={handleRatingChange}
+            isPriceFilterEnabled={isPriceFilterEnabled}
+            onTogglePriceFilter={(value) => setIsPriceFilterEnabled(value)}
+            isRatingFilterEnabled={isRatingFilterEnabled}
+            onToggleRatingFilter={(value) => setIsRatingFilterEnabled(value)}
+          />
         </div>
 
         {/* Сетка товаров */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product: Product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              isFavorite={true}
-              onToggleFavorite={async () => {
-                await removeFromFavorites(product.id);
-                refetch();
-              }}
-              refetchFavorites={() => {return;}}
-              refetchCart={() => {return;}}
-            />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product: Product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isFavorite={true}
+                isInCart={cartItems.some(
+                  (item) => item.productId === product.id
+                )}
+                refetchFavorites={refetchFavorites}
+                refetchCart={refetchCart}
+                removeFromCart={handleRemoveFromCart}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-xl text-primary">Ничего не найдено</p>
+          </div>
+        )}
 
         {/* Кнопка "Показать больше" если есть следующая страница */}
         {page.hasNextPage && (

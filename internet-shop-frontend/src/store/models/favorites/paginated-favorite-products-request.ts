@@ -1,10 +1,11 @@
 import { Order } from "../order";
+import Product from "../product/product";
 
 export default interface PaginatedFavoriteProductsRequest {
   search?: string;
   pageIndex?: number;
   pageSize?: number;
-  sortField?: string;
+  sortField?: keyof Product;
   orderBy?: Order;
   priceFrom?: number;
   priceTo?: number;

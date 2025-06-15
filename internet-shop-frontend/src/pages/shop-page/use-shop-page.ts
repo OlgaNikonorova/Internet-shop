@@ -2,7 +2,10 @@ import { useMemo, useState } from "react";
 import { useGetPaginatedProductsQuery } from "../../store/api/products-api";
 import { Order } from "../../store/models/order";
 import { useGetUserFavoritesQuery } from "../../store/api/favorites-api";
-import { useGetUserCartQuery } from "../../store/api/cart-api";
+import {
+  useGetUserCartQuery,
+  useRemoveItemFromCartMutation,
+} from "../../store/api/cart-api";
 import { useDebounce } from "../../store/hooks";
 import { ProductCategory } from "../../store/models/product/product-category";
 import Product from "../../store/models/product/product";
@@ -23,6 +26,8 @@ export const useShopPage = () => {
 
   const [isPriceFilterEnabled, setIsPriceFilterEnabled] = useState(false);
   const [isRatingFilterEnabled, setIsRatingFilterEnabled] = useState(false);
+
+  const [removeFromCart] = useRemoveItemFromCartMutation();
 
   const requestParams = useMemo(
     () => ({
@@ -64,22 +69,21 @@ export const useShopPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const {
-    data: { products: latestProducts = [] } = {},
-    isLoading: isLatestLoading,
-    isError: isLatestError,
-  } = useGetPaginatedProductsQuery(
-    {
-      pageSize: 6,
-      sort: [{ field: "createdAt", order: Order.DESCENDING }],
-    },
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+  const { data: { products: latestProducts = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        sort: [{ field: "createdAt", order: Order.DESCENDING }],
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
-  const {data: favoriteProducts = [], refetch: refetchFavorites} = useGetUserFavoritesQuery();
-  const {data: {items: cartItems = []} = {}, refetch: refetchCart} = useGetUserCartQuery()
+  const { data: favoriteProducts = [], refetch: refetchFavorites } =
+    useGetUserFavoritesQuery();
+  const { data: { items: cartItems = [] } = {}, refetch: refetchCart } =
+    useGetUserCartQuery();
 
   const handleShowMore = () => {
     setPageSize((prev) => prev + 8);
@@ -110,6 +114,68 @@ export const useShopPage = () => {
     setPageSize(8);
   };
 
+  const handleRemoveFromCart = async (productId: string) => {
+    const cartItemId = cartItems.find(
+      (item) => item.productId === productId
+    )?.id;
+
+    if (cartItemId) await removeFromCart(cartItemId);
+  };
+
+  const { data: { products: mayInterestedProducts = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        sort: [{ field: "rating", order: Order.DESCENDING }],
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: parfume = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.PARFUME,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: care = [] } = {} } = useGetPaginatedProductsQuery(
+    {
+      pageSize: 6,
+      category: ProductCategory.CARE,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  const { data: { products: decorativeCosmetics = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.DECORATIVE_COSMETICS,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: jewelry = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.JEWELRY,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
   return {
     products,
     page,
@@ -117,10 +183,13 @@ export const useShopPage = () => {
     isError,
     handleShowMore,
     latestProducts,
-    isLatestLoading,
-    isLatestError,
-    favoriteProductIds: favoriteProducts.map(product => product.id),
-    cartItemIds: cartItems.map(item => item.productId),
+    mayInterestedProducts,
+    parfume,
+    care,
+    decorativeCosmetics,
+    jewelry,
+    favoriteProductIds: favoriteProducts.map((product) => product.id),
+    cartItemIds: cartItems.map((item) => item.productId),
     refetchFavorites,
     refetchCart,
     search,
@@ -137,5 +206,6 @@ export const useShopPage = () => {
     setIsPriceFilterEnabled,
     isRatingFilterEnabled,
     setIsRatingFilterEnabled,
+    handleRemoveFromCart,
   };
 };
