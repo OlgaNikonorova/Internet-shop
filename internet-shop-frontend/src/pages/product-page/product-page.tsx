@@ -7,10 +7,15 @@ import {
   Delete,
   Add,
   Remove,
+  Star,
+  LocalShipping,
+  Person,
+  Home,
+  Diamond as DiamondIcon,
 } from "@mui/icons-material";
 import { useProductPage } from "./use-product-page";
 import { ProductStatus } from "../../store/models/product/product-status";
-import { Button, IconButton } from "@mui/material";
+import { Avatar, Box, Button, Chip, IconButton, Rating as MuiRating, Paper, Tab, Tabs, Typography } from "@mui/material";
 import Review from "../../components/review/review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
@@ -20,7 +25,7 @@ import Counter from "../../components/counter/counter";
 import Slider from "../../components/slider/slider";
 import { ActionNotification } from "../modal/ActionNotification";
 import { ImageModal } from "../modal/ImageModal";
-import Rating from "../../components/rating/rating";
+import ProductCard from "../../components/product-card/product-card";
 
 const ProductPage = () => {
   const {
@@ -50,21 +55,80 @@ const ProductPage = () => {
     cartItem,
     reviewText,
     setReviewText,
-  reviewRating,
-  setReviewRating,
-  isSubmittingReview,
-  handleSubmitReview,
-  handleEditReview,
-  handleDeleteReview,
-  editingReviewId,
-  setEditingReviewId,
+    reviewRating,
+    setReviewRating,
+    isSubmittingReview,
+    handleSubmitReview,
+    handleEditReview,
+    handleDeleteReview,
+    editingReviewId,
+    setEditingReviewId,
   } = useProductPage();
 
   const imagesSwiperRef = useRef<{ swiper: SwiperType } | null>(null);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
 
-  if (isProductError || !product || product.status !== ProductStatus.ACTIVE) {
+    // Устанавливаем рейтинг по умолчанию
+  const productWithDefaultRating = product ? {
+    ...product,
+    rating: typeof product.rating === 'number' ? product.rating : 0
+  } : null;
+
+  const similarProducts = [
+    {
+      id: "1",
+      name: "Похожий товар 1",
+      price: 1999,
+      rating: 4.5,
+      stock: 10,
+      status: ProductStatus.ACTIVE,
+      category: product?.category || "Категория",
+      images: ["/uploads/files-1749991787756-410100815.webp"],
+      description: "Описание похожего товара 1",
+    },
+    {
+      id: "2",
+      name: "Похожий товар 2",
+      price: 2499,
+      rating: 4.2,
+      stock: 5,
+      status: ProductStatus.ACTIVE,
+      category: product?.category || "Категория",
+      images: ["/uploads/files-1749991787756-410100815.webp"],
+      description: "Описание похожего товара 2",
+    },
+    {
+      id: "3",
+      name: "Похожий товар 3",
+      price: 1799,
+      rating: 4.7,
+      stock: 8,
+      status: ProductStatus.ACTIVE,
+      category: product?.category || "Категория",
+      images: ["/uploads/files-1749991787756-410100815.webp"],
+      description: "Описание похожего товара 3",
+    },
+    {
+      id: "4",
+      name: "Похожий товар 4",
+      price: 2999,
+      rating: 4.9,
+      stock: 3,
+      status: ProductStatus.ACTIVE,
+      category: product?.category || "Категория",
+      images: ["/uploads/files-1749991787756-410100815.webp"],
+      description: "Описание похожего товара 4",
+    },
+  ];
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  if (isProductError || !productWithDefaultRating || productWithDefaultRating.status !== ProductStatus.ACTIVE) {
     return (
       <div className="text-center mt-10 py-12 text-white">
         <h2 className="text-2xl font-semibold text-gray-700">
@@ -78,8 +142,8 @@ const ProductPage = () => {
     );
   }
 
-  const isInStock = product.stock > 0;
-  const productImages = product.images ?? [];
+  const isInStock = productWithDefaultRating.stock > 0;
+  const productImages = productWithDefaultRating.images ?? [];
 
   const handleImageClick = (image: string, index: number) => {
     setSelectedImage(image);
@@ -105,6 +169,11 @@ const ProductPage = () => {
       setSelectedImage(productImages[newIndex]);
       return newIndex;
     });
+  };
+
+  const handleSubmitReviewAndClose = async () => {
+    await handleSubmitReview();
+    setIsReviewFormOpen(false);
   };
 
   return (
@@ -139,7 +208,7 @@ const ProductPage = () => {
                 >
                   <img
                     src={`${process.env.REACT_APP_API_BASE_URL}${image}`}
-                    alt={product.name}
+                    alt={productWithDefaultRating.name}
                     className="w-full h-full object-cover"
                     onClick={() => handleImageClick(image, index)}
                   />
@@ -157,7 +226,7 @@ const ProductPage = () => {
         ) : (
           <img
             src="/images/placeholder.webp"
-            alt={product.name}
+            alt={productWithDefaultRating.name}
             className="w-full h-full object-cover"
           />
         )}
@@ -181,7 +250,7 @@ const ProductPage = () => {
               >
                 <img
                   src={`${process.env.REACT_APP_API_BASE_URL}${image}`}
-                  alt={`${product.name} thumbnail`}
+                  alt={`${productWithDefaultRating.name} thumbnail`}
                   className="w-full h-full object-cover"
                 />
                 <div className="swiper-thumb-overlay absolute inset-0 bg-black/40 opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -192,79 +261,119 @@ const ProductPage = () => {
       )}
 
       {/* Информация о товаре */}
-      <div className="text-primary px-10 py-5">
-        <h1 className="text-3xl font-bold">{product.name}</h1>
+      <div className="text-primary px-15 py-5 m-10">
+        <h1 className="text-4xl font-bold mb-1">{productWithDefaultRating.name}</h1>
         <div className="flex gap-5">
-          <Rating value={product.rating} />
-          <p>{reviews.length} оценок</p>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontStyle: "italic",
+              fontSize: "1.25rem",
+            }}
+          >
+            <MuiRating
+              component="span"
+              value={parseFloat(productWithDefaultRating.rating.toFixed(1))}
+              precision={1}
+              readOnly
+              sx={{
+                "& .MuiRating-iconFilled": {
+                  color: "black",
+                },
+                "& .MuiRating-iconEmpty": {
+                  color: "black",
+                  opacity: 0.3,
+                },
+              }}
+            />
+          </Box>
+          <p>
+            {reviews.length}{" "}
+            {
+              ["оценок", "оценка", "оценки"][
+                reviews.length % 100 >= 11 && reviews.length % 100 <= 14
+                  ? 0
+                  : reviews.length % 10 === 1
+                  ? 1
+                  : reviews.length % 10 >= 2 && reviews.length % 10 <= 4
+                  ? 2
+                  : 0
+              ]
+            }
+          </p>
         </div>
 
-        <div className="flex justify-between gap-20 mt-10">
-          <div className="flex flex-col">
-            <p>{product.description || "Описание товара отсутствует"}</p>
-          </div>
+        <div className="flex flex-col lg:flex-row gap-10">
+          {/* Левый блок - описание и характеристики */}
+          <Box sx={{ width: '50%' }}>
+  <Typography variant="h5" paragraph>
+    {productWithDefaultRating.description || "Описание товара отсутствует"}
+  </Typography>
+</Box>
 
-          <div className="flex flex-col min-w-[300px] mr-20 gap-8">
-            <div className="flex self-center justify-between w-full">
-              <span className="text-3xl font-semibold">
-                {product.price.toFixed(2)} ₽
-              </span>
-              <div className="flex flex-col text-center">
-                <span className="font-semibold text-lg">
-                  {(product.price * 0.8).toFixed(2)} ₽
-                </span>
-                <span className="text-lg">по скидочной карте</span>
+          {/* Правый блок - цена и кнопки */}
+          <div className="lg:w-80 flex flex-col gap-6">
+            <div className="flex justify-between items-center">
+              <Typography variant="h4" fontWeight="bold">
+                {productWithDefaultRating.price.toFixed(2)} ₽
+              </Typography>
+              <div className="flex flex-col items-end">
+                <Typography variant="h6" fontWeight="bold">
+                  {(productWithDefaultRating.price * 0.8).toFixed(2)} ₽
+                </Typography>
+                <Typography variant="body2">
+                  по скидочной карте
+                </Typography>
               </div>
             </div>
 
-          {/*Добавление в корзину и в избранное*/}
-            <div className="flex justify-between gap-5">
-              <div className="flex-1">
-                {isInCart && cartItem ? (
-                  <div className="flex items-center bg-black rounded-lg overflow-hidden">
-                    <IconButton
-                      onClick={() => onDecrease(cartItem.id, cartItem.quantity ?? 1)}
-                      className="!text-white !p-2 hover:!bg-gray-800"
-                      size="small"
-                    >
-                      <Remove />
-                    </IconButton>
-
-                    <span className="flex-1 text-center text-white text-xl">
-                      {cartItem.quantity}
-                    </span>
-
-                    <IconButton
-                      onClick={() => onIncrease(cartItem.id, cartItem.quantity ?? 1)}
-                      className="!text-white !p-2 hover:!bg-gray-800"
-                      size="small"
-                    >
-                      <Add />
-                    </IconButton>
-                  </div>
-                ) : (
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    startIcon={<ShoppingCart />}
-                    onClick={handleAddToCart}
-                    disabled={!isInStock || isAddingToCart}
-                    className="!bg-black !text-white hover:!bg-gray-800 !py-3"
+            {/* Блок с кнопками */}
+            <div className="flex flex-col gap-4">
+              {isInCart && cartItem ? (
+                <div className="flex items-center bg-black rounded-lg overflow-hidden">
+                  <IconButton
+                    onClick={() => onDecrease(cartItem.id, cartItem.quantity ?? 1)}
+                    className="!text-white !p-2 hover:!bg-gray-800"
+                    size="small"
                   >
-                    {isAddingToCart
-                      ? "Загрузка..."
-                      : !isInStock
-                      ? "Нет в наличии"
-                      : "Добавить в корзину"}
-                  </Button>
-                )}
-              </div>
+                    <Remove />
+                  </IconButton>
+
+                  <span className="flex-1 text-center text-white text-xl">
+                    {cartItem.quantity}
+                  </span>
+
+                  <IconButton
+                    onClick={() => onIncrease(cartItem.id, cartItem.quantity ?? 1)}
+                    className="!text-white !p-2 hover:!bg-gray-800"
+                    size="small"
+                  >
+                    <Add />
+                  </IconButton>
+                </div>
+              ) : (
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  startIcon={<ShoppingCart />}
+                  onClick={handleAddToCart}
+                  disabled={!isInStock || isAddingToCart}
+                  className="!bg-black !text-white hover:!bg-gray-800 !py-3"
+                >
+                  {isAddingToCart
+                    ? "Загрузка..."
+                    : !isInStock
+                    ? "Нет в наличии"
+                    : "Добавить в корзину"}
+                </Button>
+              )}
 
               <IconButton
                 onClick={handleToggleFavorite}
                 disabled={isAddingToFavorites}
-                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition"
+                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition self-center"
               >
                 {isFavorite ? (
                   <Favorite className="text-black" />
@@ -273,79 +382,355 @@ const ProductPage = () => {
                 )}
               </IconButton>
             </div>
-            <div className="flex items-center justify-center text-xl">
-            {isInStock && <p>В наличии {product.stock} шт.</p>}
-            </div>
+
+            <Typography variant="body1" textAlign="center">
+              {isInStock ? `В наличии ${productWithDefaultRating.stock} шт.` : "Нет в наличии"}
+            </Typography>
           </div>
         </div>
 
-        <div className="mt-8 mb-12">
-  <h3 className="text-xl font-semibold mb-4">
-    {editingReviewId ? "Редактировать отзыв" : "Оставить отзыв"}
-  </h3>
-  <div className="bg-gray-50 p-6 rounded-lg">
-    <Rating 
-      value={reviewRating}
-      onChange={setReviewRating}
-      editable
-      className="mb-4"
-    />
-    <textarea
-      className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent"
-      placeholder="Напишите ваш отзыв..."
-      value={reviewText}
-      onChange={(e) => setReviewText(e.target.value)}
-    />
-    <div className="flex gap-3">
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmitReview}
-        disabled={isSubmittingReview || !reviewText || reviewRating === 0}
-        className="!bg-black !text-white hover:!bg-gray-800"
-      >
-        {isSubmittingReview 
-          ? "Отправка..." 
-          : editingReviewId 
-            ? "Обновить отзыв" 
-            : "Отправить отзыв"}
-      </Button>
-      {editingReviewId && (
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setEditingReviewId(null);
-            setReviewText("");
-            setReviewRating(0);
-          }}
-          className="!border-black !text-black"
-        >
-          Отмена
-        </Button>
-      )}
-    </div>
-    </div>
-  </div>
-</div>
+<div className="mt-10 ml-10">
+          {/* Гарантии и доставка */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-around',
+            mb: 4,
+            flexWrap: 'wrap',
+            gap: 2,
+            width: 0.4,
+          }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
+                  <DiamondIcon color="inherit" />
+                </Avatar>
+                <Typography variant="body1" textAlign="center">
+                  Гарантия качества продукции
+                </Typography>
+              </Box>
 
-{/* Список отзывов */}
-{reviews.length > 0 ? (
-  <div className="space-y-4">
-    {reviews.map((review) => (
-      <Review
-        key={review.id}
-        review={review}
-        isOwn={review.isOwn}
-        onEdit={handleEditReview}
-        onDelete={handleDeleteReview}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
+                  <Typography fontWeight="bold" color="inherit">FREE</Typography>
+                </Avatar>
+                <Typography variant="body1" textAlign="center">
+                  Бесплатная доставка от 1500 ₽
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar sx={{ bgcolor: 'background.paper', mb: 1, color: 'black' }}>
+                  <Typography fontWeight="bold" color="inherit">RU</Typography>
+                </Avatar>
+                <Typography variant="body1" textAlign="center">
+                  Доставка по всей территории РФ
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Варианты доставки */}
+            <Typography variant="h6" gutterBottom>
+              Способы доставки:
+            </Typography>
+            
+            <Box sx={{ mb: 4, width: 0.3 }}>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                mb: 1, 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                border: '1px solid black',
+                backgroundColor: 'white', 
+                borderColor: 'divider'
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LocalShipping fontSize="small" />
+                  <Typography>ПВЗ Sobaccini</Typography>
+                </Box>
+                <Chip label="завтра" size="medium" />
+              </Paper>
+
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                mb: 1, 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                border: '1px solid black',
+                backgroundColor: 'white', 
+                borderColor: 'divider'
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Person fontSize="small" />
+                  <Typography>Курьер</Typography>
+                </Box>
+                <Chip label="завтра" size="medium" />
+              </Paper>
+
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                border: '1px solid black',
+                backgroundColor: 'white', 
+                borderColor: 'divider'
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Home fontSize="small" />
+                  <Typography>Самовывоз из магазина</Typography>
+                </Box>
+                <Chip label="завтра" size="medium" />
+              </Paper>
+            </Box>
+            </div>
+
+        <div className="flex flex-col gap-20 m-10">
+          {/* Основное описание и характеристики */}
+          <div className="flex flex-col">
+            {/* Вкладки с информацией */}
+<Box sx={{ width: '100%' }}>
+  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+    <Tabs 
+      value={tabValue} 
+      onChange={handleTabChange} 
+      aria-label="product info tabs"
+    >
+      <Tab 
+        label="Описание" 
+        sx={{ 
+          fontWeight: tabValue === 0 ? 'bold' : 'normal',
+          '&.Mui-selected': { color: 'black' }
+        }} 
       />
-    ))}
+      <Tab 
+        label="Состав" 
+        sx={{ 
+          fontWeight: tabValue === 1 ? 'bold' : 'normal',
+          '&.Mui-selected': { color: 'black' }
+        }} 
+      />
+      <Tab 
+        label="Бренд" 
+        sx={{ 
+          fontWeight: tabValue === 2 ? 'bold' : 'normal',
+          '&.Mui-selected': { color: 'black' }
+        }} 
+      />
+      <Tab 
+        label="Дополнительная информация" 
+        sx={{ 
+          fontWeight: tabValue === 3 ? 'bold' : 'normal',
+          '&.Mui-selected': { color: 'black' }
+        }} 
+      />
+    </Tabs>
+  </Box>
+  <Box sx={{ p: 3 }}>
+    {tabValue === 0 && (
+      <>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+          {productWithDefaultRating.name}
+        </Typography>
+        <Typography>
+          {productWithDefaultRating.description || "Описание товара отсутствует"}
+        </Typography>
+      </>
+    )}
+    {tabValue === 1 && (
+      <Typography>Состав товара будет указан здесь</Typography>
+    )}
+    {tabValue === 2 && (
+      <Typography>Информация о бренде будет здесь</Typography>
+    )}
+    {tabValue === 3 && (
+      <Typography>Дополнительная информация о товаре</Typography>
+    )}
+  </Box>
+  </Box>
   </div>
-) : (
-  <div className="my-8 text-center text-gray-500">
-    Пока нет отзывов. Будьте первым!
   </div>
-)}
+  </div>
+
+      {/* Список отзывов */}
+      {!isReviewsError && (
+        <div className="m-12 mt-2">
+          <h2 className="text-2xl font-bold mb-10">Рейтинг и отзывы</h2>
+          {reviews.length > 0 ? (
+            <div className="flex items-center p-6 justify-between gap-6">
+              <div className="flex gap-7">
+                <h3 className="text-5xl font-bold">{productWithDefaultRating.rating}</h3>
+                <div className="flex flex-col items-center gap-1">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontStyle: "italic",
+                      fontSize: "1.25rem",
+                    }}
+                  >
+                    <MuiRating
+                      component="span"
+                      value={parseFloat(productWithDefaultRating.rating.toFixed(1))}
+                      precision={1}
+                      readOnly
+                      sx={{
+                        "& .MuiRating-iconFilled": {
+                          color: "black",
+                        },
+                        "& .MuiRating-iconEmpty": {
+                          color: "black",
+                          opacity: 0.3,
+                        },
+                      }}
+                    />
+                  </Box>
+                  <p>
+                    {reviews.length}{" "}
+                    {
+                      ["оценок", "оценка", "оценки"][
+                        reviews.length % 100 >= 11 && reviews.length % 100 <= 14
+                          ? 0
+                          : reviews.length % 10 === 1
+                          ? 1
+                          : reviews.length % 10 >= 2 && reviews.length % 10 <= 4
+                          ? 2
+                          : 0
+                      ]
+                    }
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <Slider
+                  slidesPerView={3}
+                  items={reviews}
+                  renderItem={(review) => (
+                    <Review key={review.id} review={review} />
+                  )}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="my-8 text-center">Отзывов еще нет. Оставьте отзыв первым!</div>
+          )}
+
+          {/* Кнопка для открытия формы отзыва */}
+          <div className="text-center mt-8">
+            <Button
+              variant="outlined"
+              onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
+              className="!border-black !text-black hover:!bg-gray-100"
+            >
+              {isReviewFormOpen ? "Скрыть форму отзыва" : "Оставить отзыв"}
+            </Button>
+          </div>
+
+          {/* Форма для отзыва (появляется только при isReviewFormOpen === true) */}
+          {isReviewFormOpen && (
+            <div className="mt-8">
+              <h3 className="text-2xl font-bold mb-4">
+                {editingReviewId ? "Редактировать отзыв" : "Оставить отзыв"}
+              </h3>
+              <div className="bg-gray-50 rounded-lg p-6">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    fontStyle: "italic",
+                    fontSize: "1.25rem",
+                    mb: 3,
+                  }}
+                >
+                  <MuiRating
+                    value={reviewRating}
+                    onChange={(event, newValue) => {
+                      if (newValue !== null) {
+                        setReviewRating(newValue);
+                      }
+                    }}
+                    precision={1}
+                    sx={{
+                      fontSize: "1.5rem",
+                      "& .MuiRating-iconFilled": {
+                        color: "black",
+                      },
+                      "& .MuiRating-iconEmpty": {
+                        color: "black",
+                        opacity: 0.3,
+                      },
+                      "& .MuiRating-icon": {
+                        fontStyle: "italic",
+                      },
+                    }}
+                    icon={
+                      <Star fontSize="inherit" style={{ fontStyle: "italic" }} />
+                    }
+                    emptyIcon={
+                      <Star
+                        fontSize="inherit"
+                        style={{ fontStyle: "italic", opacity: 0.3 }}
+                      />
+                    }
+                  />
+                </Box>
+
+                <textarea
+                  className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Напишите ваш отзыв..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                />
+                <div className="flex gap-3">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmitReviewAndClose}
+                    disabled={
+                      isSubmittingReview || !reviewText || reviewRating === 0
+                    }
+                    className="!bg-black !text-white hover:!bg-gray-800"
+                  >
+                    {isSubmittingReview
+                      ? "Отправка..."
+                      : editingReviewId
+                      ? "Обновить отзыв"
+                      : "Отправить отзыв"}
+                  </Button>
+                  {editingReviewId && (
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setEditingReviewId(null);
+                        setReviewText("");
+                        setReviewRating(0);
+                      }}
+                      className="!border-black !text-black"
+                    >
+                      Отмена
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="m-12 mt-2">
+        <h2 className="text-2xl font-bold mb-6">Похожие товары</h2>
+        <Slider
+          slidesPerView={4}
+          items={similarProducts}
+          renderItem={(product) => (
+            <ProductCard
+              key={productWithDefaultRating.id}
+              product={product}
+              isInCart={false} // Здесь нужно передать реальное значение из корзины
+              isFavorite={false} // Здесь нужно передать реальное значение из избранного
+              refetchCart={() => {}} // Здесь нужно передать реальную функцию обновления корзины
+              refetchFavorites={() => {}} // Здесь нужно передать реальную функцию обновления избранного
+            />
+          )}
+        />
+      </div>
+        </div>
+      )}
 
       {/* Модальное окно изображения */}
       {productImages.length > 0 && (
