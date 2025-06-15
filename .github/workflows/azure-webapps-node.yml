@@ -1,0 +1,14 @@
+name: Deploy with Ngrok
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install && npm run build
+      - run: npx serve -s build &  # Запуск сервера в фоне
+      - uses: gabrielbb/ngrok-action@v1
+        with:
+          authToken: ${{ secrets.NGROK_TOKEN }}
+          region: us
+          port: 5000
