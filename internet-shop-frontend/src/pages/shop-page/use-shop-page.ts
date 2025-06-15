@@ -69,19 +69,16 @@ export const useShopPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const {
-    data: { products: latestProducts = [] } = {},
-    isLoading: isLatestLoading,
-    isError: isLatestError,
-  } = useGetPaginatedProductsQuery(
-    {
-      pageSize: 6,
-      sort: [{ field: "createdAt", order: Order.DESCENDING }],
-    },
-    {
-      refetchOnMountOrArgChange: true,
-    }
-  );
+  const { data: { products: latestProducts = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        sort: [{ field: "createdAt", order: Order.DESCENDING }],
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
   const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
@@ -125,6 +122,60 @@ export const useShopPage = () => {
     if (cartItemId) await removeFromCart(cartItemId);
   };
 
+  const { data: { products: mayInterestedProducts = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        sort: [{ field: "rating", order: Order.DESCENDING }],
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: parfume = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.PARFUME,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: care = [] } = {} } = useGetPaginatedProductsQuery(
+    {
+      pageSize: 6,
+      category: ProductCategory.CARE,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  const { data: { products: decorativeCosmetics = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.DECORATIVE_COSMETICS,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
+  const { data: { products: jewelry = [] } = {} } =
+    useGetPaginatedProductsQuery(
+      {
+        pageSize: 6,
+        category: ProductCategory.JEWELRY,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
   return {
     products,
     page,
@@ -132,8 +183,11 @@ export const useShopPage = () => {
     isError,
     handleShowMore,
     latestProducts,
-    isLatestLoading,
-    isLatestError,
+    mayInterestedProducts,
+    parfume,
+    care,
+    decorativeCosmetics,
+    jewelry,
     favoriteProductIds: favoriteProducts.map((product) => product.id),
     cartItemIds: cartItems.map((item) => item.productId),
     refetchFavorites,

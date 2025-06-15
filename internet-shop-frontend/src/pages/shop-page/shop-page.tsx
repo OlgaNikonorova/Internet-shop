@@ -22,6 +22,11 @@ const ShopPage = () => {
     isLoading,
     handleShowMore,
     latestProducts,
+    mayInterestedProducts,
+    care,
+    jewelry,
+    decorativeCosmetics,
+    parfume,
     favoriteProductIds,
     cartItemIds,
     refetchFavorites,
@@ -131,7 +136,6 @@ const ShopPage = () => {
               />
             )}
           />
-
           <Slider
             title="АКЦИИ"
             items={promoImages}
@@ -143,12 +147,10 @@ const ShopPage = () => {
               />
             )}
           />
-
           <SkinTypeSection />
-
           <Slider
             title="ВАС МОЖЕТ ЗАИНТЕРЕСОВАТЬ"
-            items={latestProducts}
+            items={mayInterestedProducts}
             renderItem={(product) => (
               <ProductCard
                 key={product.id}
@@ -161,7 +163,6 @@ const ShopPage = () => {
               />
             )}
           />
-
           {/* Основной контент */}
           <Typography
             id="catalog"
@@ -171,9 +172,7 @@ const ShopPage = () => {
           >
             КАТАЛОГ ТОВАРОВ
           </Typography>
-
           <Search search={search} handleSearch={handleSearch} />
-
           <div className="flex p-5 gap-5 self-start w-full justify-between">
             <SortOptions
               sortOption={sortOption}
@@ -193,7 +192,6 @@ const ShopPage = () => {
               onToggleRatingFilter={(value) => setIsRatingFilterEnabled(value)}
             />
           </div>
-
           <Box className="w-full">
             {/* Список товаров */}
             {products.length > 0 ? (
@@ -229,10 +227,9 @@ const ShopPage = () => {
               </div>
             )}
           </Box>
-
           <Slider
             title="ПАРФЮМЕРИЯ"
-            items={latestProducts}
+            items={parfume}
             renderItem={(product) => (
               <ProductCard
                 key={product.id}
@@ -249,10 +246,9 @@ const ShopPage = () => {
               "/uploads/files-1749654949798-93558344.jpeg"
             }
           />
-
           <Slider
             title="УХОДОВАЯ КОСМЕТИКА"
-            items={latestProducts}
+            items={care}
             renderItem={(product) => (
               <ProductCard
                 key={product.id}
@@ -272,7 +268,7 @@ const ShopPage = () => {
 
           <Slider
             title="УКРАШЕНИЯ"
-            items={latestProducts}
+            items={jewelry}
             renderItem={(product) => (
               <ProductCard
                 key={product.id}
@@ -287,6 +283,26 @@ const ShopPage = () => {
             bgImagePath={
               process.env.REACT_APP_API_BASE_URL +
               "/uploads/files-1749654782918-410515775.png"
+            }
+          />
+
+          <Slider
+            title="ДЕКОРАТИВНАЯ КОСМЕТИКА"
+            items={decorativeCosmetics}
+            renderItem={(product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isInCart={cartItemIds.includes(product.id)}
+                isFavorite={favoriteProductIds.includes(product.id)}
+                refetchCart={refetchCart}
+                refetchFavorites={refetchFavorites}
+                removeFromCart={handleRemoveFromCart}
+              />
+            )}
+            bgImagePath={
+              process.env.REACT_APP_API_BASE_URL +
+              "/uploads/files-1749583702971-100516327.jpg"
             }
           />
         </div>
