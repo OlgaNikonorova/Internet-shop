@@ -5,6 +5,7 @@ import { UserRole } from "../models/user/user-role";
 type AuthTokens = {
   accessToken: string | null;
   refreshToken: string | null;
+  resetToken: string | null;
 };
 
 type UserState = AuthTokens & {
@@ -18,6 +19,7 @@ const initialState: UserState = {
   avatar: null,
   accessToken: null,
   refreshToken: null,
+  resetToken: null,
   role: null,
 };
 
@@ -36,6 +38,10 @@ export const userSlice = createSlice({
     updateTokens: (state, action: PayloadAction<AuthTokens>) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+    },
+
+    setResetToken: (state, action: PayloadAction<string>) => {
+      state.resetToken = action.payload;
     },
 
     logout: (state) => {
@@ -63,6 +69,7 @@ export const {
   setAvatar,
   setUsername,
   setUserRole,
+  setResetToken
 } = userSlice.actions;
 
 export const isAuthSelector = (state: RootState) =>
@@ -73,5 +80,6 @@ export const refreshTokenSelector = (state: RootState) =>
   state.user.refreshToken;
 export const avatarSelector = (state: RootState) => state.user.avatar;
 export const userRoleSelector = (state: RootState) => state.user.role;
+export const resetTokenSelector = (state: RootState) => state.user.resetToken;
 
 export default userSlice.reducer;

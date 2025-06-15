@@ -16,9 +16,19 @@ import {
   Paper,
   Box,
 } from "@mui/material";
+import { useState } from "react";
 
 const AuthPage = () => {
-  const { mode, error, onSubmit, toggleMode } = useAuthPage();
+  const {
+    error,
+    mode,
+    onSubmit,
+    toggleMode,
+    setForgotPasswordMode,
+    setLoginMode,
+    setRegisterMode,
+  } = useAuthPage();
+  const isForgotPassword = mode === AuthMode.ForgotPassword;
 
   const {
     register,
@@ -27,13 +37,13 @@ const AuthPage = () => {
     watch,
     formState: { errors },
   } = useForm<any>({
-    resolver: zodResolver(getSchema(mode)),
+    resolver: zodResolver(getSchema(mode) as any),
     defaultValues: {
       role: UserRole.USER,
     },
   });
 
-  const selectedRole = watch('role');
+  const selectedRole = watch("role");
 
   const handleFormSubmit = async (data: FormData) => {
     await onSubmit(data);
@@ -55,29 +65,56 @@ const AuthPage = () => {
       >
         <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
           <Typography variant="h4" textAlign="center" fontWeight={600} mb={3}>
-            {isLogin ? "Вход" : "Регистрация"}
+            {isLogin
+              ? "Вход"
+              : isForgotPassword
+              ? "Восстановление пароля"
+              : "Регистрация"}
           </Typography>
 
-          <TextField
-            label="Логин"
-            fullWidth
-            margin="normal"
-            {...register("username")}
-            error={!!errors.username}
-            helperText={errors.username?.message?.toString()}
-          />
+          {/* Показываем только email в режиме восстановления */}
+          {isForgotPassword ? (
+            <>
+              <TextField
+                label="Email"
+                fullWidth
+                margin="normal"
+                {...register("email")}
+                error={!!errors.email}
+                helperText={errors.email?.message?.toString()}
+              />
+              <TextField
+                label="Логин"
+                fullWidth
+                margin="normal"
+                {...register("username")}
+                error={!!errors.username}
+                helperText={errors.username?.message?.toString()}
+              />
+            </>
+          ) : (
+            <>
+              <TextField
+                label="Логин"
+                fullWidth
+                margin="normal"
+                {...register("username")}
+                error={!!errors.username}
+                helperText={errors.username?.message?.toString()}
+              />
+              <TextField
+                label="Пароль"
+                type="password"
+                fullWidth
+                margin="normal"
+                {...register("password")}
+                error={!!errors.password}
+                helperText={errors.password?.message?.toString()}
+              />
+            </>
+          )}
 
-          <TextField
-            label="Пароль"
-            type="password"
-            fullWidth
-            margin="normal"
-            {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password?.message?.toString()}
-          />
-
-          {!isLogin && (
+          {!isLogin && !isForgotPassword && (
             <>
               <TextField
                 label="Email"
@@ -163,7 +200,11 @@ const AuthPage = () => {
               color="primary"
               sx={{ mt: 3, mb: 2, fontSize: 24, width: 0.5 }}
             >
-              {isLogin ? "Войти" : "Зарегистрироваться"}
+              {isLogin
+                ? "Войти"
+                : isForgotPassword
+                ? "Восстановить пароль"
+                : "Зарегистрироваться"}
             </Button>
           </Box>
           <Box
@@ -172,10 +213,31 @@ const AuthPage = () => {
             justifyContent={"center"}
             gap={30}
           >
+            {isLogin && (
+              <Button
+                onClick={setForgotPasswordMode}
+                size="medium"
+                sx={{ fontSize: 16 }}
+              >
+                Забыли пароль?
+              </Button>
+            )}
             <Typography variant="h5" textAlign="center">
-              {isLogin ? "Еще нет аккаунта?" : "Уже есть аккаунт?"}{" "}
-              <Button onClick={toggleMode} size="medium" sx={{ fontSize: 20 }}>
-                {isLogin ? "Зарегистрироваться" : "Войти"}
+              {isLogin
+                ? "Еще нет аккаунта?"
+                : isForgotPassword
+                ? "Вспомнили пароль?"
+                : "Уже есть аккаунт?"}{" "}
+              <Button
+                onClick={toggleMode}
+                size="medium"
+                sx={{ fontSize: 20 }}
+              >
+                {isLogin
+                  ? "Зарегистрироваться"
+                  : isForgotPassword
+                  ? "Войти"
+                  : "Войти"}
               </Button>
             </Typography>
           </Box>

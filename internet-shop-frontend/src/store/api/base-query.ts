@@ -50,6 +50,7 @@ export const baseQueryWithReauth: BaseQueryFn<
           updateTokens({
             accessToken,
             refreshToken: newRefreshToken,
+            resetToken: null
           })
         );
 
