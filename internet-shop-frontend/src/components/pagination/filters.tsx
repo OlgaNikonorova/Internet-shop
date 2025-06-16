@@ -16,7 +16,7 @@ interface FiltersProps {
   priceRange: [number, number];
   onPriceChange: (newRange: [number, number]) => void;
   selectedCategory?: ProductCategory;
-  onCategoryToggle: (category: ProductCategory) => void;
+  onCategoryToggle: (category?: ProductCategory) => void;
   ratingRange: [number, number];
   onRatingChange: (newRange: [number, number]) => void;
   isPriceFilterEnabled: boolean;
@@ -40,7 +40,8 @@ export const Filters = ({
   const categories = Object.values(ProductCategory);
 
   const handleCategoryChange = (event: SelectChangeEvent) => {
-    onCategoryToggle(event.target.value as ProductCategory);
+    const value = event.target.value;
+    onCategoryToggle(value === "" ? undefined : (value as ProductCategory));
   };
 
   return (
@@ -164,7 +165,7 @@ export const Filters = ({
       {/* Фильтр по категории */}
       <FormControl sx={{ flex: 1, minWidth: 200 }}>
         <Select
-          value={selectedCategory}
+          value={selectedCategory || ""}
           onChange={handleCategoryChange}
           displayEmpty
           renderValue={(selected) => {

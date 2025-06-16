@@ -250,6 +250,14 @@ const ProfilePage = () => {
               />
 
               <TextField
+                label="Имя и фамилия"
+                fullWidth
+                {...register("name")}
+                error={!!errors.name}
+                helperText={errors.name?.message?.toString()}
+              />
+
+              <TextField
                 label="Адрес"
                 fullWidth
                 {...register("address")}

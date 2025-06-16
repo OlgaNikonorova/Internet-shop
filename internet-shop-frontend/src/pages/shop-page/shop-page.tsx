@@ -48,6 +48,7 @@ const ShopPage = () => {
     isRatingFilterEnabled,
     setIsRatingFilterEnabled,
     handleRemoveFromCart,
+    handleResetFilters
   } = useShopPage();
 
   const promoImages = [
@@ -590,9 +591,9 @@ const ShopPage = () => {
                   fontWeight: 600,
                   "&:hover": {
                     color: "#C19C30",
-                    backgroundColor: "transparent",
                   },
                 }}
+                onClick={handleResetFilters}
               >
                 Сбросить фильтры
               </Button>
@@ -642,7 +643,7 @@ const ShopPage = () => {
                   width: "100%",
                   height: "60%",
                   objectFit: "cover",
-                  opacity: 0.75, // Прозрачность 75%
+                  opacity: 0.75,
                   display: "block",
                 },
               }}
