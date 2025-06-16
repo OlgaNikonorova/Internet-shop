@@ -175,7 +175,7 @@ const ShopPage = () => {
                 backgroundColor: "black",
                 color: "white",
                 "&:hover": {
-                  backgroundColor: "#D4AF37",
+                  backgroundColor: "#C0A062",
                   color: "black",
                 },
               }}
@@ -204,7 +204,7 @@ const ShopPage = () => {
               mb: 4,
               cursor: "pointer",
               "&:hover h2": {
-                color: "#D4AF37",
+                color: "#C0A062",
               },
             }}
           >
@@ -224,7 +224,7 @@ const ShopPage = () => {
                   transform: "translateX(-50%)",
                   width: "80px",
                   height: "3px",
-                  backgroundColor: "#D4AF37",
+                  backgroundColor: "#C0A062",
                   transition: "width 0.3s ease",
                 },
                 "&:hover::after": {
@@ -265,7 +265,7 @@ const ShopPage = () => {
               mb: 4,
               cursor: "pointer",
               "&:hover h2": {
-                color: "#D4AF37",
+                color: "#C0A062",
               },
             }}
           >
@@ -285,7 +285,7 @@ const ShopPage = () => {
                   transform: "translateX(-50%)",
                   width: "80px",
                   height: "3px",
-                  backgroundColor: "#D4AF37",
+                  backgroundColor: "#C0A062",
                   transition: "width 0.3s ease",
                 },
                 "&:hover::after": {
@@ -315,7 +315,7 @@ const ShopPage = () => {
                       transform: "translateY(-5px)",
                       boxShadow: 6,
                       "& .promo-text": {
-                        color: "#D4AF37",
+                        color: "#C0A062",
                       },
                     },
                   }}
@@ -383,7 +383,7 @@ const ShopPage = () => {
               mb: 4,
               cursor: "pointer",
               "&:hover h2": {
-                color: "#D4AF37",
+                color: "#C0A062",
               },
             }}
           >
@@ -403,7 +403,7 @@ const ShopPage = () => {
                   transform: "translateX(-50%)",
                   width: "80px",
                   height: "3px",
-                  backgroundColor: "#D4AF37",
+                  backgroundColor: "#C0A062",
                   transition: "width 0.3s ease",
                 },
                 "&:hover::after": {
@@ -444,7 +444,7 @@ const ShopPage = () => {
               mb: 4,
               cursor: "pointer",
               "&:hover h2": {
-                color: "#D4AF37",
+                color: "#C0A062",
               },
             }}
           >
@@ -464,7 +464,7 @@ const ShopPage = () => {
                   transform: "translateX(-50%)",
                   width: "80px",
                   height: "3px",
-                  backgroundColor: "#D4AF37",
+                  backgroundColor: "#C0A062",
                   transition: "width 0.3s ease",
                 },
                 "&:hover::after": {
@@ -551,8 +551,8 @@ const ShopPage = () => {
                     sx={{
                       px: 6,
                       py: 2,
-                      borderColor: "#D4AF37",
-                      color: "#D4AF37",
+                      borderColor: "#C0A062",
+                      color: "#C0A062",
                       borderWidth: 2,
                       fontSize: "1rem",
                       fontWeight: 600,
@@ -585,7 +585,7 @@ const ShopPage = () => {
               <Button
                 variant="text"
                 sx={{
-                  color: "#D4AF37",
+                  color: "#C0A062",
                   fontWeight: 600,
                   "&:hover": {
                     color: "#C19C30",
@@ -616,7 +616,7 @@ const ShopPage = () => {
           {
             title: "УКРАШЕНИЯ",
             items: jewelry,
-            bgImage: "/uploads/files-1750033844009-855389816.jpeg",
+            bgImage: "/uploads/files-1750040301786-71246669.jpeg",
             link: "/category/jewelry",
           },
           {
@@ -635,7 +635,7 @@ const ShopPage = () => {
                 mb: 4,
                 cursor: "pointer",
                 "&:hover h2": {
-                  color: "#D4AF37",
+                  color: "#C0A062",
                 },
                 "& img": {
                   width: "100%",
@@ -662,7 +662,7 @@ const ShopPage = () => {
                     transform: "translateX(-50%)",
                     width: "80px",
                     height: "3px",
-                    backgroundColor: "#D4AF37",
+                    backgroundColor: "#C0A062",
                     transition: "width 0.3s ease",
                   },
                   "&:hover::after": {

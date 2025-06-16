@@ -11,7 +11,9 @@ import {
   Person,
   Home,
   Diamond as DiamondIcon,
+  Close,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import { useProductPage } from "./use-product-page";
 import { ProductStatus } from "../../store/models/product/product-status";
 import {
@@ -25,6 +27,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  Stack,
 } from "@mui/material";
 import Review from "../../components/review/review";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -37,6 +40,7 @@ import ProductCard from "../../components/product-card/product-card";
 import Slider from "../../components/slider/slider";
 
 const ProductPage = () => {
+  const navigate = useNavigate();
   const {
     product,
     isProductError,
@@ -186,18 +190,28 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="flex flex-col bg-white">
+    <div className="flex flex-col bg-white relative">
+      <IconButton
+        onClick={() => navigate(-1)}
+        sx={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          zIndex: 100,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "rgba(0,0,0,0.7)",
+          },
+        }}
+      >
+        <Close />
+      </IconButton>
+
       {/* Галерея изображений */}
       <div className="relative w-full h-[60vh] overflow-hidden">
         {productImages.length > 0 ? (
           <>
-            <Button
-              onClick={() => imagesSwiperRef.current?.swiper.slidePrev()}
-              className="!absolute top-1/2 left-4 -translate-y-1/2 z-10 h-1/2 !bg-black/10"
-            >
-              <ChevronLeft className="text-white" fontSize="large" />
-            </Button>
-
             <Swiper
               className="h-full"
               ref={imagesSwiperRef}
@@ -224,13 +238,6 @@ const ProductPage = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
-
-            <Button
-              onClick={() => imagesSwiperRef.current?.swiper.slideNext()}
-              className="!absolute top-1/2 right-4 -translate-y-1/2 z-10 h-1/2 !bg-black/10"
-            >
-              <ChevronRight className="text-white" fontSize="large" />
-            </Button>
           </>
         ) : (
           <img
@@ -316,7 +323,6 @@ const ProductPage = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10">
-          {/* Левый блок - описание и характеристики */}
           <Box sx={{ width: "50%" }}>
             <Typography variant="h5" paragraph>
               {productWithDefaultRating.description ||
@@ -324,7 +330,6 @@ const ProductPage = () => {
             </Typography>
           </Box>
 
-          {/* Правый блок - цена и кнопки */}
           <div className="lg:w-80 flex flex-col gap-6">
             <div className="flex justify-between items-center">
               <Typography variant="h4" fontWeight="bold">
@@ -334,12 +339,11 @@ const ProductPage = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {(productWithDefaultRating.price * 0.8).toFixed(2)} ₽
                 </Typography>
-                <Typography variant="body2">по скидочной карте</Typography>
+                <Typography variant="body1">по скидочной карте</Typography>
               </div>
             </div>
 
-            {/* Блок с кнопками */}
-            <div className="flex flex-col gap-4">
+            <Stack direction="row" spacing={2} alignItems="center">
               {isInCart && cartItem ? (
                 <div className="flex items-center bg-black rounded-lg overflow-hidden">
                   <IconButton
@@ -387,17 +391,18 @@ const ProductPage = () => {
               <IconButton
                 onClick={handleToggleFavorite}
                 disabled={isAddingToFavorites}
-                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition self-center"
+                className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition"
+                size="large"
               >
                 {isFavorite ? (
-                  <Favorite className="text-black" />
+                  <Favorite className="text-black" fontSize="large" />
                 ) : (
-                  <FavoriteBorder className="text-black" />
+                  <FavoriteBorder className="text-black" fontSize="large" />
                 )}
               </IconButton>
-            </div>
+            </Stack>
 
-            <Typography variant="body1" textAlign="center">
+            <Typography variant="body1" textAlign="center" fontSize="1.1rem">
               {isInStock
                 ? `В наличии ${productWithDefaultRating.stock} шт.`
                 : "Нет в наличии"}
@@ -429,7 +434,7 @@ const ProductPage = () => {
               >
                 <DiamondIcon color="inherit" />
               </Avatar>
-              <Typography variant="body1" textAlign="center">
+              <Typography variant="body1" textAlign="center" fontSize="1.1rem">
                 Гарантия качества продукции
               </Typography>
             </Box>
@@ -448,7 +453,7 @@ const ProductPage = () => {
                   FREE
                 </Typography>
               </Avatar>
-              <Typography variant="body1" textAlign="center">
+              <Typography variant="body1" textAlign="center" fontSize="1.1rem">
                 Бесплатная доставка от 1500 ₽
               </Typography>
             </Box>
@@ -467,14 +472,14 @@ const ProductPage = () => {
                   RU
                 </Typography>
               </Avatar>
-              <Typography variant="body1" textAlign="center">
+              <Typography variant="body1" textAlign="center" fontSize="1.1rem">
                 Доставка по всей территории РФ
               </Typography>
             </Box>
           </Box>
 
           {/* Варианты доставки */}
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom fontSize="1.3rem">
             Способы доставки:
           </Typography>
 
@@ -493,7 +498,7 @@ const ProductPage = () => {
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <LocalShipping fontSize="small" />
-                <Typography>ПВЗ Sobaccini</Typography>
+                <Typography fontSize="1.1rem">ПВЗ Sobaccini</Typography>
               </Box>
               <Chip label="завтра" size="medium" />
             </Paper>
@@ -512,7 +517,7 @@ const ProductPage = () => {
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Person fontSize="small" />
-                <Typography>Курьер</Typography>
+                <Typography fontSize="1.1rem">Курьер</Typography>
               </Box>
               <Chip label="завтра" size="medium" />
             </Paper>
@@ -530,7 +535,7 @@ const ProductPage = () => {
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Home fontSize="small" />
-                <Typography>Самовывоз из магазина</Typography>
+                <Typography fontSize="1.1rem">Самовывоз из магазина</Typography>
               </Box>
               <Chip label="завтра" size="medium" />
             </Paper>
@@ -538,7 +543,6 @@ const ProductPage = () => {
         </div>
 
         <div className="flex flex-col gap-20 m-10">
-          {/* Основное описание и характеристики */}
           <div className="flex flex-col">
             {/* Вкладки с информацией */}
             <Box sx={{ width: "100%" }}>
@@ -553,6 +557,7 @@ const ProductPage = () => {
                     sx={{
                       fontWeight: tabValue === 0 ? "bold" : "normal",
                       "&.Mui-selected": { color: "black" },
+                      fontSize: "1.1rem",
                     }}
                   />
                   <Tab
@@ -560,6 +565,7 @@ const ProductPage = () => {
                     sx={{
                       fontWeight: tabValue === 1 ? "bold" : "normal",
                       "&.Mui-selected": { color: "black" },
+                      fontSize: "1.1rem",
                     }}
                   />
                   <Tab
@@ -567,6 +573,7 @@ const ProductPage = () => {
                     sx={{
                       fontWeight: tabValue === 2 ? "bold" : "normal",
                       "&.Mui-selected": { color: "black" },
+                      fontSize: "1.1rem",
                     }}
                   />
                   <Tab
@@ -574,6 +581,7 @@ const ProductPage = () => {
                     sx={{
                       fontWeight: tabValue === 3 ? "bold" : "normal",
                       "&.Mui-selected": { color: "black" },
+                      fontSize: "1.1rem",
                     }}
                   />
                 </Tabs>
@@ -588,20 +596,26 @@ const ProductPage = () => {
                     >
                       {productWithDefaultRating.name}
                     </Typography>
-                    <Typography>
+                    <Typography variant="h6">
                       {productWithDefaultRating.description ||
                         "Описание товара отсутствует"}
                     </Typography>
                   </>
                 )}
                 {tabValue === 1 && (
-                  <Typography>Состав товара будет указан здесь</Typography>
+                  <Typography variant="h6">
+                    Состав товара будет указан здесь
+                  </Typography>
                 )}
                 {tabValue === 2 && (
-                  <Typography>Информация о бренде будет здесь</Typography>
+                  <Typography variant="h6">
+                    Информация о бренде будет здесь
+                  </Typography>
                 )}
                 {tabValue === 3 && (
-                  <Typography>Дополнительная информация о товаре</Typography>
+                  <Typography variant="h6">
+                    Дополнительная информация о товаре
+                  </Typography>
                 )}
               </Box>
             </Box>
@@ -612,7 +626,9 @@ const ProductPage = () => {
       {/* Список отзывов */}
       {!isReviewsError && (
         <div className="m-12 mt-2">
-          <h2 className="text-2xl font-bold mb-10">Рейтинг и отзывы</h2>
+          <h2 className="text-2xl font-bold mb-10 text-left">
+            Рейтинг и отзывы
+          </h2>
           {reviews.length > 0 ? (
             <div className="flex items-center p-6 justify-between gap-6">
               <div className="flex gap-7">
@@ -646,7 +662,7 @@ const ProductPage = () => {
                       }}
                     />
                   </Box>
-                  <p>
+                  <p className="text-lg">
                     {reviews.length}{" "}
                     {
                       ["оценок", "оценка", "оценки"][
@@ -673,7 +689,7 @@ const ProductPage = () => {
               </div>
             </div>
           ) : (
-            <div className="my-8 text-center">
+            <div className="my-8 text-center text-xl">
               Отзывов еще нет. Оставьте отзыв первым!
             </div>
           )}
@@ -684,12 +700,13 @@ const ProductPage = () => {
               variant="outlined"
               onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
               className="!border-black !text-black hover:!bg-gray-100"
+              sx={{ fontSize: "1.1rem" }}
             >
               {isReviewFormOpen ? "Скрыть форму отзыва" : "Оставить отзыв"}
             </Button>
           </div>
 
-          {/* Форма для отзыва (появляется только при isReviewFormOpen === true) */}
+          {/* Форма для отзыва */}
           {isReviewFormOpen && (
             <div className="mt-8">
               <h3 className="text-2xl font-bold mb-4">
@@ -742,7 +759,7 @@ const ProductPage = () => {
                 </Box>
 
                 <textarea
-                  className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent text-xl"
                   placeholder="Напишите ваш отзыв..."
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
@@ -756,6 +773,7 @@ const ProductPage = () => {
                       isSubmittingReview || !reviewText || reviewRating === 0
                     }
                     className="!bg-black !text-white hover:!bg-gray-800"
+                    sx={{ fontSize: "1.1rem" }}
                   >
                     {isSubmittingReview
                       ? "Отправка..."
@@ -772,6 +790,7 @@ const ProductPage = () => {
                         setReviewRating(0);
                       }}
                       className="!border-black !text-black"
+                      sx={{ fontSize: "1.1rem" }}
                     >
                       Отмена
                     </Button>
@@ -782,7 +801,9 @@ const ProductPage = () => {
           )}
 
           <div className="m-12 mt-2">
-            <h2 className="text-2xl font-bold mb-6">Похожие товары</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              Похожие товары
+            </h2>
             <Slider
               slidesPerView={4}
               items={similarProducts}
