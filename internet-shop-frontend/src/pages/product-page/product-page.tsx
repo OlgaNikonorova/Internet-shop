@@ -369,6 +369,10 @@ const ProductPage = () => {
                     </Tooltip>
                   </IconButton>
 
+                  <span className="flex-1 text-center text-white text-xl">
+                    {cartItem.quantity}
+                  </span>
+
                   <IconButton
                     onClick={() =>
                       onIncrease(cartItem.id, cartItem.quantity ?? 1)
