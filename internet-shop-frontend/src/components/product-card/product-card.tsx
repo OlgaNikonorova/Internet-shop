@@ -98,7 +98,7 @@ const ProductCard = React.memo(
 
     return (
       <motion.div
-        className="relative bg-white shadow-lg rounded-xl overflow-hidden flex flex-col hover:cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        className="relative bg-white shadow-lg rounded-xl overflow-hidden flex flex-col hover:cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => navigate(`/product/${id}`)}
