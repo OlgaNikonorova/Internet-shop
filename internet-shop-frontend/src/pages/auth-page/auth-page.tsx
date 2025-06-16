@@ -16,18 +16,10 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import { useState } from "react";
 
 const AuthPage = () => {
-  const {
-    error,
-    mode,
-    onSubmit,
-    toggleMode,
-    setForgotPasswordMode,
-    setLoginMode,
-    setRegisterMode,
-  } = useAuthPage();
+  const { error, mode, onSubmit, toggleMode, setForgotPasswordMode } =
+    useAuthPage();
   const isForgotPassword = mode === AuthMode.ForgotPassword;
 
   const {
@@ -193,7 +185,7 @@ const AuthPage = () => {
               {error}
             </Typography>
           )}
-          <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+          <Box display={"flex"} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} marginBottom={3}>
             <Button
               type="submit"
               variant="contained"
@@ -206,13 +198,6 @@ const AuthPage = () => {
                 ? "Восстановить пароль"
                 : "Зарегистрироваться"}
             </Button>
-          </Box>
-          <Box
-            display={"flex"}
-            alignItems={"center"}
-            justifyContent={"center"}
-            gap={30}
-          >
             {isLogin && (
               <Button
                 onClick={setForgotPasswordMode}
@@ -222,13 +207,20 @@ const AuthPage = () => {
                 Забыли пароль?
               </Button>
             )}
+          </Box>
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            gap={30}
+          >
             <Typography variant="h5" textAlign="center">
               {isLogin
                 ? "Еще нет аккаунта?"
                 : isForgotPassword
                 ? "Вспомнили пароль?"
                 : "Уже есть аккаунт?"}{" "}
-              <Button onClick={toggleMode} size="medium" sx={{ fontSize: 20 }}>
+              <Button onClick={toggleMode} size="medium" sx={{ fontSize: 20, fontWeight: "bold" }}>
                 {isLogin
                   ? "Зарегистрироваться"
                   : isForgotPassword

@@ -34,13 +34,27 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#ffffff"
+    >
+      <Paper
+        elevation={5}
+        sx={{ p: 4, width: "100%", maxWidth: 813, bgcolor: "white", margin: 5 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+      >
         <Typography variant="h5" gutterBottom>
           Сброс пароля
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center w-full">
           <TextField
             label="Новый пароль"
             type="password"
@@ -61,7 +75,11 @@ const ResetPasswordPage = () => {
             required
           />
 
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 2, fontSize: 20, fontWeight: "semibold" }}
+          >
             Сбросить пароль
           </Button>
         </form>

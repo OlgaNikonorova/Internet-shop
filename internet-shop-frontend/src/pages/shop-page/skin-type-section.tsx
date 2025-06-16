@@ -8,7 +8,6 @@ export const SkinTypeSection = () => {
   const elegantGold = "#C0A062";
   const darkGold = "#A08650";
   const lightText = "#F5F5F5";
-  const darkText = "#333333";
 
   return (
     <Box
