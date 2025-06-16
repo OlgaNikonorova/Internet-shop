@@ -174,7 +174,7 @@ const ProfileForm = ({ user, onSubmit }: ProfileFormProps) => {
           fullWidth
         />
 
-        {/* Скрытые поля для роли и статуса (если не нужно редактировать) */}
+        {/* Скрытые поля для роли и статуса*/}
         <input type="hidden" {...register("role")} />
         <input type="hidden" {...register("status")} />
         <input type="hidden" {...register("avatar")} />
