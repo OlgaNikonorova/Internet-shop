@@ -63,8 +63,7 @@ const AuthPage = () => {
               ? "Восстановление пароля"
               : "Регистрация"}
           </Typography>
-
-          {/* Показываем только email в режиме восстановления */}
+          
           {isForgotPassword ? (
             <>
               <TextField

@@ -9,8 +9,8 @@ import { Box, Button } from "@mui/material";
 import { SkinTypeSection } from "./skin-type-section";
 import ProductCard from "../../components/product-card/product-card";
 import { Search } from "../../components/search/search";
-import { SortOptions } from "../../components/pagination/sort";
-import { Filters } from "../../components/pagination/filters";
+import { SortOptions } from "../../components/sort-and-filter/sort";
+import { Filters } from "../../components/sort-and-filter/filters";
 import { useEffect } from "react";
 import { useTypedSelector } from "../../store/hooks";
 import { lastUpdatedFavoritesSelector } from "../../store/slices/favorites-slice";
@@ -96,7 +96,7 @@ const ShopPage = () => {
       gap={8}
       width="100%"
     >
-      {/* Hero Section */}
+
       <Box width="100%">
         <Box
           px={0}
@@ -191,7 +191,6 @@ const ShopPage = () => {
         </Box>
       </Box>
 
-      {/* Main Content */}
       <Box
         sx={{
           width: "100%",
@@ -510,7 +509,6 @@ const ShopPage = () => {
             />
           </Box>
 
-          {/* Список товаров */}
           {products.length > 0 ? (
             <>
               <Box
