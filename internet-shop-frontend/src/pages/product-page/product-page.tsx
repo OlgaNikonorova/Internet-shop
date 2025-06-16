@@ -54,8 +54,6 @@ const ProductPage = () => {
     isInCart,
     isImageModalOpen,
     setIsImageModalOpen,
-    selectedImage,
-    setSelectedImage,
     actionNotification,
     setActionNotification,
     onIncrease,
@@ -168,7 +166,6 @@ const ProductPage = () => {
 
     setCurrentImageIndex((prev: number) => {
       const newIndex = prev < productImages.length - 1 ? prev + 1 : 0;
-      setSelectedImage(productImages[newIndex]);
       return newIndex;
     });
   };
@@ -178,7 +175,6 @@ const ProductPage = () => {
 
     setCurrentImageIndex((prev: number) => {
       const newIndex = prev > 0 ? prev - 1 : productImages.length - 1;
-      setSelectedImage(productImages[newIndex]);
       return newIndex;
     });
   };
@@ -267,7 +263,6 @@ const ProductPage = () => {
                   className="w-full h-full object-cover"
                   onClick={() => {
                     setCurrentImageIndex(index);
-                    setSelectedImage(productImages[index]);
                   }}
                 />
                 <div className="swiper-thumb-overlay absolute inset-0 bg-black/40 opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -875,7 +870,7 @@ const ProductPage = () => {
         <ImageModal
           open={isImageModalOpen}
           onClose={() => setIsImageModalOpen(false)}
-          imageUrl={selectedImage}
+          imageUrl={productImages[currentImageIndex]}
           onNext={handleNextImage}
           onPrev={handlePrevImage}
           hasNext={currentImageIndex < productImages.length - 1}

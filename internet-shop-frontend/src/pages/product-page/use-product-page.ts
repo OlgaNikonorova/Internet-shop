@@ -43,10 +43,6 @@ export const useProductPage = () => {
     refetchOnMountOrArgChange: true,
   });
 
-  const [selectedImage, setSelectedImage] = useState<string>(
-    product?.images?.at(0) ?? ""
-  );
-
   const {
     data: reviews = [],
     error: isReviewsError,
@@ -177,11 +173,6 @@ export const useProductPage = () => {
     }
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-    setIsImageModalOpen(true);
-  };
-
   const handleAddToCart = async () => {
     if (!product) return;
 
@@ -256,9 +247,6 @@ export const useProductPage = () => {
     cartItem,
     isImageModalOpen,
     setIsImageModalOpen,
-    selectedImage,
-    setSelectedImage,
-    handleImageClick,
     actionNotification,
     setActionNotification,
     refetchCart,
