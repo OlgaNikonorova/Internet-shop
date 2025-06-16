@@ -50,6 +50,7 @@ export const useAuthPage = () => {
           role: response.user.role,
           avatar: response.user.avatar ?? null,
           resetToken: null,
+          userId: response.user.id,
         })
       );
 

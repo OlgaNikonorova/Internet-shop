@@ -68,6 +68,8 @@ const ProductPage = () => {
     editingReviewId,
     setEditingReviewId,
     refetchReviews,
+    isReviewCreatingAllowed,
+    ownReviewId,
   } = useProductPage();
 
   useEffect(() => {
@@ -680,7 +682,11 @@ const ProductPage = () => {
                   slidesPerView={3}
                   items={reviews}
                   renderItem={(review) => (
-                    <Review key={review.id} review={review} />
+                    <Review
+                      key={review.id}
+                      review={review}
+                      isOwn={ownReviewId === review.id}
+                    />
                   )}
                 />
               </div>
@@ -691,104 +697,108 @@ const ProductPage = () => {
             </div>
           )}
 
-          {/* Кнопка для открытия формы отзыва */}
-          <div className="text-center my-8">
-            <Button
-              variant="outlined"
-              onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
-              className="!border-black !text-black hover:!bg-gray-100"
-              sx={{ fontSize: "1.1rem" }}
-            >
-              {isReviewFormOpen ? "Скрыть форму отзыва" : "Оставить отзыв"}
-            </Button>
-          </div>
-
-          {/* Форма для отзыва */}
-          {isReviewFormOpen && (
-            <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4">Оставить отзыв</h3>
-              <div className="bg-gray-50 rounded-lg p-6">
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontStyle: "italic",
-                    fontSize: "1.25rem",
-                    mb: 3,
-                  }}
+          {isReviewCreatingAllowed && (
+            <>
+              <div className="text-center my-8">
+                <Button
+                  variant="outlined"
+                  onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
+                  className="!border-black !text-black hover:!bg-gray-100"
+                  sx={{ fontSize: "1.1rem" }}
                 >
-                  <MuiRating
-                    value={reviewRating}
-                    onChange={(event, newValue) => {
-                      if (newValue !== null) {
-                        setReviewRating(newValue);
-                      }
-                    }}
-                    precision={1}
-                    sx={{
-                      fontSize: "1.5rem",
-                      "& .MuiRating-iconFilled": {
-                        color: "black",
-                      },
-                      "& .MuiRating-iconEmpty": {
-                        color: "black",
-                        opacity: 0.3,
-                      },
-                      "& .MuiRating-icon": {
-                        fontStyle: "italic",
-                      },
-                    }}
-                    icon={
-                      <Star
-                        fontSize="inherit"
-                        style={{ fontStyle: "italic" }}
-                      />
-                    }
-                    emptyIcon={
-                      <Star
-                        fontSize="inherit"
-                        style={{ fontStyle: "italic", opacity: 0.3 }}
-                      />
-                    }
-                  />
-                </Box>
-
-                <textarea
-                  className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent text-xl"
-                  placeholder="Напишите ваш отзыв..."
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                />
-                <div className="flex gap-3">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmitReviewAndClose}
-                    disabled={
-                      isSubmittingReview || !reviewText || reviewRating === 0
-                    }
-                    className="!bg-black !text-white hover:!bg-gray-800"
-                    sx={{ fontSize: "1.1rem" }}
-                  >
-                    {isSubmittingReview ? "Отправка..." : "Отправить отзыв"}
-                  </Button>
-                  {editingReviewId && (
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setEditingReviewId(null);
-                        setReviewText("");
-                        setReviewRating(0);
-                      }}
-                      className="!border-black !text-black"
-                      sx={{ fontSize: "1.1rem" }}
-                    >
-                      Отмена
-                    </Button>
-                  )}
-                </div>
+                  {isReviewFormOpen ? "Скрыть форму отзыва" : "Оставить отзыв"}
+                </Button>
               </div>
-            </div>
+
+              {isReviewFormOpen && (
+                <div className="mt-8">
+                  <h3 className="text-2xl font-bold mb-4">Оставить отзыв</h3>
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        fontStyle: "italic",
+                        fontSize: "1.25rem",
+                        mb: 3,
+                      }}
+                    >
+                      <MuiRating
+                        value={reviewRating}
+                        onChange={(event, newValue) => {
+                          if (newValue !== null) {
+                            setReviewRating(newValue);
+                          }
+                        }}
+                        precision={1}
+                        sx={{
+                          fontSize: "1.5rem",
+                          "& .MuiRating-iconFilled": {
+                            color: "black",
+                          },
+                          "& .MuiRating-iconEmpty": {
+                            color: "black",
+                            opacity: 0.3,
+                          },
+                          "& .MuiRating-icon": {
+                            fontStyle: "italic",
+                          },
+                        }}
+                        icon={
+                          <Star
+                            fontSize="inherit"
+                            style={{ fontStyle: "italic" }}
+                          />
+                        }
+                        emptyIcon={
+                          <Star
+                            fontSize="inherit"
+                            style={{ fontStyle: "italic", opacity: 0.3 }}
+                          />
+                        }
+                      />
+                    </Box>
+
+                    <textarea
+                      className="w-full p-3 border rounded mb-4 min-h-[100px] focus:ring-2 focus:ring-black focus:border-transparent text-xl"
+                      placeholder="Напишите ваш отзыв..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                    />
+                    <div className="flex gap-3">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmitReviewAndClose}
+                        disabled={
+                          isSubmittingReview ||
+                          !reviewText ||
+                          reviewRating === 0
+                        }
+                        className="!bg-black !text-white hover:!bg-gray-800"
+                        sx={{ fontSize: "1.1rem" }}
+                      >
+                        {isSubmittingReview ? "Отправка..." : "Отправить отзыв"}
+                      </Button>
+                      {editingReviewId && (
+                        <Button
+                          variant="outlined"
+                          onClick={() => {
+                            setEditingReviewId(null);
+                            setReviewText("");
+                            setReviewRating(0);
+                          }}
+                          className="!border-black !text-black"
+                          sx={{ fontSize: "1.1rem" }}
+                        >
+                          Отмена
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className="m-12 mt-2">

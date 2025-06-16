@@ -22,6 +22,8 @@ import {
 import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
 import { ActionNotificationType } from "../modal/action-notification-type";
+import { useTypedSelector } from "../../store/hooks";
+import { userIdSelector } from "../../store/slices/user-slice";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,6 +48,12 @@ export const useProductPage = () => {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
+
+  const userId = useTypedSelector(userIdSelector);
+
+  const ownReviewId = reviews.find((review) => review.userId === userId)?.id;
+
+  const isReviewCreatingAllowed = !!ownReviewId;
 
   const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
@@ -258,5 +266,7 @@ export const useProductPage = () => {
     setEditingReviewId,
     refetchReviews,
     navigate,
+    isReviewCreatingAllowed,
+    ownReviewId,
   };
 };

@@ -5,10 +5,11 @@ import { Avatar, Box, Rating as MuiRating } from "@mui/material";
 
 interface ReviewProps {
   review: ReviewModel;
+  isOwn?: boolean;
 }
 
 const Review = (props: ReviewProps) => {
-  const { review } = props;
+  const { review, isOwn } = props;
 
   const { data: user } = useGetUserByIdQuery(review.userId, {
     refetchOnMountOrArgChange: true,
@@ -29,7 +30,7 @@ const Review = (props: ReviewProps) => {
           sx={{ width: 64, height: 64 }}
         />
         <div className="flex flex-col items-center">
-          <h5 style={{ wordBreak: "break-word", fontSize: "1.1rem" }}>
+          <h5 style={{ wordBreak: "break-word", fontSize: "1.1rem", color: isOwn ? "#C0A062" : "" }}>
             {user?.username ?? `Пользователь ${review.id.replaceAll("-", "")}`}
           </h5>
           <span className="text-sm text-gray">
