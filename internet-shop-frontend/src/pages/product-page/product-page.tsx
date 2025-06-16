@@ -42,6 +42,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const {
     product,
+    refetchProduct,
     isProductError,
     reviews,
     isReviewsError,
@@ -184,6 +185,7 @@ const ProductPage = () => {
 
   const handleSubmitReviewAndClose = async () => {
     await handleSubmitReview();
+    refetchProduct();
     refetchReviews();
     setIsReviewFormOpen(false);
   };

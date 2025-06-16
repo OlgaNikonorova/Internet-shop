@@ -1,12 +1,10 @@
 import { useState, useEffect, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Product from "../../store/models/product/product";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { Favorite, FavoriteBorder, ShoppingCart } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  useAddItemToCartMutation,
-} from "../../store/api/cart-api";
+import { useAddItemToCartMutation } from "../../store/api/cart-api";
 import { useDispatch } from "react-redux";
 import { addCartItem } from "../../store/slices/cart-slice";
 import {
@@ -135,17 +133,34 @@ const ProductCard = React.memo(
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <IconButton
-                    onClick={handleToggleFavorite}
-                    className="!p-2 !bg-white/90 hover:!bg-black/90 !shadow-md"
-                    sx={{ zIndex: 10 }}
+                  <Tooltip
+                    title={
+                      isFavorite
+                        ? "Удалить из избранного"
+                        : "Добавить в избранное"
+                    }
+                    placement="top"
+                    arrow
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          fontSize: "1.3rem",
+                        },
+                      },
+                    }}
                   >
-                    {isFavorite ? (
-                      <Favorite className="text-red-500 hover:text-white" />
-                    ) : (
-                      <FavoriteBorder className="text-gray-600 hover:text-white" />
-                    )}
-                  </IconButton>
+                    <IconButton
+                      onClick={handleToggleFavorite}
+                      className="!p-2 !bg-white/90 hover:!bg-black/90 !shadow-md"
+                      sx={{ zIndex: 10 }}
+                    >
+                      {isFavorite ? (
+                        <Favorite className="text-red-500 hover:text-white" />
+                      ) : (
+                        <FavoriteBorder className="text-gray-600 hover:text-white" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
                 </motion.div>
               </motion.div>
             </>
@@ -187,22 +202,35 @@ const ProductCard = React.memo(
               whileTap={{ scale: 0.9 }}
               className="absolute bottom-3 right-3 z-10"
             >
-              <IconButton
-                onClick={handleAddToCart}
-                className={`!p-2 backdrop-blur ${
-                  isInCart
-                    ? "!bg-black !bg-opacity-60 text-white"
-                    : "!bg-white !bg-opacity-80 hover:!bg-black hover:!bg-opacity-60"
-                }`}
-                size="medium"
+              <Tooltip
+                title={isInCart ? "Удалить из корзины" : "Добавить в корзину"}
+                placement="top"
+                arrow
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      fontSize: "1.3rem",
+                    },
+                  },
+                }}
               >
-                <ShoppingCart
-                  className={
-                    isInCart ? "text-white" : "text-gray-800 hover:text-white"
-                  }
-                  fontSize="small"
-                />
-              </IconButton>
+                <IconButton
+                  onClick={handleAddToCart}
+                  className={`!p-2 backdrop-blur ${
+                    isInCart
+                      ? "!bg-black !bg-opacity-60 text-white"
+                      : "!bg-white !bg-opacity-80 hover:!bg-black hover:!bg-opacity-60"
+                  }`}
+                  size="medium"
+                >
+                  <ShoppingCart
+                    className={
+                      isInCart ? "text-white" : "text-gray-800 hover:text-white"
+                    }
+                    fontSize="small"
+                  />
+                </IconButton>
+              </Tooltip>
             </motion.div>
           </div>
         </div>

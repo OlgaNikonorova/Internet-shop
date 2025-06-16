@@ -35,7 +35,11 @@ export const useProductPage = () => {
   const [actionNotification, setActionNotification] =
     useState<ActionNotificationType | null>(null);
 
-  const { data: product, error: isProductError } = useGetProductQuery(id!, {
+  const {
+    data: product,
+    error: isProductError,
+    refetch: refetchProduct,
+  } = useGetProductQuery(id!, {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
@@ -232,6 +236,7 @@ export const useProductPage = () => {
 
   return {
     product,
+    refetchProduct,
     isProductError: !!isProductError,
     reviews,
     isReviewsError: !!isReviewsError,
