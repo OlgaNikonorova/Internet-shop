@@ -43,14 +43,12 @@ export const forgotPasswordSchema = z.object({
   username: z.string().min(3, "Псевдоним должен быть не менее 3 символов"),
 });
 
-// Обновляем тип FormData
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type FormData =
   | LoginFormData
   | RegisterFormData
   | ForgotPasswordFormData;
 
-// Обновляем getSchema
 export const getSchema = (mode: AuthMode) => {
   switch (mode) {
     case AuthMode.Login:

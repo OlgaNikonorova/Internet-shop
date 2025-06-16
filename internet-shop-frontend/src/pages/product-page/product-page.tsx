@@ -26,6 +26,7 @@ import {
   Tabs,
   Typography,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import Review from "../../components/review/review";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -352,12 +353,21 @@ const ProductPage = () => {
                     className="!text-white !p-2 hover:!bg-gray"
                     size="small"
                   >
-                    <Remove />
+                    <Tooltip
+                      title="Уменьшить количество"
+                      placement="top"
+                      arrow
+                      componentsProps={{
+                        tooltip: {
+                          sx: {
+                            fontSize: "1.3rem",
+                          },
+                        },
+                      }}
+                    >
+                      <Remove />
+                    </Tooltip>
                   </IconButton>
-
-                  <span className="flex-1 text-center text-white text-xl">
-                    {cartItem.quantity}
-                  </span>
 
                   <IconButton
                     onClick={() =>
@@ -366,7 +376,20 @@ const ProductPage = () => {
                     className="!text-white !p-2 hover:!bg-gray"
                     size="small"
                   >
-                    <Add />
+                    <Tooltip
+                      title="Увеличить количество"
+                      placement="top"
+                      arrow
+                      componentsProps={{
+                        tooltip: {
+                          sx: {
+                            fontSize: "1.3rem",
+                          },
+                        },
+                      }}
+                    >
+                      <Add />
+                    </Tooltip>
                   </IconButton>
                 </div>
               ) : (
@@ -393,11 +416,28 @@ const ProductPage = () => {
                 className="!p-2 !rounded-full !border !border-black bg-white hover:bg-gray-100 transition"
                 size="large"
               >
-                {isFavorite ? (
-                  <Favorite className="text-black" fontSize="large" />
-                ) : (
-                  <FavoriteBorder className="text-black" fontSize="large" />
-                )}
+                <Tooltip
+                  title={
+                    isFavorite
+                      ? "Удалить из избранного"
+                      : "Добавить в избранное"
+                  }
+                  placement="top"
+                  arrow
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: "1.3rem",
+                      },
+                    },
+                  }}
+                >
+                  {isFavorite ? (
+                    <Favorite className="text-black" fontSize="large" />
+                  ) : (
+                    <FavoriteBorder className="textblack" fontSize="large" />
+                  )}
+                </Tooltip>
               </IconButton>
             </Stack>
 
