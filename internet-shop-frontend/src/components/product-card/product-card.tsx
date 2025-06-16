@@ -95,14 +95,16 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div
-        className="relative bg-white shadow-md rounded-lg flex flex-col justify-between hover:cursor-pointer w-full"
+      <motion.div
+        className="relative bg-white shadow-lg rounded-xl overflow-hidden flex flex-col hover:cursor-pointer 
+        min-w-[350px] max-w-[450px] transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => navigate(`/product/${id}`)}
+        whileHover={{ scale: 1.02 }}
       >
-        {/* Product image */}
-        <div className="relative w-full h-48 overflow-hidden">
+        {/* Картинки продукта */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden group">
           <AnimatePresence initial={false}>
             <motion.img
               key={currentImageIndex}
@@ -113,88 +115,116 @@ const ProductCard = React.memo(
                 "/images/placeholder.webp"
               }
               alt={name}
-              className="absolute w-full h-full object-cover rounded-lg"
+              className="absolute w-full h-full object-cover object-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
+              loading="lazy"
             />
           </AnimatePresence>
 
           {isHovered && (
-            <motion.div
-              className="absolute top-2 right-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            >
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <IconButton
-                  onClick={handleToggleFavorite}
-                  className="!p-2 !bg-white/80 hover:!bg-black"
-                  sx={{ zIndex: 10 }}
+            <>
+              <div className="absolute inset-0 bg-black/10 transition-all duration-300" />
+              <motion.div
+                className="absolute top-3 right-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  {isFavorite ? (
-                    <Favorite className="text-red-500 hover:text-white" />
-                  ) : (
-                    <FavoriteBorder className="text-gray-600 hover:text-white" />
-                  )}
-                </IconButton>
+                  <IconButton
+                    onClick={handleToggleFavorite}
+                    className="!p-2 !bg-white/90 hover:!bg-black/90 !shadow-md"
+                    sx={{ zIndex: 10 }}
+                  >
+                    {isFavorite ? (
+                      <Favorite className="text-red-500 hover:text-white" />
+                    ) : (
+                      <FavoriteBorder className="text-gray-600 hover:text-white" />
+                    )}
+                  </IconButton>
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </>
           )}
         </div>
 
-        {/* Product info with gold text on hover */}
-        <div className="p-3 w-full">
+        {/* Информация о продукте*/}
+        <div className="p-4 space-y-2">
           <motion.div
             animate={{ color: isHovered ? goldColor : "#333333" }}
             transition={{ duration: 0.2 }}
-            className="w-full"
           >
             <h3
-              className={`text-lg font-bold mb-1 truncate ${
+              className={`text-xl font-bold truncate ${
                 isHovered ? goldTwClass : ""
               }`}
             >
               {name}
             </h3>
             <p
-              className={`text-xs mb-2 line-clamp-2 ${
+              className={`text-sm text-gray-600 line-clamp-2 ${
                 isHovered ? goldTwClass : ""
               }`}
             >
               {description}
             </p>
-            <p
-              className={`font-semibold text-sm ${
-                isHovered ? goldTwClass : ""
-              }`}
+          </motion.div>
+
+          <div className="flex justify-between items-center pt-2">
+            <motion.p
+              animate={{ color: isHovered ? goldColor : "#111827" }}
+              className="font-bold text-lg"
             >
               {price.toFixed(2)} ₽
-            </p>
-          </motion.div>
+            </motion.p>
+
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="absolute bottom-3 right-3 z-10"
+            >
+              <IconButton
+                onClick={handleAddToCart}
+                className={`!p-2 backdrop-blur ${
+                  isInCart
+                    ? "!bg-black !bg-opacity-60 text-white"
+                    : "!bg-white !bg-opacity-80 hover:!bg-black hover:!bg-opacity-60"
+                }`}
+                size="medium"
+              >
+                <ShoppingCart
+                  className={
+                    isInCart ? "text-white" : "text-gray-800 hover:text-white"
+                  }
+                  fontSize="small"
+                />
+              </IconButton>
+            </motion.div>
+          </div>
         </div>
 
-        {/* Cart button */}
-        <div className="absolute bottom-3 right-3 z-10">
-          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <IconButton
-              onClick={handleAddToCart}
-              className={`!p-2 ${
-                isInCart
-                  ? "!bg-yellow-500"
-                  : "!bg-white !border !border-gray-300"
-              } h-10 w-10`}
-              size="medium"
-            >
-              <ShoppingCart
-                className={isInCart ? "text-white" : "text-gray-800"}
-              />
-            </IconButton>
+        {/* Индикатор в корзине */}
+        {isInCart && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.05,
+              ease: "easeOut",
+            }}
+            className="absolute top-3 left-3 bg-black bg-opacity-60 text-white text-xs font-light
+     px-3 py-1 rounded-full z-10 backdrop-blur"
+          >
+            В корзине
           </motion.div>
-        </div>
-      </div>
+        )}
+      </motion.div>
     );
   },
   (prevProps, nextProps) => {
