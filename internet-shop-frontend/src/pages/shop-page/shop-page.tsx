@@ -1,6 +1,6 @@
 import "swiper/css";
 import "swiper/css/navigation";
-
+import { useNavigate } from "react-router-dom";
 import Product from "../../store/models/product/product";
 import { useShopPage } from "./use-shop-page";
 import Typography from "@mui/material/Typography";
@@ -14,8 +14,10 @@ import { Filters } from "../../components/pagination/filters";
 import { useEffect } from "react";
 import { useTypedSelector } from "../../store/hooks";
 import { lastUpdatedFavoritesSelector } from "../../store/slices/favorites-slice";
+import { SwiperSlide } from "swiper/react";
 
 const ShopPage = () => {
+  const navigate = useNavigate();
   const {
     products,
     page,
@@ -49,11 +51,30 @@ const ShopPage = () => {
   } = useShopPage();
 
   const promoImages = [
-    "/uploads/files-1749583702973-607901801.jpeg",
-    "/uploads/files-1749583702973-607901801.jpeg",
-    "/uploads/files-1749583702973-607901801.jpeg",
-    "/uploads/files-1749583702973-607901801.jpeg",
-    "/uploads/files-1749583702973-607901801.jpeg",
+    {
+      image: "/uploads/files-1750023560621-788358470.webp",
+      title: "Скидка 20% на весь уход",
+      subtitle: "Только до конца месяца",
+      link: "/category/care",
+    },
+    {
+      image: "/uploads/files-1750023560621-802021856.webp",
+      title: "Подарок за покупку",
+      subtitle: "Бесплатная мини-версия парфюма",
+      link: "/category/parfume",
+    },
+    {
+      image: "/uploads/files-1750023560623-426648666.webp",
+      title: "Наборы со скидкой",
+      subtitle: "Экономия до 35%",
+      link: "/category/sets",
+    },
+    {
+      image: "/uploads/files-1750023560623-982391042.webp",
+      title: "Бесплатная доставка",
+      subtitle: "При заказе от 5000₽",
+      link: "/delivery",
+    },
   ];
 
   const lastUpdated = useTypedSelector(lastUpdatedFavoritesSelector);
@@ -71,22 +92,66 @@ const ShopPage = () => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      gap={10}
+      gap={8}
       width="100%"
+      sx={{ backgroundColor: "#000000" }}
     >
+      {/* Hero Section */}
       <Box width="100%">
         <Box
           px={0}
           className="flex flex-col w-full"
-          style={{
+          sx={{
             backgroundImage: 'url("/images/welcome.jpg")',
             backgroundPosition: "left 27%",
             backgroundSize: "cover",
+            height: { xs: "600px", md: "800px" },
+            position: "relative",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                "linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(54, 54, 54, 0.3) 20%, transparent 100%)",
+            },
           }}
         >
-          <div className="flex pt-60 px-10 pb-20 flex-col text-white w-1/2 self-end items-start gap-6">
-            <h1 className="text-4xl">Красота снаружи начинается внутри.</h1>
-            <p className="text-lg">
+          <Box
+            sx={{
+              pt: { xs: 20, md: 20 },
+              px: { xs: 4, md: 10 },
+              pb: { xs: 10, md: 20 },
+              flexDirection: "column",
+              color: "white",
+              width: { xs: "100%", md: "50%" },
+              display: "flex",
+              justifyContent: "center",
+              alignSelf: "flex-end",
+              gap: 4,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: { xs: "2rem", md: "3rem" },
+                fontWeight: 700,
+                mb: 2,
+              }}
+            >
+              Красота снаружи начинается внутри.
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: { xs: "1rem", md: "1.25rem" },
+                mb: 4,
+              }}
+            >
               Но знаешь, что самое волшебное? Когда внутренний свет отражается в
               сиянии кожи, в блеске глаз, в уверенной улыбке. Ты — это не просто
               отражение в зеркале. Ты — настроение, энергия, настроение дня,
@@ -100,85 +165,335 @@ const ShopPage = () => {
               раскрыться. Потому что ты заслуживаешь не просто макияжа, а магии.
               Не просто ухода, а ритуала. Не просто покупки, а настроения.
               Выбирай. Вдохновляйся. Сияй.
-            </p>
-            <Box display="flex" justifyContent="flex-start" alignItems="center">
-              <Button
-                component="a"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const el = document.getElementById("catalog");
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                variant="contained"
-                sx={{ px: 4, py: 1, width: "100%", mb: 2 }}
-              >
-                К покупкам!
-              </Button>
-            </Box>
-          </div>
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{
+                px: 4,
+                py: 1.5,
+                width: "fit-content",
+                backgroundColor: "black",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "#D4AF37",
+                  color: "black",
+                },
+              }}
+            >
+              К покупкам!
+            </Button>
+          </Box>
         </Box>
+      </Box>
 
-        <div className="flex w-full items-center flex-col gap-10 px-[54px] px-4 py-4">
+      {/* Main Content */}
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "1800px",
+          px: { xs: 2, md: 6 },
+        }}
+      >
+        {/* Новинки */}
+        <Box width="100%" sx={{ mb: 8 }}>
+          <Box
+            onClick={() => navigate("/new")}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 4,
+              cursor: "pointer",
+              "&:hover h2": {
+                color: "#D4AF37",
+              },
+            }}
+          >
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "white",
+                position: "relative",
+                display: "inline-block",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "-8px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "80px",
+                  height: "3px",
+                  backgroundColor: "#D4AF37",
+                  transition: "width 0.3s ease",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
+              }}
+            >
+              НОВИНКИ
+            </Typography>
+          </Box>
           <Slider
-            title="НОВИНКИ"
             items={latestProducts}
             renderItem={(product) => (
-              <ProductCard
+              <SwiperSlide
                 key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
+                style={{ width: "auto", padding: "0 8px" }}
+              >
+                <ProductCard
+                  product={product}
+                  isInCart={cartItemIds.includes(product.id)}
+                  isFavorite={favoriteProductIds.includes(product.id)}
+                  refetchCart={refetchCart}
+                  refetchFavorites={refetchFavorites}
+                  removeFromCart={handleRemoveFromCart}
+                />
+              </SwiperSlide>
             )}
           />
+        </Box>
+
+        {/* Акции */}
+        <Box width="100%" sx={{ mb: 8 }}>
+          <Box
+            onClick={() => navigate("/promo")}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 4,
+              cursor: "pointer",
+              "&:hover h2": {
+                color: "#D4AF37",
+              },
+            }}
+          >
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "white",
+                position: "relative",
+                display: "inline-block",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "-8px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "80px",
+                  height: "3px",
+                  backgroundColor: "#D4AF37",
+                  transition: "width 0.3s ease",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
+              }}
+            >
+              АКЦИИ
+            </Typography>
+          </Box>
           <Slider
-            title="АКЦИИ"
             items={promoImages}
-            renderItem={(imageSrc, index) => (
-              <img
-                src={process.env.REACT_APP_API_BASE_URL + imageSrc}
-                alt={`promo-${index}`}
-                className="rounded-lg shadow-lg w-full h-auto object-cover"
-              />
+            renderItem={(promo, index) => (
+              <SwiperSlide
+                key={index}
+                style={{ width: "auto", padding: "0 8px" }}
+              >
+                <Box
+                  position="relative"
+                  sx={{
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    boxShadow: 3,
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow: 6,
+                      "& .promo-text": {
+                        color: "#D4AF37",
+                      },
+                    },
+                  }}
+                  onClick={() => navigate(promo.link)}
+                >
+                  <img
+                    src={process.env.REACT_APP_API_BASE_URL + promo.image}
+                    alt={`promo-${index}`}
+                    style={{
+                      width: "100%",
+                      height: "300px",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                  <Box
+                    position="absolute"
+                    bottom={0}
+                    left={0}
+                    right={0}
+                    p={3}
+                    sx={{
+                      background:
+                        "linear-gradient(to top, rgba(195, 192, 192, 0.8) 0%, transparent 100%)",
+                      color: "black",
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      className="promo-text"
+                      sx={{
+                        fontWeight: 700,
+                        transition: "color 0.3s ease",
+                        mb: 1,
+                      }}
+                    >
+                      {promo.title}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      className="promo-text"
+                      sx={{
+                        transition: "color 0.3s ease",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {promo.subtitle}
+                    </Typography>
+                  </Box>
+                </Box>
+              </SwiperSlide>
             )}
           />
-          <SkinTypeSection />
+        </Box>
+
+        <SkinTypeSection />
+
+        {/* Вас может заинтересовать */}
+        <Box width="100%" sx={{ mb: 8 }}>
+          <Box
+            onClick={() => navigate("/promo")}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 4,
+              cursor: "pointer",
+              "&:hover h2": {
+                color: "#D4AF37",
+              },
+            }}
+          >
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "white",
+                position: "relative",
+                display: "inline-block",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "-8px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "80px",
+                  height: "3px",
+                  backgroundColor: "#D4AF37",
+                  transition: "width 0.3s ease",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
+              }}
+            >
+              ВАС МОЖЕТ ЗАИНТЕРЕСОВАТЬ
+            </Typography>
+          </Box>
           <Slider
-            title="ВАС МОЖЕТ ЗАИНТЕРЕСОВАТЬ"
             items={mayInterestedProducts}
             renderItem={(product) => (
-              <ProductCard
+              <SwiperSlide
                 key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
+                style={{ width: "auto", padding: "0 8px" }}
+              >
+                <ProductCard
+                  product={product}
+                  isInCart={cartItemIds.includes(product.id)}
+                  isFavorite={favoriteProductIds.includes(product.id)}
+                  refetchCart={refetchCart}
+                  refetchFavorites={refetchFavorites}
+                  removeFromCart={handleRemoveFromCart}
+                />
+              </SwiperSlide>
             )}
           />
-          {/* Основной контент */}
-          <Typography
-            id="catalog"
-            variant="h4"
-            sx={{ marginTop: "10vh" }}
-            className="text-white"
+        </Box>
+
+        {/* Каталог товаров */}
+        <Box width="100%" sx={{ mb: 8 }}>
+          <Box
+            onClick={() => navigate("/promo")}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 4,
+              cursor: "pointer",
+              "&:hover h2": {
+                color: "#D4AF37",
+              },
+            }}
           >
-            КАТАЛОГ ТОВАРОВ
-          </Typography>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.75rem", md: "2.5rem" },
+                fontWeight: 700,
+                color: "white",
+                position: "relative",
+                display: "inline-block",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "-8px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "80px",
+                  height: "3px",
+                  backgroundColor: "#D4AF37",
+                  transition: "width 0.3s ease",
+                },
+                "&:hover::after": {
+                  width: "100%",
+                },
+              }}
+            >
+              КАТАЛОГ ТОВАРОВ
+            </Typography>
+          </Box>
+
           <Search search={search} handleSearch={handleSearch} />
-          <div className="flex p-5 gap-5 self-start w-full justify-between">
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2,
+              p: 2,
+              backgroundColor: "white",
+              borderRadius: 2,
+              boxShadow: 1,
+              mb: 4,
+            }}
+          >
             <SortOptions
               sortOption={sortOption}
               onSortChange={handleSortChange}
             />
-
             <Filters
               priceRange={priceRange}
               onPriceChange={handlePriceChange}
@@ -191,121 +506,194 @@ const ShopPage = () => {
               isRatingFilterEnabled={isRatingFilterEnabled}
               onToggleRatingFilter={(value) => setIsRatingFilterEnabled(value)}
             />
-          </div>
-          <Box className="w-full">
-            {/* Список товаров */}
-            {products.length > 0 ? (
-              <>
-                <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px={10}">
-                  {products.map((product: Product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      isInCart={cartItemIds.includes(product.id)}
-                      isFavorite={favoriteProductIds.includes(product.id)}
-                      refetchCart={refetchCart}
-                      refetchFavorites={refetchFavorites}
-                      removeFromCart={handleRemoveFromCart}
-                    />
-                  ))}
-                </Box>
-
-                {page.hasNextPage && (
-                  <Box className="mt-8 flex justify-center">
-                    <button
-                      onClick={handleShowMore}
-                      className="border border-white px-6 py-2 rounded transition text-white"
-                    >
-                      Показать больше
-                    </button>
-                  </Box>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-xl text-white">Ничего не найдено</p>
-              </div>
-            )}
           </Box>
-          <Slider
-            title="ПАРФЮМЕРИЯ"
-            items={parfume}
-            renderItem={(product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
-            )}
-            bgImagePath={
-              process.env.REACT_APP_API_BASE_URL +
-              "/uploads/files-1749654949798-93558344.jpeg"
-            }
-          />
-          <Slider
-            title="УХОДОВАЯ КОСМЕТИКА"
-            items={care}
-            renderItem={(product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
-            )}
-            bgImagePath={
-              process.env.REACT_APP_API_BASE_URL +
-              "/uploads/files-1749655046735-12483775.jpeg"
-            }
-          />
 
-          <Slider
-            title="УКРАШЕНИЯ"
-            items={jewelry}
-            renderItem={(product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
-            )}
-            bgImagePath={
-              process.env.REACT_APP_API_BASE_URL +
-              "/uploads/files-1749654782918-410515775.png"
-            }
-          />
+          {/* Список товаров */}
+          {products.length > 0 ? (
+            <>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                    lg: "repeat(4, 1fr)",
+                  },
+                  gap: 3,
+                }}
+              >
+                {products.map((product: Product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isInCart={cartItemIds.includes(product.id)}
+                    isFavorite={favoriteProductIds.includes(product.id)}
+                    refetchCart={refetchCart}
+                    refetchFavorites={refetchFavorites}
+                    removeFromCart={handleRemoveFromCart}
+                  />
+                ))}
+              </Box>
 
-          <Slider
-            title="ДЕКОРАТИВНАЯ КОСМЕТИКА"
-            items={decorativeCosmetics}
-            renderItem={(product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isInCart={cartItemIds.includes(product.id)}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                refetchCart={refetchCart}
-                refetchFavorites={refetchFavorites}
-                removeFromCart={handleRemoveFromCart}
-              />
-            )}
-            bgImagePath={
-              process.env.REACT_APP_API_BASE_URL +
-              "/uploads/files-1749583702971-100516327.jpg"
-            }
-          />
-        </div>
+              {page.hasNextPage && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 6,
+                    mb: 4,
+                  }}
+                >
+                  <Button
+                    onClick={handleShowMore}
+                    variant="outlined"
+                    sx={{
+                      px: 6,
+                      py: 2,
+                      borderColor: "#D4AF37",
+                      color: "#D4AF37",
+                      borderWidth: 2,
+                      fontSize: "1rem",
+                      fontWeight: 600,
+                      "&:hover": {
+                        backgroundColor: "rgba(212, 175, 55, 0.1)",
+                        borderColor: "#C19C30",
+                        color: "#C19C30",
+                        borderWidth: 2,
+                      },
+                    }}
+                  >
+                    Показать больше
+                  </Button>
+                </Box>
+              )}
+            </>
+          ) : (
+            <Box
+              sx={{
+                textAlign: "center",
+                py: 10,
+                backgroundColor: "white",
+                borderRadius: 2,
+                boxShadow: 1,
+              }}
+            >
+              <Typography variant="h5" sx={{ color: "text.secondary", mb: 2 }}>
+                Ничего не найдено
+              </Typography>
+              <Button
+                variant="text"
+                sx={{
+                  color: "#D4AF37",
+                  fontWeight: 600,
+                  "&:hover": {
+                    color: "#C19C30",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                Сбросить фильтры
+              </Button>
+            </Box>
+          )}
+        </Box>
+
+        {/* Категории товаров */}
+        {[
+          {
+            title: "ПАРФЮМЕРИЯ",
+            items: parfume,
+            bgImage: "/uploads/files-1750033607101-711929750.jpeg",
+            link: "/category/parfume",
+          },
+          {
+            title: "УХОДОВАЯ КОСМЕТИКА",
+            items: care,
+            bgImage: "/uploads/files-1750033276324-865290115.jpeg",
+            link: "/category/care",
+          },
+          {
+            title: "УКРАШЕНИЯ",
+            items: jewelry,
+            bgImage: "/uploads/files-1750033844009-855389816.jpeg",
+            link: "/category/jewelry",
+          },
+          {
+            title: "ДЕКОРАТИВНАЯ КОСМЕТИКА",
+            items: decorativeCosmetics,
+            bgImage: "/uploads/files-1750033521553-951601827.jpeg",
+            link: "/category/cosmetics",
+          },
+        ].map((section) => (
+          <Box width="100%" key={section.title} sx={{ mb: 8 }}>
+            <Box
+              onClick={() => navigate(section.link)}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mb: 4,
+                cursor: "pointer",
+                "&:hover h2": {
+                  color: "#D4AF37",
+                },
+                "& img": {
+                  width: "100%",
+                  height: "60%",
+                  objectFit: "cover",
+                  opacity: 0.75, // Прозрачность 75%
+                  display: "block",
+                },
+              }}
+            >
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: "1.75rem", md: "2.5rem" },
+                  fontWeight: 700,
+                  color: "white",
+                  position: "relative",
+                  display: "inline-block",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: "-8px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "80px",
+                    height: "3px",
+                    backgroundColor: "#D4AF37",
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
+                }}
+              >
+                {section.title}
+              </Typography>
+            </Box>
+            <Slider
+              items={section.items}
+              bgImagePath={process.env.REACT_APP_API_BASE_URL + section.bgImage}
+              renderItem={(product) => (
+                <SwiperSlide
+                  key={product.id}
+                  style={{ width: "auto", padding: "0 8px" }}
+                >
+                  <ProductCard
+                    product={product}
+                    isInCart={cartItemIds.includes(product.id)}
+                    isFavorite={favoriteProductIds.includes(product.id)}
+                    refetchCart={refetchCart}
+                    refetchFavorites={refetchFavorites}
+                    removeFromCart={handleRemoveFromCart}
+                  />
+                </SwiperSlide>
+              )}
+            />
+          </Box>
+        ))}
       </Box>
     </Box>
   );
