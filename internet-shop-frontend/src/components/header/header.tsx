@@ -59,7 +59,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
         backgroundColor: "rgba(0, 0, 0, 0.3)",
       }}
     >
-      <div className="px-4 py-4 flex items-center justify-center gap-5">
+      <div className="px-4 py-4 flex items-center justify-around gap-5">
         <Link to="/shop" className="flex items-center mr-5">
           <span
             className="text-2xl font-bold tracking-tight hover:text-[#C0A062] transition-colors duration-300"

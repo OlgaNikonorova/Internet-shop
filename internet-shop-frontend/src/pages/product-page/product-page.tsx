@@ -36,12 +36,12 @@ import { Thumbs, EffectFade, Autoplay } from "swiper/modules";
 import { ImageModal } from "../modal/image-modal";
 import ProductCard from "../../components/product-card/product-card";
 import Slider from "../../components/slider/slider";
-import { ActionNotification } from "../modal/action-notification";
 
 const ProductPage = () => {
   const navigate = useNavigate();
   const {
     product,
+    refetchProduct,
     isProductError,
     reviews,
     isReviewsError,
@@ -53,10 +53,6 @@ const ProductPage = () => {
     isInCart,
     isImageModalOpen,
     setIsImageModalOpen,
-    selectedImage,
-    setSelectedImage,
-    actionNotification,
-    setActionNotification,
     onIncrease,
     onDecrease,
     cartItem,
@@ -167,7 +163,6 @@ const ProductPage = () => {
 
     setCurrentImageIndex((prev: number) => {
       const newIndex = prev < productImages.length - 1 ? prev + 1 : 0;
-      setSelectedImage(productImages[newIndex]);
       return newIndex;
     });
   };
@@ -177,13 +172,13 @@ const ProductPage = () => {
 
     setCurrentImageIndex((prev: number) => {
       const newIndex = prev > 0 ? prev - 1 : productImages.length - 1;
-      setSelectedImage(productImages[newIndex]);
       return newIndex;
     });
   };
 
   const handleSubmitReviewAndClose = async () => {
     await handleSubmitReview();
+    refetchProduct();
     refetchReviews();
     setIsReviewFormOpen(false);
   };
@@ -265,7 +260,6 @@ const ProductPage = () => {
                   className="w-full h-full object-cover"
                   onClick={() => {
                     setCurrentImageIndex(index);
-                    setSelectedImage(productImages[index]);
                   }}
                 />
                 <div className="swiper-thumb-overlay absolute inset-0 bg-black/40 opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -368,6 +362,10 @@ const ProductPage = () => {
                       <Remove />
                     </Tooltip>
                   </IconButton>
+
+                  <span className="flex-1 text-center text-white text-xl">
+                    {cartItem.quantity}
+                  </span>
 
                   <IconButton
                     onClick={() =>
@@ -869,21 +867,13 @@ const ProductPage = () => {
         <ImageModal
           open={isImageModalOpen}
           onClose={() => setIsImageModalOpen(false)}
-          imageUrl={selectedImage}
+          imageUrl={productImages[currentImageIndex]}
           onNext={handleNextImage}
           onPrev={handlePrevImage}
           hasNext={currentImageIndex < productImages.length - 1}
           hasPrev={currentImageIndex > 0}
         />
       )}
-
-      {/* Уведомление о действиях */}
-      <ActionNotification
-        open={!!actionNotification}
-        onClose={() => setActionNotification(null)}
-        message={actionNotification?.message || ""}
-        type={actionNotification?.type || "cart"}
-      />
     </div>
   );
 };

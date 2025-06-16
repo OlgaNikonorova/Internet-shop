@@ -99,28 +99,18 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         ${animateDrawer ? "translate-x-0" : "translate-x-full"}
         shadow-xl`}
       >
-        <div className="flex justify-between items-center shrink-0">
-          <h2 className="text-3xl font-light">
-            Ваша корзина{" "}
-            <span className="font-normal">
-              ({products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)}{" "}
-              шт.)
-            </span>
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-3xl hover:text-[#C0A062] transition-colors duration-200"
-          >
-            &times;
-          </button>
-        </div>
-
         {isLoading ? (
           <div className="flex justify-center items-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C0A062]"></div>
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-gray">
+          <div className="flex flex-col items-center justify-center h-full">
+            <button
+              onClick={onClose}
+              className="text-5xl hover:text-[#C0A062] transition-colors duration-200 absolute top-5 right-10"
+            >
+              &times;
+            </button>
             <svg
               className="w-16 h-16 mb-4"
               fill="none"
@@ -137,7 +127,27 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             <p className="text-xl">Ваша корзина пуста</p>
           </div>
         ) : (
-          <div className="flex flex-col flex-grow">
+          <div className="flex flex-col grow justify-between h-full">
+            <div className="flex justify-between items-center shrink-0">
+              <h2 className="text-3xl font-light">
+                Ваша корзина{" "}
+                <span className="font-normal">
+                  (
+                  {products.reduce(
+                    (acc, item) => acc + (item.quantity ?? 1),
+                    0
+                  )}{" "}
+                  шт.)
+                </span>
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-5xl hover:text-[#C0A062] transition-colors duration-200"
+              >
+                &times;
+              </button>
+            </div>
+
             <List
               sx={{
                 width: "100%",
@@ -145,7 +155,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 flexGrow: 1,
                 overflowY: "auto",
                 gap: 4,
-                maxHeight: "40vh",
+                maxHeight: "100%",
                 padding: "0 8px",
               }}
             >

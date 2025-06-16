@@ -21,9 +21,9 @@ import {
 } from "../../store/api/favorites-api";
 import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
-import { ActionNotificationType } from "../modal/action-notification-type";
 import { useTypedSelector } from "../../store/hooks";
 import { userIdSelector } from "../../store/slices/user-slice";
+import { toast } from "react-toastify";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,11 +31,12 @@ export const useProductPage = () => {
   const dispatch = useDispatch();
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string>("");
-  const [actionNotification, setActionNotification] =
-    useState<ActionNotificationType | null>(null);
 
-  const { data: product, error: isProductError } = useGetProductQuery(id!, {
+  const {
+    data: product,
+    error: isProductError,
+    refetch: refetchProduct,
+  } = useGetProductQuery(id!, {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
@@ -66,7 +67,8 @@ export const useProductPage = () => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
   const [updateCartItem] = useUpdateCartItemQuantityMutation();
 
-  const [addToFavorites] = useAddProductToFavoritesMutation();
+  const [addToFavorites, { isLoading: isAddingToFavorites }] =
+    useAddProductToFavoritesMutation();
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
   const isFavorite =
@@ -112,15 +114,9 @@ export const useProductPage = () => {
       setReviewText("");
       setReviewRating(0);
       setEditingReviewId(null);
-      setActionNotification({
-        message: "Отзыв успешно добавлен",
-        type: "success",
-      });
+      toast.success("Отзыв успешно добавлен");
     } catch (error) {
-      setActionNotification({
-        message: "Ошибка при отправке отзыва",
-        type: "error",
-      });
+      toast.error("Ошибка при отправке отзыва");
     } finally {
       setIsSubmittingReview(false);
     }
@@ -131,10 +127,7 @@ export const useProductPage = () => {
       await deleteCartItem(cartItemId).unwrap();
       dispatch(addCartItem(-1));
       await refetchCart();
-      setActionNotification({
-        message: `Товар удален из корзины`,
-        type: "cart",
-      });
+      toast.success(`Товар "${cartItem?.productName ?? ""}" удален из корзины`);
     } catch (error) {
       console.error("Ошибка удаления из корзины:", error);
       await refetchCart();
@@ -169,11 +162,6 @@ export const useProductPage = () => {
     }
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-    setIsImageModalOpen(true);
-  };
-
   const handleAddToCart = async () => {
     if (!product) return;
 
@@ -181,10 +169,7 @@ export const useProductPage = () => {
       await addToCart({ productId: product.id, quantity: count }).unwrap();
       dispatch(addCartItem(1));
       await refetchCart();
-      setActionNotification({
-        message: `Товар "${product.name}" добавлен в корзину`,
-        type: "cart",
-      });
+      toast.success(`Товар "${product.name}" добавлен в корзину`);
     } catch (error) {
       console.error("Ошибка добавления в корзину:", error);
     }
@@ -213,16 +198,10 @@ export const useProductPage = () => {
     try {
       if (isFavorite) {
         await removeFromFavorites(product.id).unwrap();
-        setActionNotification({
-          message: `Товар "${product.name}" удален из избранного`,
-          type: "favorite",
-        });
+        toast.success(`Товар "${product.name}" удален из избранного`);
       } else {
         await addToFavorites({ productId: product.id }).unwrap();
-        setActionNotification({
-          message: `Товар "${product.name}" добавлен в избранное`,
-          type: "favorite",
-        });
+        toast.success(`Товар "${product.name}" добавлен в избранное`);
       }
       refetchFavorites();
     } catch (error) {
@@ -232,12 +211,13 @@ export const useProductPage = () => {
 
   return {
     product,
+    refetchProduct,
     isProductError: !!isProductError,
     reviews,
     isReviewsError: !!isReviewsError,
     isFavorite,
     isAddingToCart,
-    isAddingToFavorites: false,
+    isAddingToFavorites,
     handleAddToCart,
     handleUpdateQuantity,
     handleToggleFavorite,
@@ -247,11 +227,6 @@ export const useProductPage = () => {
     cartItem,
     isImageModalOpen,
     setIsImageModalOpen,
-    selectedImage,
-    setSelectedImage,
-    handleImageClick,
-    actionNotification,
-    setActionNotification,
     refetchCart,
     onDelete,
     onIncrease,

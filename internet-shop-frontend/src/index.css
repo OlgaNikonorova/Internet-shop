@@ -19,3 +19,10 @@ body {
 .swiper-slide-thumb-active .swiper-thumb-overlay {
   opacity: 0 !important;
 }
+
+:root {
+  --toastify-color-info: black;
+  --toastify-color-success: black;
+  --toastify-color-warning: black;
+  --toastify-color-error: black;
+}

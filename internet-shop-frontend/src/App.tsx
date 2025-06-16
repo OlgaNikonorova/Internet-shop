@@ -4,6 +4,7 @@ import {
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Header from "./components/header/header";
 import RootLayout from "./routes/root-layout";
 import PublicLayout from "./routes/public-layout";
@@ -91,9 +92,20 @@ export default function App() {
   const [isCartOpen, setCartOpen] = useState(false);
 
   return (
-    <RouterProvider router={router}>
-      <Header onCartClick={() => setCartOpen(true)} />
-      <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
-    </RouterProvider>
+    <>
+      <ToastContainer
+        position="top-left"
+        autoClose={2000}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <RouterProvider router={router}>
+        <Header onCartClick={() => setCartOpen(true)} />
+        <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
+      </RouterProvider>
+    </>
   );
 }
