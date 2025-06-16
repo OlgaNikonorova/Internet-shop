@@ -104,7 +104,7 @@ export const useShopPage = () => {
     setPageSize(8);
   };
 
-  const handleCategoryToggle = (category: ProductCategory) => {
+  const handleCategoryToggle = (category?: ProductCategory) => {
     setCategory(category);
     setPageSize(8);
   };
@@ -176,6 +176,16 @@ export const useShopPage = () => {
       }
     );
 
+  const handleResetFilters = () => {
+    setSearch("");
+    setPageSize(8);
+    setPriceRange([0, 1000000]);
+    setIsPriceFilterEnabled(false);
+    setRatingRange([0, 5]);
+    setIsRatingFilterEnabled(false);
+    setCategory(undefined);
+  };
+
   return {
     products,
     page,
@@ -207,5 +217,6 @@ export const useShopPage = () => {
     isRatingFilterEnabled,
     setIsRatingFilterEnabled,
     handleRemoveFromCart,
+    handleResetFilters,
   };
 };

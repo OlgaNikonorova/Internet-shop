@@ -19,6 +19,7 @@ import { SortOptions } from "../../components/pagination/sort";
 import { Filters } from "../../components/pagination/filters";
 import { useDebounce } from "../../store/hooks";
 import { ProductCategory } from "../../store/models/product/product-category";
+import { Button } from "@mui/material";
 
 const FavoritesPage = () => {
   const [pageSize, setPageSize] = useState(8);
@@ -122,7 +123,7 @@ const FavoritesPage = () => {
     setPageSize(8);
   };
 
-  const handleCategoryToggle = (category: ProductCategory) => {
+  const handleCategoryToggle = (category?: ProductCategory) => {
     setCategory(category);
     setPageSize(8);
   };
@@ -130,6 +131,16 @@ const FavoritesPage = () => {
   const handleRatingChange = (newRange: [number, number]) => {
     setRatingRange(newRange);
     setPageSize(8);
+  };
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setPageSize(8);
+    setPriceRange([0, 1000000]);
+    setIsPriceFilterEnabled(false);
+    setRatingRange([0, 5]);
+    setIsRatingFilterEnabled(false);
+    setCategory(undefined);
   };
 
   if (isError) {
@@ -207,6 +218,19 @@ const FavoritesPage = () => {
         ) : (
           <div className="text-center py-12">
             <p className="text-xl text-primary">Ничего не найдено</p>
+            <Button
+              variant="text"
+              sx={{
+                color: "#C0A062",
+                fontWeight: 600,
+                "&:hover": {
+                  color: "#C19C30",
+                },
+              }}
+              onClick={handleResetFilters}
+            >
+              Сбросить фильтры
+            </Button>
           </div>
         )}
 

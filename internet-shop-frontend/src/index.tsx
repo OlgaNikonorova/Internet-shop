@@ -5,7 +5,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "./store/store";
-import theme from "./theme"; 
+import theme from "./theme";
 
 import "./index.css";
 
@@ -14,13 +14,11 @@ const root = ReactDOM.createRoot(
 );
 
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <ThemeProvider theme={theme}> 
-          <App />
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </PersistGate>
+  </Provider>
 );
