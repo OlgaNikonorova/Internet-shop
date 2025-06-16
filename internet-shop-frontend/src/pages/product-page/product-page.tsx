@@ -36,7 +36,6 @@ import { Thumbs, EffectFade, Autoplay } from "swiper/modules";
 import { ImageModal } from "../modal/image-modal";
 import ProductCard from "../../components/product-card/product-card";
 import Slider from "../../components/slider/slider";
-import { ActionNotification } from "../modal/action-notification";
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -54,8 +53,6 @@ const ProductPage = () => {
     isInCart,
     isImageModalOpen,
     setIsImageModalOpen,
-    actionNotification,
-    setActionNotification,
     onIncrease,
     onDecrease,
     cartItem,
@@ -877,14 +874,6 @@ const ProductPage = () => {
           hasPrev={currentImageIndex > 0}
         />
       )}
-
-      {/* Уведомление о действиях */}
-      <ActionNotification
-        open={!!actionNotification}
-        onClose={() => setActionNotification(null)}
-        message={actionNotification?.message || ""}
-        type={actionNotification?.type || "cart"}
-      />
     </div>
   );
 };

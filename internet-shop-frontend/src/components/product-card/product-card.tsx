@@ -13,6 +13,7 @@ import {
 } from "../../store/api/favorites-api";
 import React from "react";
 import { refreshFavorites } from "../../store/slices/favorites-slice";
+import { toast } from "react-toastify";
 
 interface ProductCardProps {
   product: Product;
@@ -65,9 +66,11 @@ const ProductCard = React.memo(
             quantity: 1,
           }).unwrap();
           dispatch(addCartItem(1));
+          toast.success(`Товар "${product.name}" добавлен в корзину`);
         } else {
           removeFromCart(id);
           dispatch(addCartItem(-1));
+          toast.success(`Товар "${product.name}" удален из корзины`);
         }
         refetchCart();
       } catch (error) {
@@ -80,8 +83,10 @@ const ProductCard = React.memo(
       try {
         if (!isFavorite) {
           await addToFavorites({ productId: id }).unwrap();
+          toast.success(`Товар "${product.name}" добавлен в избранное`);
         } else {
           await removeFromFavorites(id).unwrap();
+          toast.success(`Товар "${product.name}" удален из избранного`);
         }
 
         dispatch(refreshFavorites());
