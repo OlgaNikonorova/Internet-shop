@@ -23,7 +23,10 @@ import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
 import { useTypedSelector } from "../../store/hooks";
 import { userIdSelector } from "../../store/slices/user-slice";
-import { toast } from "react-toastify";
+import {
+  NotificationType,
+  showNotification,
+} from "../../components/notification/notification";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -114,9 +117,15 @@ export const useProductPage = () => {
       setReviewText("");
       setReviewRating(0);
       setEditingReviewId(null);
-      toast.success("Отзыв успешно добавлен");
+      showNotification({
+        message: "Отзыв успешно добавлен",
+        type: NotificationType.SUCCESS,
+      });
     } catch (error) {
-      toast.error("Ошибка при отправке отзыва");
+      showNotification({
+        message: "Ошибка при отправке отзыва",
+        type: NotificationType.ERROR,
+      });
     } finally {
       setIsSubmittingReview(false);
     }
@@ -127,9 +136,15 @@ export const useProductPage = () => {
       await deleteCartItem(cartItemId).unwrap();
       dispatch(addCartItem(-1));
       await refetchCart();
-      toast.success(`Товар "${cartItem?.productName ?? ""}" удален из корзины`);
+      showNotification({
+        message: `Товар "${cartItem?.productName ?? ""}" удален из корзины`,
+        type: NotificationType.CART,
+      });
     } catch (error) {
-      console.error("Ошибка удаления из корзины:", error);
+      showNotification({
+        message: "Ошибка добавления товара в корзину",
+        type: NotificationType.ERROR,
+      });
       await refetchCart();
     }
   };
@@ -169,8 +184,15 @@ export const useProductPage = () => {
       await addToCart({ productId: product.id, quantity: count }).unwrap();
       dispatch(addCartItem(1));
       await refetchCart();
-      toast.success(`Товар "${product.name}" добавлен в корзину`);
+      showNotification({
+        message: `Товар "${product.name}" добавлен в корзину`,
+        type: NotificationType.CART,
+      });
     } catch (error) {
+      showNotification({
+        message: "Ошибка добавления товара в корзину",
+        type: NotificationType.ERROR,
+      });
       console.error("Ошибка добавления в корзину:", error);
     }
   };
@@ -198,10 +220,16 @@ export const useProductPage = () => {
     try {
       if (isFavorite) {
         await removeFromFavorites(product.id).unwrap();
-        toast.success(`Товар "${product.name}" удален из избранного`);
+        showNotification({
+          message: `Товар "${product.name}" удален из избранного`,
+          type: NotificationType.FAVORITE,
+        });
       } else {
         await addToFavorites({ productId: product.id }).unwrap();
-        toast.success(`Товар "${product.name}" добавлен в избранное`);
+        showNotification({
+          message: `Товар "${product.name}" добавлен в избранное`,
+          type: NotificationType.FAVORITE,
+        });
       }
       refetchFavorites();
     } catch (error) {

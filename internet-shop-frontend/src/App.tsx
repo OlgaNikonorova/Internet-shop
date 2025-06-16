@@ -93,15 +93,7 @@ export default function App() {
 
   return (
     <>
-      <ToastContainer
-        position="top-left"
-        autoClose={2000}
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <ToastContainer />
       <RouterProvider router={router}>
         <Header onCartClick={() => setCartOpen(true)} />
         <CartDrawer isOpen={isCartOpen} onClose={() => setCartOpen(false)} />

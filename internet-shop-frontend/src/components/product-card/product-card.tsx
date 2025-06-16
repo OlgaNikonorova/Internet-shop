@@ -13,7 +13,10 @@ import {
 } from "../../store/api/favorites-api";
 import React from "react";
 import { refreshFavorites } from "../../store/slices/favorites-slice";
-import { toast } from "react-toastify";
+import {
+  NotificationType,
+  showNotification,
+} from "../notification/notification";
 
 interface ProductCardProps {
   product: Product;
@@ -66,11 +69,17 @@ const ProductCard = React.memo(
             quantity: 1,
           }).unwrap();
           dispatch(addCartItem(1));
-          toast.success(`Товар "${product.name}" добавлен в корзину`);
+          showNotification({
+            message: `Товар "${product.name}" добавлен в корзину`,
+            type: NotificationType.CART,
+          });
         } else {
           removeFromCart(id);
           dispatch(addCartItem(-1));
-          toast.success(`Товар "${product.name}" удален из корзины`);
+          showNotification({
+            message: `Товар "${product.name}" удален из корзины`,
+            type: NotificationType.CART,
+          });
         }
         refetchCart();
       } catch (error) {
@@ -83,10 +92,16 @@ const ProductCard = React.memo(
       try {
         if (!isFavorite) {
           await addToFavorites({ productId: id }).unwrap();
-          toast.success(`Товар "${product.name}" добавлен в избранное`);
+          showNotification({
+            message: `Товар "${product.name}" добавлен в избранное`,
+            type: NotificationType.FAVORITE,
+          });
         } else {
           await removeFromFavorites(id).unwrap();
-          toast.success(`Товар "${product.name}" удален из избранного`);
+          showNotification({
+            message: `Товар "${product.name}" удален из избранного`,
+            type: NotificationType.FAVORITE,
+          });
         }
 
         dispatch(refreshFavorites());

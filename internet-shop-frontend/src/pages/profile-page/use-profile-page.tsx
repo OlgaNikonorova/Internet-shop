@@ -11,6 +11,10 @@ import { useLogoutUserMutation } from "../../store/api/auth-api";
 import { useDispatch } from "react-redux";
 import { logout, setAvatar } from "../../store/slices/user-slice";
 import { useUploadFileMutation } from "../../store/api/files-api";
+import {
+  NotificationType,
+  showNotification,
+} from "../../components/notification/notification";
 
 export const useProfilePage = () => {
   const [isPasswordEditable, setIsPasswordEditable] = useState(false);
@@ -75,8 +79,16 @@ export const useProfilePage = () => {
     try {
       await updateUser({ id: user.id, updateUser: updateData }).unwrap();
       refetch();
+      showNotification({
+        message: "Данные профиля успешно обновлены",
+        type: NotificationType.SUCCESS,
+      });
     } catch (err) {
       console.error("Ошибка при обновлении профиля:", err);
+      showNotification({
+        message: "Ошибка обновления профиля",
+        type: NotificationType.ERROR,
+      });
     }
   };
 
@@ -113,8 +125,15 @@ export const useProfilePage = () => {
       dispatch(setAvatar(uploadResults[0].path));
 
       refetch();
+      showNotification({
+        message: "Фото профиля успешно обновлено",
+        type: NotificationType.SUCCESS,
+      });
     } catch (err) {
-      alert("Не удалось загрузить аватар. Пожалуйста, попробуйте ещё раз.");
+      showNotification({
+        message: "Ошибка обновления фото профиля",
+        type: NotificationType.ERROR,
+      });
     }
   };
 

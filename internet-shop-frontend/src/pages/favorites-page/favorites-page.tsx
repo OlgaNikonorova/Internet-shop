@@ -20,6 +20,10 @@ import { Filters } from "../../components/pagination/filters";
 import { useDebounce } from "../../store/hooks";
 import { ProductCategory } from "../../store/models/product/product-category";
 import { Button } from "@mui/material";
+import {
+  showNotification,
+  NotificationType,
+} from "../../components/notification/notification";
 
 const FavoritesPage = () => {
   const [pageSize, setPageSize] = useState(8);
@@ -94,6 +98,10 @@ const FavoritesPage = () => {
     await clearFavorites();
     dispatch(refreshFavorites());
     refetchFavorites();
+    showNotification({
+      message: "Избранные товары успешно очищены",
+      type: NotificationType.SUCCESS,
+    });
   };
 
   const handleShowMore = () => {

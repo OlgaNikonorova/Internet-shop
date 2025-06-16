@@ -20,9 +20,8 @@ body {
   opacity: 0 !important;
 }
 
-:root {
-  --toastify-color-info: black;
-  --toastify-color-success: black;
-  --toastify-color-warning: black;
-  --toastify-color-error: black;
+.Toastify__toast {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
