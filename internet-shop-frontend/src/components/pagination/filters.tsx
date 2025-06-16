@@ -3,7 +3,6 @@ import {
   Typography,
   Slider,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   SelectChangeEvent,

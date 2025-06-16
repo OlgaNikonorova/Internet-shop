@@ -17,9 +17,7 @@ const Counter = (props: CounterProps) => {
         >
           −
         </button>
-        <span className="min-w-[20px] text-center text-xl">
-          {count}
-        </span>
+        <span className="min-w-[20px] text-center text-xl">{count}</span>
         <button
           onClick={onIncrease}
           className="w-6 h-6 flex justify-center items-center text-xl"

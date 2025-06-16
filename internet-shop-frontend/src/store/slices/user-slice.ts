@@ -10,6 +10,7 @@ type AuthTokens = {
 
 type UserState = AuthTokens & {
   username: string | null;
+  userId: string | null;
   role: UserRole | null;
   avatar: string | null;
 };
@@ -18,6 +19,7 @@ const initialState: UserState = {
   username: null,
   avatar: null,
   accessToken: null,
+  userId: null,
   refreshToken: null,
   resetToken: null,
   role: null,
@@ -33,6 +35,7 @@ export const userSlice = createSlice({
       state.refreshToken = action.payload.refreshToken;
       state.role = action.payload.role;
       state.avatar = action.payload.avatar;
+      state.userId = action.payload.userId;
     },
 
     updateTokens: (state, action: PayloadAction<AuthTokens>) => {
@@ -59,6 +62,10 @@ export const userSlice = createSlice({
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
     },
+
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
+    },
   },
 });
 
@@ -69,7 +76,8 @@ export const {
   setAvatar,
   setUsername,
   setUserRole,
-  setResetToken
+  setResetToken,
+  setUserId,
 } = userSlice.actions;
 
 export const isAuthSelector = (state: RootState) =>
@@ -81,5 +89,6 @@ export const refreshTokenSelector = (state: RootState) =>
 export const avatarSelector = (state: RootState) => state.user.avatar;
 export const userRoleSelector = (state: RootState) => state.user.role;
 export const resetTokenSelector = (state: RootState) => state.user.resetToken;
+export const userIdSelector = (state: RootState) => state.user.userId;
 
 export default userSlice.reducer;

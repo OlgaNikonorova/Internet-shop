@@ -1,17 +1,12 @@
-import { Snackbar, Alert, Slide, SlideProps, IconButton } from "@mui/material";
-import { CheckCircle, ShoppingCart, Favorite } from "@mui/icons-material";
-import CloseIcon from '@mui/icons-material/Close';
-import React from "react";
+import { Snackbar, Alert, Slide, IconButton } from "@mui/material";
+import { ShoppingCart, Favorite } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface ActionNotificationProps {
   open: boolean;
   onClose: () => void;
   message: string;
   type: "cart" | "favorite" | "success" | "error";
-}
-
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="left" />;
 }
 
 export const ActionNotification = ({
@@ -25,7 +20,7 @@ export const ActionNotification = ({
       open={open}
       onClose={onClose}
       autoHideDuration={3000}
-      TransitionComponent={SlideTransition}
+      slots={{ transition: (props) => <Slide {...props} direction="left" /> }}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       sx={{ top: { xs: 70, sm: 80 } }}
     >
@@ -48,15 +43,15 @@ export const ActionNotification = ({
           </IconButton>
         }
         variant="filled"
-        sx={{ 
-          width: "100%", 
-          alignItems: "center", 
-          background: "black", 
+        sx={{
+          width: "100%",
+          alignItems: "center",
+          background: "black",
           color: "white",
           fontSize: "1.1rem",
-          '& .MuiAlert-message': {
-            fontSize: '1.1rem'
-          }
+          "& .MuiAlert-message": {
+            fontSize: "1.1rem",
+          },
         }}
       >
         {message}

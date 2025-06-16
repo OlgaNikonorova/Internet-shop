@@ -50,6 +50,7 @@ export const useAuthPage = () => {
           role: response.user.role,
           avatar: response.user.avatar ?? null,
           resetToken: null,
+          userId: response.user.id,
         })
       );
 
@@ -86,21 +87,11 @@ export const useAuthPage = () => {
     setMode(AuthMode.ForgotPassword);
   };
 
-  const setLoginMode = () => {
-    setMode(AuthMode.Login);
-  };
-
-  const setRegisterMode = () => {
-    setMode(AuthMode.Register);
-  };
-
   return {
     mode,
     error,
     onSubmit,
     toggleMode,
     setForgotPasswordMode,
-    setLoginMode,
-    setRegisterMode,
   };
 };

@@ -5,21 +5,32 @@ import { Avatar, Box, Rating as MuiRating } from "@mui/material";
 
 interface ReviewProps {
   review: ReviewModel;
+  isOwn?: boolean;
 }
 
 const Review = (props: ReviewProps) => {
-  const { review } = props;
+  const { review, isOwn } = props;
 
   const { data: user } = useGetUserByIdQuery(review.userId, {
     refetchOnMountOrArgChange: true,
   });
 
   return (
-    <div className="flex flex-col justify-between gap-5" style={{ fontSize: '1.1rem' }}>
+    <div
+      className="flex flex-col justify-between gap-5"
+      style={{ fontSize: "1.1rem" }}
+    >
       <div className="flex gap-5 items-center">
-        <Avatar src={user?.avatar} sx={{ width: 64, height: 64 }} />
+        <Avatar
+          src={
+            user?.avatar
+              ? process.env.REACT_APP_API_BASE_URL + user?.avatar
+              : "/default-avatar/png"
+          }
+          sx={{ width: 64, height: 64 }}
+        />
         <div className="flex flex-col items-center">
-          <h5 style={{ wordBreak: "break-word", fontSize: '1.1rem' }}>
+          <h5 style={{ wordBreak: "break-word", fontSize: "1.1rem", color: isOwn ? "#C0A062" : "" }}>
             {user?.username ?? `Пользователь ${review.id.replaceAll("-", "")}`}
           </h5>
           <span className="text-sm text-gray">
@@ -52,7 +63,7 @@ const Review = (props: ReviewProps) => {
         </Box>
       </div>
 
-      <p style={{ fontSize: '1.1rem' }}>{review.comment}</p>
+      <p style={{ fontSize: "1.1rem" }}>{review.comment}</p>
     </div>
   );
 };

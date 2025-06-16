@@ -18,7 +18,7 @@ import CartDrawer from "./components/cart/cart-drawer";
 import { useState } from "react";
 import CreateProductPage from "./pages/seller/create-product-page";
 import { UserRole } from "./store/models/user/user-role";
-import ResetPasswordPage from "./pages/resetPassword-page/resetPasswordPage";
+import ResetPasswordPage from "./pages/reset-password/reset-password-page";
 
 const publicRoutes: RouteObject[] = [
   {
@@ -27,8 +27,8 @@ const publicRoutes: RouteObject[] = [
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage/>
-  }
+    element: <ResetPasswordPage />,
+  },
 ];
 
 const protectedRoutes: RouteObject[] = [

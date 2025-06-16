@@ -1,6 +1,5 @@
 export enum AuthMode {
   Login = "login",
   Register = "register",
-  ForgotPassword = 'forgot_password',
-
+  ForgotPassword = "forgot_password",
 }

@@ -6,7 +6,6 @@ import { Favorite, FavoriteBorder, ShoppingCart } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useAddItemToCartMutation,
-  useRemoveItemFromCartMutation,
 } from "../../store/api/cart-api";
 import { useDispatch } from "react-redux";
 import { addCartItem } from "../../store/slices/cart-slice";
@@ -96,8 +95,7 @@ const ProductCard = React.memo(
 
     return (
       <motion.div
-        className="relative bg-white shadow-lg rounded-xl overflow-hidden flex flex-col hover:cursor-pointer 
-        min-w-[350px] max-w-[450px] transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        className="relative bg-white shadow-lg rounded-xl overflow-hidden flex flex-col hover:cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => navigate(`/product/${id}`)}

@@ -21,17 +21,14 @@ import {
 } from "../../store/api/favorites-api";
 import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
-import { NavigateBeforeRounded } from "@mui/icons-material";
+import { ActionNotificationType } from "../modal/action-notification-type";
+import { useTypedSelector } from "../../store/hooks";
+import { userIdSelector } from "../../store/slices/user-slice";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  type ActionNotificationType = {
-    message: string;
-    type: "cart" | "favorite" | "success" | "error";
-  };
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -51,6 +48,12 @@ export const useProductPage = () => {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
+
+  const userId = useTypedSelector(userIdSelector);
+
+  const ownReviewId = reviews.find((review) => review.userId === userId)?.id;
+
+  const isReviewCreatingAllowed = !ownReviewId;
 
   const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
@@ -110,9 +113,7 @@ export const useProductPage = () => {
       setReviewRating(0);
       setEditingReviewId(null);
       setActionNotification({
-        message: editingReviewId
-          ? "Отзыв успешно обновлен"
-          : "Отзыв успешно добавлен",
+        message: "Отзыв успешно добавлен",
         type: "success",
       });
     } catch (error) {
@@ -265,5 +266,7 @@ export const useProductPage = () => {
     setEditingReviewId,
     refetchReviews,
     navigate,
+    isReviewCreatingAllowed,
+    ownReviewId,
   };
 };

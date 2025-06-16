@@ -55,12 +55,12 @@ const Header = ({ onCartClick }: HeaderProps) => {
     <header
       className={`z-10 bg-black text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
       style={{
-        backdropFilter: "blur(10px)",
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backdropFilter: "blur(5px)",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
       }}
     >
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/shop" className="flex items-center">
+      <div className="px-4 py-4 flex items-center justify-center gap-5">
+        <Link to="/shop" className="flex items-center mr-5">
           <span
             className="text-2xl font-bold tracking-tight hover:text-[#C0A062] transition-colors duration-300"
             style={{ letterSpacing: "2px" }}
@@ -69,7 +69,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-[35px]">
+        <nav className="flex items-center gap-4 justify-between">
           <div className="hidden md:flex items-center gap-[81px]">
             <NavLink to="/shop" active={isActiveRoute("/shop")}>
               Каталог
