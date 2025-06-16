@@ -53,7 +53,7 @@ export const useProductPage = () => {
 
   const ownReviewId = reviews.find((review) => review.userId === userId)?.id;
 
-  const isReviewCreatingAllowed = !!ownReviewId;
+  const isReviewCreatingAllowed = !ownReviewId;
 
   const { data: favoriteProducts = [], refetch: refetchFavorites } =
     useGetUserFavoritesQuery();
