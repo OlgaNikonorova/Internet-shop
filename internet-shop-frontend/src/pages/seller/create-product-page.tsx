@@ -77,12 +77,12 @@ const CreateProductPage = () => {
         aria-describedby="alert-dialog-description"
       >
         <Box sx={{ textAlign: "center", p: 3 }}>
-          <CheckCircle color="success" sx={{ fontSize: 60, mb: 2 }} />
+          <CheckCircle color="primary" sx={{ fontSize: 60, mb: 2 }} />
 
           <DialogTitle
             id="alert-dialog-title"
             sx={{
-              color: "green",
+              color: "primary",
               textAlign: "center",
               fontSize: "2rem",
             }}
@@ -109,7 +109,7 @@ const CreateProductPage = () => {
             <Button
               onClick={handleCloseSuccessModal}
               variant="contained"
-              color="success"
+              color="primary"
               sx={{ px: 4 }}
             >
               В главное меню
