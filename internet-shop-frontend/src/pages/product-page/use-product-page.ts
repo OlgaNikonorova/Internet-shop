@@ -31,7 +31,6 @@ export const useProductPage = () => {
   const dispatch = useDispatch();
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string>("");
   const [actionNotification, setActionNotification] =
     useState<ActionNotificationType | null>(null);
 
@@ -43,6 +42,10 @@ export const useProductPage = () => {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
+
+  const [selectedImage, setSelectedImage] = useState<string>(
+    product?.images?.at(0) ?? ""
+  );
 
   const {
     data: reviews = [],
@@ -70,7 +73,8 @@ export const useProductPage = () => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddItemToCartMutation();
   const [updateCartItem] = useUpdateCartItemQuantityMutation();
 
-  const [addToFavorites] = useAddProductToFavoritesMutation();
+  const [addToFavorites, { isLoading: isAddingToFavorites }] =
+    useAddProductToFavoritesMutation();
   const [removeFromFavorites] = useRemoveProductFromFavoritesMutation();
 
   const isFavorite =
@@ -242,7 +246,7 @@ export const useProductPage = () => {
     isReviewsError: !!isReviewsError,
     isFavorite,
     isAddingToCart,
-    isAddingToFavorites: false,
+    isAddingToFavorites,
     handleAddToCart,
     handleUpdateQuantity,
     handleToggleFavorite,
