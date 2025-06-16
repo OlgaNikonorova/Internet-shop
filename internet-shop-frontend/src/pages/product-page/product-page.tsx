@@ -1,6 +1,4 @@
 import {
-  ChevronLeft,
-  ChevronRight,
   Favorite,
   FavoriteBorder,
   ShoppingCart,
@@ -32,12 +30,12 @@ import {
 import Review from "../../components/review/review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper";
-import { useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import { Thumbs, EffectFade, Autoplay } from "swiper/modules";
-import { ActionNotification } from "../modal/ActionNotification";
-import { ImageModal } from "../modal/ImageModal";
+import { ImageModal } from "../modal/image-modal";
 import ProductCard from "../../components/product-card/product-card";
 import Slider from "../../components/slider/slider";
+import { ActionNotification } from "../modal/action-notification";
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -71,6 +69,10 @@ const ProductPage = () => {
     setEditingReviewId,
     refetchReviews,
   } = useProductPage();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const imagesSwiperRef = useRef<{ swiper: SwiperType } | null>(null);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
@@ -132,7 +134,7 @@ const ProductPage = () => {
     },
   ];
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -156,12 +158,6 @@ const ProductPage = () => {
 
   const isInStock = productWithDefaultRating.stock > 0;
   const productImages = productWithDefaultRating.images ?? [];
-
-  const handleImageClick = (image: string, index: number) => {
-    setSelectedImage(image);
-    setCurrentImageIndex(index);
-    setIsImageModalOpen(true);
-  };
 
   const handleNextImage = () => {
     if (productImages.length === 0) return;
@@ -197,7 +193,7 @@ const ProductPage = () => {
           position: "fixed",
           top: "20px",
           right: "20px",
-          zIndex: 100,
+          zIndex: 20,
           backgroundColor: "rgba(0,0,0,0.5)",
           color: "white",
           "&:hover": {
@@ -218,11 +214,7 @@ const ProductPage = () => {
               thumbs={{ swiper: thumbsSwiper }}
               modules={[Thumbs, EffectFade, Autoplay]}
               effect="fade"
-              speed={800}
-              autoplay={{
-                delay: 5000,
-                disableOnInteraction: false,
-              }}
+              speed={500}
             >
               {productImages.map((image, index) => (
                 <SwiperSlide
@@ -233,7 +225,7 @@ const ProductPage = () => {
                     src={`${process.env.REACT_APP_API_BASE_URL}${image}`}
                     alt={productWithDefaultRating.name}
                     className="w-full h-full object-cover"
-                    onClick={() => handleImageClick(image, index)}
+                    onClick={() => setIsImageModalOpen(true)}
                   />
                 </SwiperSlide>
               ))}
@@ -268,6 +260,10 @@ const ProductPage = () => {
                   src={`${process.env.REACT_APP_API_BASE_URL}${image}`}
                   alt={`${productWithDefaultRating.name} thumbnail`}
                   className="w-full h-full object-cover"
+                  onClick={() => {
+                    setCurrentImageIndex(index);
+                    setSelectedImage(productImages[index]);
+                  }}
                 />
                 <div className="swiper-thumb-overlay absolute inset-0 bg-black/40 opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </SwiperSlide>
@@ -278,7 +274,7 @@ const ProductPage = () => {
 
       {/* Информация о товаре */}
       <div className="text-primary px-15 py-5 m-10">
-        <h1 className="text-4xl font-bold mb-1">
+        <h1 className="text-4xl font-bold mb-4">
           {productWithDefaultRating.name}
         </h1>
         <div className="flex gap-5">
@@ -288,6 +284,7 @@ const ProductPage = () => {
               alignItems: "center",
               fontStyle: "italic",
               fontSize: "1.25rem",
+              marginBottom: 4,
             }}
           >
             <MuiRating
@@ -324,7 +321,7 @@ const ProductPage = () => {
 
         <div className="flex flex-col lg:flex-row gap-10">
           <Box sx={{ width: "50%" }}>
-            <Typography variant="h5" paragraph>
+            <Typography variant="h5">
               {productWithDefaultRating.description ||
                 "Описание товара отсутствует"}
             </Typography>
@@ -345,12 +342,12 @@ const ProductPage = () => {
 
             <Stack direction="row" spacing={2} alignItems="center">
               {isInCart && cartItem ? (
-                <div className="flex items-center bg-black rounded-lg overflow-hidden">
+                <div className="flex items-center h-full bg-black rounded-lg overflow-hidden grow">
                   <IconButton
                     onClick={() =>
                       onDecrease(cartItem.id, cartItem.quantity ?? 1)
                     }
-                    className="!text-white !p-2 hover:!bg-gray-800"
+                    className="!text-white !p-2 hover:!bg-gray"
                     size="small"
                   >
                     <Remove />
@@ -364,7 +361,7 @@ const ProductPage = () => {
                     onClick={() =>
                       onIncrease(cartItem.id, cartItem.quantity ?? 1)
                     }
-                    className="!text-white !p-2 hover:!bg-gray-800"
+                    className="!text-white !p-2 hover:!bg-gray"
                     size="small"
                   >
                     <Add />
@@ -695,7 +692,7 @@ const ProductPage = () => {
           )}
 
           {/* Кнопка для открытия формы отзыва */}
-          <div className="text-center mt-8">
+          <div className="text-center my-8">
             <Button
               variant="outlined"
               onClick={() => setIsReviewFormOpen(!isReviewFormOpen)}
@@ -709,9 +706,7 @@ const ProductPage = () => {
           {/* Форма для отзыва */}
           {isReviewFormOpen && (
             <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4">
-                {editingReviewId ? "Редактировать отзыв" : "Оставить отзыв"}
-              </h3>
+              <h3 className="text-2xl font-bold mb-4">Оставить отзыв</h3>
               <div className="bg-gray-50 rounded-lg p-6">
                 <Box
                   sx={{
@@ -775,11 +770,7 @@ const ProductPage = () => {
                     className="!bg-black !text-white hover:!bg-gray-800"
                     sx={{ fontSize: "1.1rem" }}
                   >
-                    {isSubmittingReview
-                      ? "Отправка..."
-                      : editingReviewId
-                      ? "Обновить отзыв"
-                      : "Отправить отзыв"}
+                    {isSubmittingReview ? "Отправка..." : "Отправить отзыв"}
                   </Button>
                   {editingReviewId && (
                     <Button

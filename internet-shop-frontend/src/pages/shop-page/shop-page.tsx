@@ -94,7 +94,6 @@ const ShopPage = () => {
       alignItems="center"
       gap={8}
       width="100%"
-      sx={{ backgroundColor: "#000000" }}
     >
       {/* Hero Section */}
       <Box width="100%">
@@ -105,7 +104,6 @@ const ShopPage = () => {
             backgroundImage: 'url("/images/welcome.jpg")',
             backgroundPosition: "left 27%",
             backgroundSize: "cover",
-            height: { xs: "600px", md: "800px" },
             position: "relative",
             "&::before": {
               content: '""',
@@ -121,16 +119,16 @@ const ShopPage = () => {
         >
           <Box
             sx={{
-              pt: { xs: 20, md: 20 },
-              px: { xs: 4, md: 10 },
-              pb: { xs: 10, md: 20 },
+              paddingTop: { xs: 20, md: 30 },
+              paddingBottom: { xs: 10, md: 10 },
+              paddingX: { xs: 4, md: 10 },
               flexDirection: "column",
               color: "white",
               width: { xs: "100%", md: "50%" },
               display: "flex",
               justifyContent: "center",
               alignSelf: "flex-end",
-              gap: 4,
+              gap: 2,
               position: "relative",
               zIndex: 1,
             }}
@@ -178,6 +176,12 @@ const ShopPage = () => {
                   backgroundColor: "#C0A062",
                   color: "black",
                 },
+              }}
+              onClick={() => {
+                const catalog = document.getElementById("catalog");
+                if (catalog) {
+                  catalog.scrollIntoView({ behavior: "smooth" });
+                }
               }}
             >
               К покупкам!
@@ -435,7 +439,7 @@ const ShopPage = () => {
         </Box>
 
         {/* Каталог товаров */}
-        <Box width="100%" sx={{ mb: 8 }}>
+        <Box width="100%" sx={{ mb: 8 }} id="catalog">
           <Box
             onClick={() => navigate("/promo")}
             sx={{
@@ -484,9 +488,6 @@ const ShopPage = () => {
               flexDirection: { xs: "column", md: "row" },
               gap: 2,
               p: 2,
-              backgroundColor: "white",
-              borderRadius: 2,
-              boxShadow: 1,
               mb: 4,
             }}
           >

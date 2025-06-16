@@ -11,22 +11,26 @@ export interface RatingProps {
   readOnly?: boolean;
 }
 
-const Rating = ({ 
-  value, 
-  onChange, 
-  editable = false, 
+const Rating = ({
+  value,
+  onChange,
+  editable = false,
   className = "",
   size = "medium",
-  readOnly = false
+  readOnly = false,
 }: RatingProps) => {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
-  
+
   const getSize = () => {
     switch (size) {
-      case "small": return "1rem";
-      case "medium": return "1.5rem";
-      case "large": return "2rem";
-      default: return "1.5rem";
+      case "small":
+        return "1rem";
+      case "medium":
+        return "1.5rem";
+      case "large":
+        return "2rem";
+      default:
+        return "1.5rem";
     }
   };
 
@@ -49,13 +53,10 @@ const Rating = ({
           size="small"
         >
           {(hoverValue || value) >= star ? (
-            <Star 
-              className="text-yellow-400" 
-              style={{ fontSize: getSize() }}
-            />
+            <Star className="text-yellow-400" style={{ fontSize: getSize() }} />
           ) : (
-            <StarBorder 
-              className="text-yellow-400" 
+            <StarBorder
+              className="text-yellow-400"
               style={{ fontSize: getSize() }}
             />
           )}

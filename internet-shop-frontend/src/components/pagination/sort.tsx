@@ -18,7 +18,14 @@ export const SortOptions = ({ sortOption, onSortChange }: SortOptionsProps) => {
   ];
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "background.paper", borderRadius: 5, height: "max-content" }}>
+    <Box
+      sx={{
+        p: 3,
+        backgroundColor: "background.paper",
+        borderRadius: 5,
+        height: "max-content",
+      }}
+    >
       <Typography variant="h6" gutterBottom>
         Сортировать по
       </Typography>

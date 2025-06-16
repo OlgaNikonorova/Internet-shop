@@ -36,15 +36,19 @@ export const registerSchema = loginSchema.extend({
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 
-
 export const forgotPasswordSchema = z.object({
-  email: z.string().regex(/^\S+@\S+\.\S+$/, "Введите корректную электронную почту"),
+  email: z
+    .string()
+    .regex(/^\S+@\S+\.\S+$/, "Введите корректную электронную почту"),
   username: z.string().min(3, "Псевдоним должен быть не менее 3 символов"),
 });
 
 // Обновляем тип FormData
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-export type FormData = LoginFormData | RegisterFormData | ForgotPasswordFormData;
+export type FormData =
+  | LoginFormData
+  | RegisterFormData
+  | ForgotPasswordFormData;
 
 // Обновляем getSchema
 export const getSchema = (mode: AuthMode) => {

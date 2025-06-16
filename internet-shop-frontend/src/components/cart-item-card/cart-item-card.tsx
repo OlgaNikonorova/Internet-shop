@@ -70,7 +70,7 @@ const CartItemCard = (props: CartItemCardProps) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-4 md:justify-between">
+    <div className="flex flex-col md:flex-row gap-4 p-4 md:justify-between items-center">
       <div className="w-full md:w-1/4">
         <img
           src={mainImage}

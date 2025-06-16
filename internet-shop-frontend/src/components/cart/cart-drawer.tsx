@@ -6,7 +6,15 @@ import CartItem from "../../store/models/cart/cart-item";
 import List from "@mui/material/List";
 import { useDispatch } from "react-redux";
 import { setCartProductIds } from "../../store/slices/cart-slice";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -87,16 +95,20 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       {/* Drawer */}
       <div
         className={`fixed right-0 top-0 h-screen w-full max-w-[720px] bg-white z-50 p-8 overflow-y-auto
-        transform transition-transform duration-300 ease-in-out flex flex-col
+        transform transition-transform duration-300 ease-in-out flex flex-col justify-between gap-3
         ${animateDrawer ? "translate-x-0" : "translate-x-full"}
         shadow-xl`}
       >
-        <div className="flex justify-between items-center mb-8 pb-6">
+        <div className="flex justify-between items-center shrink-0">
           <h2 className="text-3xl font-light">
-            Ваша корзина <span className="font-normal">({products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)} шт.)</span>
+            Ваша корзина{" "}
+            <span className="font-normal">
+              ({products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)}{" "}
+              шт.)
+            </span>
           </h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-3xl hover:text-[#C0A062] transition-colors duration-200"
           >
             &times;
@@ -104,30 +116,41 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
+          <div className="flex justify-center items-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C0A062]"></div>
           </div>
         ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-            <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          <div className="flex flex-col items-center justify-center text-gray">
+            <svg
+              className="w-16 h-16 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              ></path>
             </svg>
             <p className="text-xl">Ваша корзина пуста</p>
           </div>
         ) : (
-          <div className="flex flex-col h-full justify-between">
+          <div className="flex flex-col flex-grow">
             <List
               sx={{
                 width: "100%",
                 position: "relative",
-                overflow: "auto",
-                flex: "1 1 auto",
-                maxHeight: "55vh",
+                flexGrow: 1,
+                overflowY: "auto",
+                gap: 4,
+                maxHeight: "40vh",
                 padding: "0 8px",
               }}
             >
               {products.map((product: CartItem) => (
-                <div key={product.id} className="relative py-4">
+                <div key={product.id} className="relative">
                   <CartItemCard
                     cartItem={product}
                     refetchCart={refetch}
@@ -138,7 +161,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             </List>
 
             {/* Промокод и итог */}
-            <div className="mt-8 pt-6">
+            <div className="mt-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-4">
                   <h3 className="text-xl font-medium">Промокод</h3>
@@ -171,7 +194,9 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                         color: isPromoApplied ? "#9CA3AF" : "#C0A062",
                         borderColor: isPromoApplied ? "#9CA3AF" : "#C0A062",
                         "&:hover": {
-                          backgroundColor: isPromoApplied ? "transparent" : "rgba(192, 160, 98, 0.08)",
+                          backgroundColor: isPromoApplied
+                            ? "transparent"
+                            : "rgba(192, 160, 98, 0.08)",
                           borderColor: isPromoApplied ? "#9CA3AF" : "#C0A062",
                         },
                         whiteSpace: "nowrap",
@@ -183,17 +208,20 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 </div>
 
                 <div className="flex flex-col gap-3 text-lg">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between gap-2">
                     <span>Стоимость товаров:</span>
-                    <span>{totalPrice.toFixed(2)} ₽</span>
+                    {discount > 0 && (
+                      <span className="text-[#C0A062] text-right grow">
+                        {finalPrice.toFixed(2)} ₽
+                      </span>
+                    )}
+                    <span
+                      className={discount > 0 ? "line-through text-gray" : ""}
+                    >
+                      {totalPrice.toFixed(2)} ₽
+                    </span>
                   </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-[#C0A062]">
-                      <span>Скидка:</span>
-                      <span>-{discount.toFixed(2)} ₽</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-2xl font-medium mt-4 pt-4">
+                  <div className="flex justify-between text-2xl font-medium mt-4">
                     <span>Итого:</span>
                     <span>{finalPrice.toFixed(2)} ₽</span>
                   </div>
@@ -232,12 +260,12 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             padding: "24px",
             textAlign: "center",
             maxWidth: "500px",
-          }
+          },
         }}
       >
-        <DialogTitle 
-          id="alert-dialog-title" 
-          sx={{ 
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{
             color: "black",
             fontSize: "24px",
             fontWeight: "bold",
@@ -247,7 +275,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
           Заказ оформлен!
         </DialogTitle>
         <DialogContent>
-          <DialogContentText 
+          <DialogContentText
             id="alert-dialog-description"
             sx={{
               color: "black",
@@ -256,15 +284,16 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               marginTop: "16px",
             }}
           >
-            Ваш заказ успешно оформлен. Номер заказа: #{Math.floor(Math.random() * 1000000)}. 
+            Ваш заказ успешно оформлен. Номер заказа: #
+            {Math.floor(Math.random() * 1000000)}.
             <br />
             Мы свяжемся с вами для подтверждения заказа.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", paddingBottom: "24px" }}>
-          <Button 
+          <Button
             onClick={closeSuccessModal}
-            sx={{ 
+            sx={{
               color: "white",
               backgroundColor: "black",
               padding: "8px 24px",

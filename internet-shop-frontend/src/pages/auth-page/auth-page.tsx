@@ -228,11 +228,7 @@ const AuthPage = () => {
                 : isForgotPassword
                 ? "Вспомнили пароль?"
                 : "Уже есть аккаунт?"}{" "}
-              <Button
-                onClick={toggleMode}
-                size="medium"
-                sx={{ fontSize: 20 }}
-              >
+              <Button onClick={toggleMode} size="medium" sx={{ fontSize: 20 }}>
                 {isLogin
                   ? "Зарегистрироваться"
                   : isForgotPassword

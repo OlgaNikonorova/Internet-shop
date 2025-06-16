@@ -21,17 +21,12 @@ import {
 } from "../../store/api/favorites-api";
 import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
-import { NavigateBeforeRounded } from "@mui/icons-material";
+import { ActionNotificationType } from "../modal/action-notification-type";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  type ActionNotificationType = {
-    message: string;
-    type: "cart" | "favorite" | "success" | "error";
-  };
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -110,9 +105,7 @@ export const useProductPage = () => {
       setReviewRating(0);
       setEditingReviewId(null);
       setActionNotification({
-        message: editingReviewId
-          ? "Отзыв успешно обновлен"
-          : "Отзыв успешно добавлен",
+        message: "Отзыв успешно добавлен",
         type: "success",
       });
     } catch (error) {
