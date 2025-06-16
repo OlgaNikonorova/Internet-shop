@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGetProductQuery } from "../../store/api/products-api";
 import {
   useCreateReviewMutation,
@@ -20,9 +21,11 @@ import {
 } from "../../store/api/favorites-api";
 import { addCartItem } from "../../store/slices/cart-slice";
 import CartItem from "../../store/models/cart/cart-item";
+import { NavigateBeforeRounded } from "@mui/icons-material";
 
 export const useProductPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   type ActionNotificationType = {
@@ -261,5 +264,6 @@ export const useProductPage = () => {
     editingReviewId,
     setEditingReviewId,
     refetchReviews,
+    navigate,
   };
 };

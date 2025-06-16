@@ -53,18 +53,24 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
   return (
     <header
-      className={`z-10 bg-black/15 text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
+      className={`z-10 bg-black text-white shadow-md top-0 left-0 right-0 ${getPositionClass()}`}
+      style={{
+        backdropFilter: "blur(10px)",
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+      }}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Логотип */}
         <Link to="/shop" className="flex items-center">
-          <span className="text-2xl font-bold tracking-tight">SOBACCINI</span>
+          <span
+            className="text-2xl font-bold tracking-tight hover:text-[#C0A062] transition-colors duration-300"
+            style={{ letterSpacing: "2px" }}
+          >
+            SOBACCINI
+          </span>
         </Link>
 
-        {/* Основная навигация */}
         <nav className="flex items-center gap-[35px]">
           <div className="hidden md:flex items-center gap-[81px]">
-            {/* Общие ссылки для всех */}
             <NavLink to="/shop" active={isActiveRoute("/shop")}>
               Каталог
             </NavLink>
@@ -75,7 +81,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
               Бренды
             </NavLink>
 
-            {/* Ссылки только для продавцов */}
             {isSeller && (
               <>
                 <NavLink
@@ -97,25 +102,38 @@ const Header = ({ onCartClick }: HeaderProps) => {
           </div>
 
           <div className="flex items-center gap-6">
-            <NavIcon to="/favorites" icon={<Favorite fontSize="medium" />} />
+            <NavIcon
+              to="/favorites"
+              icon={
+                <Favorite
+                  fontSize="medium"
+                  className="hover:text-[#C0A062] transition-colors duration-300"
+                />
+              }
+            />
 
             <div
               onClick={onCartClick}
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="relative p-2 rounded-full hover:bg-gray-100/10 transition-colors duration-300 cursor-pointer"
             >
-              <NavIcon icon={<ShoppingCart fontSize="medium" />} />
+              <ShoppingCart
+                fontSize="medium"
+                className="hover:text-[#C0A062] transition-colors duration-300"
+              />
               {cartItemsCount > 0 && (
-                <span onClick={onCartClick} className="absolute top-1 right-1 bg-red-500 text-white text-l rounded-full w-5 h-5 flex items-center justify-center cursor-pointer">
+                <span
+                  onClick={onCartClick}
+                  className="absolute top-1 right-1 bg-[#C0A062] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
+                >
                   {cartItemsCount}
                 </span>
               )}
             </div>
-            <button
-              className="p-2 text-xl rounded-full hover:bg-gray transition-colors"
-              aria-label="Профиль"
-            >
-              <Link className="flex gap-3" to="/profile">
-                <div>{username}</div>
+            <button className="p-2 text-xl rounded-full hover:bg-gray-100/10 transition-colors duration-300">
+              <Link className="flex gap-3 items-center" to="/profile">
+                <div className="hover:text-[#C0A062] transition-colors duration-300">
+                  {username}
+                </div>
                 <Avatar
                   src={
                     (avatar && process.env.REACT_APP_API_BASE_URL + avatar) ||
@@ -126,6 +144,11 @@ const Header = ({ onCartClick }: HeaderProps) => {
                     height: 32,
                     cursor: "pointer",
                     mx: "auto",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      opacity: 0.8,
+                      border: "1px solid #C0A062",
+                    },
                   }}
                 />
               </Link>

@@ -6,6 +6,7 @@ import CartItem from "../../store/models/cart/cart-item";
 import List from "@mui/material/List";
 import { useDispatch } from "react-redux";
 import { setCartProductIds } from "../../store/slices/cart-slice";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -14,6 +15,10 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const dispatch = useDispatch();
+  const [promoCode, setPromoCode] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
 
   const {
     data: { items: products = [], totalPrice = 0 } = {},
@@ -43,13 +48,37 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     }
   }, [dispatch, isOpen, products, refetch]);
 
+  const handleApplyPromo = () => {
+    if (promoCode === "SOBACCINI10") {
+      setDiscount(totalPrice * 0.1);
+      setIsPromoApplied(true);
+    } else if (promoCode === "SOBACCINI20") {
+      setDiscount(totalPrice * 0.2);
+      setIsPromoApplied(true);
+    } else {
+      setDiscount(0);
+      setIsPromoApplied(false);
+    }
+  };
+
+  const handleCheckout = () => {
+    setShowSuccessModal(true);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    onClose();
+  };
+
+  const finalPrice = totalPrice - discount;
+
   if (!showDrawer) return null;
 
   return createPortal(
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/70 z-40 transition-opacity duration-300 ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
@@ -57,25 +86,34 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
       {/* Drawer */}
       <div
-        className={`fixed right-0 top-0 h-screen w-[720px] bg-white z-50 p-6 overflow-y-auto
+        className={`fixed right-0 top-0 h-screen w-full max-w-[720px] bg-white z-50 p-8 overflow-y-auto
         transform transition-transform duration-300 ease-in-out flex flex-col
         ${animateDrawer ? "translate-x-0" : "translate-x-full"}
-      `}
+        shadow-xl`}
       >
-        <div className="flex justify-between items-center mb-4 p-5">
-          <h2 className="text-2xl">
-            Корзина /{" "}
-            {products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)} шт.
+        <div className="flex justify-between items-center mb-8 pb-6">
+          <h2 className="text-3xl font-light">
+            Ваша корзина <span className="font-normal">({products.reduce((acc, item) => acc + (item.quantity ?? 1), 0)} шт.)</span>
           </h2>
-          <button onClick={onClose} className="text-3xl">
+          <button 
+            onClick={onClose} 
+            className="text-3xl hover:text-[#C0A062] transition-colors duration-200"
+          >
             &times;
           </button>
         </div>
 
         {isLoading ? (
-          <div>Загрузка...</div>
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C0A062]"></div>
+          </div>
         ) : products.length === 0 ? (
-          <p className="text-center text-gray">Корзина пуста</p>
+          <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+            <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <p className="text-xl">Ваша корзина пуста</p>
+          </div>
         ) : (
           <div className="flex flex-col h-full justify-between">
             <List
@@ -85,10 +123,11 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 overflow: "auto",
                 flex: "1 1 auto",
                 maxHeight: "55vh",
+                padding: "0 8px",
               }}
             >
               {products.map((product: CartItem) => (
-                <div key={product.id} className="relative p-4">
+                <div key={product.id} className="relative py-4">
                   <CartItemCard
                     cartItem={product}
                     refetchCart={refetch}
@@ -99,35 +138,145 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             </List>
 
             {/* Промокод и итог */}
-            <div className="flex flex-col gap-6">
-              <div className="flex justify-between">
-                <div className="flex flex-col self-start">
-                  <h2 className="text-2xl font-bold mb-4">Сумма заказа</h2>
-                  <span>
-                    Стоимость продуктов...................
-                    {totalPrice.toFixed(2)} ₽
-                  </span>
-                  <span>
-                    Скидка..................................................0 ₽
-                  </span>
+            <div className="mt-8 pt-6">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xl font-medium">Промокод</h3>
+                  <div className="flex gap-4">
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Введите промокод"
+                      value={promoCode}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value);
+                        setIsPromoApplied(false);
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "#E5E7EB",
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "#C0A062",
+                          },
+                        },
+                      }}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={handleApplyPromo}
+                      disabled={isPromoApplied || !promoCode}
+                      sx={{
+                        color: isPromoApplied ? "#9CA3AF" : "#C0A062",
+                        borderColor: isPromoApplied ? "#9CA3AF" : "#C0A062",
+                        "&:hover": {
+                          backgroundColor: isPromoApplied ? "transparent" : "rgba(192, 160, 98, 0.08)",
+                          borderColor: isPromoApplied ? "#9CA3AF" : "#C0A062",
+                        },
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {isPromoApplied ? "Применено" : "Применить"}
+                    </Button>
+                  </div>
                 </div>
 
-                <button className="text-gray px-4 py-4 mb-2 border border-gray rounded w-fit self-center">
-                  ВВЕДИТЕ ПРОМОКОД
-                </button>
-              </div>
+                <div className="flex flex-col gap-3 text-lg">
+                  <div className="flex justify-between">
+                    <span>Стоимость товаров:</span>
+                    <span>{totalPrice.toFixed(2)} ₽</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-[#C0A062]">
+                      <span>Скидка:</span>
+                      <span>-{discount.toFixed(2)} ₽</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-2xl font-medium mt-4 pt-4">
+                    <span>Итого:</span>
+                    <span>{finalPrice.toFixed(2)} ₽</span>
+                  </div>
+                </div>
 
-              <div className="text-3xl self-end">
-                Итого {totalPrice.toFixed(2)} ₽
+                <Button
+                  variant="contained"
+                  onClick={handleCheckout}
+                  sx={{
+                    backgroundColor: "black",
+                    color: "white",
+                    padding: "12px 24px",
+                    fontSize: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#C0A062",
+                    },
+                  }}
+                >
+                  Оформить заказ
+                </Button>
               </div>
-
-              <button className="bg-primary text-white px-12 py-3 rounded w-fit self-center">
-                Оформить заказ
-              </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Модальное окно успешного оформления */}
+      <Dialog
+        open={showSuccessModal}
+        onClose={closeSuccessModal}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: "8px",
+            padding: "24px",
+            textAlign: "center",
+            maxWidth: "500px",
+          }
+        }}
+      >
+        <DialogTitle 
+          id="alert-dialog-title" 
+          sx={{ 
+            color: "black",
+            fontSize: "24px",
+            fontWeight: "bold",
+            paddingBottom: "0",
+          }}
+        >
+          Заказ оформлен!
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText 
+            id="alert-dialog-description"
+            sx={{
+              color: "black",
+              fontSize: "18px",
+              textAlign: "center",
+              marginTop: "16px",
+            }}
+          >
+            Ваш заказ успешно оформлен. Номер заказа: #{Math.floor(Math.random() * 1000000)}. 
+            <br />
+            Мы свяжемся с вами для подтверждения заказа.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", paddingBottom: "24px" }}>
+          <Button 
+            onClick={closeSuccessModal}
+            sx={{ 
+              color: "white",
+              backgroundColor: "black",
+              padding: "8px 24px",
+              "&:hover": {
+                backgroundColor: "#C0A062",
+              },
+            }}
+          >
+            Закрыть
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>,
     document.body
   );

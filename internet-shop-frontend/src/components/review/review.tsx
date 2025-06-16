@@ -15,14 +15,14 @@ const Review = (props: ReviewProps) => {
   });
 
   return (
-    <div className="flex flex-col justify-between gap-5">
+    <div className="flex flex-col justify-between gap-5" style={{ fontSize: '1.1rem' }}>
       <div className="flex gap-5 items-center">
         <Avatar src={user?.avatar} sx={{ width: 64, height: 64 }} />
         <div className="flex flex-col items-center">
-          <h5 style={{ wordBreak: "break-word" }}>
+          <h5 style={{ wordBreak: "break-word", fontSize: '1.1rem' }}>
             {user?.username ?? `Пользователь ${review.id.replaceAll("-", "")}`}
           </h5>
-          <span className="text-xs text-gray">
+          <span className="text-sm text-gray">
             {format(new Date(review.createdAt), "dd.MM.yyyy")}
           </span>
         </div>
@@ -52,7 +52,7 @@ const Review = (props: ReviewProps) => {
         </Box>
       </div>
 
-      <p>{review.comment}</p>
+      <p style={{ fontSize: '1.1rem' }}>{review.comment}</p>
     </div>
   );
 };

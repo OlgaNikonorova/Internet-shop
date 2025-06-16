@@ -20,8 +20,6 @@ export const ActionNotification = ({
   message,
   type,
 }: ActionNotificationProps) => {
-
-    
   return (
     <Snackbar
       open={open}
@@ -29,29 +27,37 @@ export const ActionNotification = ({
       autoHideDuration={3000}
       TransitionComponent={SlideTransition}
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      sx={{ top: { xs: 70, sm: 80 }, 
-      }}
+      sx={{ top: { xs: 70, sm: 80 } }}
     >
       <Alert
         icon={
           type === "cart" ? (
-            <ShoppingCart fontSize="inherit" />
+            <ShoppingCart fontSize="large" />
           ) : (
-            <Favorite fontSize="inherit" />
+            <Favorite fontSize="large" />
           )
         }
         action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={onClose}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={onClose}
+          >
+            <CloseIcon fontSize="large" />
+          </IconButton>
+        }
         variant="filled"
-        sx={{ width: "100%", alignItems: "center", background: "black", color: "white" }}
+        sx={{ 
+          width: "100%", 
+          alignItems: "center", 
+          background: "black", 
+          color: "white",
+          fontSize: "1.1rem",
+          '& .MuiAlert-message': {
+            fontSize: '1.1rem'
+          }
+        }}
       >
         {message}
       </Alert>
